@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7f19e742-a0f2-47c3-9348-90edcbefd02d" name="Changes" comment="" />
+    <list default="true" id="7f19e742-a0f2-47c3-9348-90edcbefd02d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/angular.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -37,6 +41,9 @@
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_interpreter_path": "node",
     "nodejs_package_manager_path": "npm",
+    "npm.Angular CLI Server.executor": "Run",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "C:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\FrontEnd\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -69,7 +76,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1778491306890</updated>
-      <workItem from="1778491307932" duration="1255000" />
+      <workItem from="1778491307932" duration="3970000" />
     </task>
     <servers />
   </component>
