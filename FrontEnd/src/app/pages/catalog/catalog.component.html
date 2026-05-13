@@ -1,0 +1,95 @@
+<div class="catalog-page">
+  <div class="catalog-header">
+    <div class="container">
+      <h1 class="catalog-title">Catalogue</h1>
+      <p class="catalog-sub">{{ filteredBooks().length }} livre{{ filteredBooks().length > 1 ? 's' : '' }} trouvé{{ filteredBooks().length > 1 ? 's' : '' }}</p>
+    </div>
+  </div>
+
+  <div class="container catalog-body">
+    <div class="filters-bar">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="search" class="search-input" placeholder="Titre, auteur, ISBN..."
+          [value]="searchQuery()" (input)="onSearchInput($any($event.target).value)" />
+      </div>
+      <select class="filter-select" [value]="selectedCategory()" (change)="onCategoryChange($any($event.target).value)">
+        @for (opt of categoryOptions; track opt.key) { <option [value]="opt.key">{{ opt.label }}</option> }
+      </select>
+      <select class="filter-select" [value]="filterAvailability()" (change)="onAvailabilityChange($any($event.target).value)">
+        <option value="all">Tous les livres</option>
+        <option value="available">Disponibles uniquement</option>
+      </select>
+      <select class="filter-select" [value]="sortBy()" (change)="onSortChange($any($event.target).value)">
+        <option value="title">Trier : Titre A-Z</option>
+        <option value="author">Trier : Auteur A-Z</option>
+        <option value="rating">Trier : Meilleures notes</option>
+        <option value="availability">Trier : Disponibilité</option>
+      </select>
+      @if (searchQuery() || selectedCategory() !== 'ALL' || filterAvailability() !== 'all') {
+        <button class="btn-clear" (click)="clearFilters()">✕ Réinitialiser</button>
+      }
+    </div>
+
+    @if (isLoading()) {
+      <div class="books-grid">
+        @for (_ of [1,2,3,4,5,6,7,8,9,10,11,12]; track $index) { <div class="book-card skeleton"></div> }
+      </div>
+    } @else if (error()) {
+      <div class="feedback-state error-state">
+        <span class="feedback-icon">⚠️</span>
+        <p>{{ error() }}</p>
+        <button class="btn-retry" (click)="loadBooks()">Réessayer</button>
+      </div>
+    } @else if (paginatedBooks().length === 0) {
+      <div class="feedback-state empty-state">
+        <span class="feedback-icon">📭</span>
+        <p>Aucun livre ne correspond à votre recherche.</p>
+        <button class="btn-retry" (click)="clearFilters()">Réinitialiser les filtres</button>
+      </div>
+    } @else {
+      <div class="books-grid">
+        @for (book of paginatedBooks(); track book.id) {
+          <article class="book-card">
+            <div class="book-cover" [class.no-cover]="!book.coverUrl">
+              @if (book.coverUrl) { <img [src]="book.coverUrl" [alt]="book.title" loading="lazy" /> }
+              @else { <span class="cover-placeholder">📖</span> }
+              <span class="availability-badge" [class.available]="book.availableCopies > 0" [class.unavailable]="book.availableCopies === 0">
+                {{ book.availableCopies > 0 ? 'Disponible' : 'Emprunté' }}
+              </span>
+            </div>
+            <div class="book-info">
+              <span class="book-category">{{ getCategoryLabel(book.category) }}</span>
+              <h3 class="book-title">{{ book.title }}</h3>
+              <p class="book-author">{{ book.author }}</p>
+              @if (book.description) { <p class="book-desc">{{ book.description }}</p> }
+              <div class="book-meta">
+                <div class="book-rating">
+                  @for (star of getStars(book.averageRating); track $index) {
+                    <span class="star" [class.full]="star === 'full'" [class.half]="star === 'half'">★</span>
+                  }
+                  <span class="rating-val">{{ book.averageRating }}</span>
+                  <span class="rating-count">({{ book.ratingCount }})</span>
+                </div>
+                <span class="copies-info">{{ book.availableCopies }}/{{ book.totalCopies }} ex.</span>
+              </div>
+              <button class="btn-borrow" [class.btn-borrow--disabled]="book.availableCopies === 0" [disabled]="book.availableCopies === 0">
+                {{ book.availableCopies > 0 ? 'Emprunter' : 'Réserver' }}
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+      @if (totalPages() > 1) {
+        <nav class="pagination" aria-label="Pagination">
+          <button class="page-btn" [disabled]="currentPage() === 1" (click)="goToPage(currentPage() - 1)">‹</button>
+          @for (page of pageNumbers(); track $index) {
+            @if (page === '...') { <span class="page-ellipsis">…</span> }
+            @else { <button class="page-btn" [class.active]="page === currentPage()" (click)="goToPage(page)">{{ page }}</button> }
+          }
+          <button class="page-btn" [disabled]="currentPage() === totalPages()" (click)="goToPage(currentPage() + 1)">›</button>
+        </nav>
+      }
+    }
+  </div>
+</div>
