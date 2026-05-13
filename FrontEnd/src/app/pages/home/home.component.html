@@ -1,0 +1,137 @@
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <span class="hero-badge">Bibliothèque communautaire</span>
+    <h1 class="hero-title">Des milliers de livres,<br><span class="hero-highlight">une communauté</span></h1>
+    <p class="hero-sub">Consultez le catalogue, empruntez vos livres préférés et partagez vos avis avec les membres du quartier.</p>
+    <div class="hero-actions">
+      <a routerLink="/catalogue" class="btn-hero-primary">Parcourir le catalogue</a>
+      <a routerLink="/inscription" class="btn-hero-outline">Rejoindre gratuitement</a>
+    </div>
+  </div>
+  <div class="hero-illustration">
+    <div class="book-stack">
+      <div class="book book-1"></div>
+      <div class="book book-2"></div>
+      <div class="book book-3"></div>
+      <div class="book book-4"></div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card"><span class="stat-number">1 200+</span><span class="stat-label">Livres disponibles</span></div>
+      <div class="stat-card"><span class="stat-number">350</span><span class="stat-label">Membres actifs</span></div>
+      <div class="stat-card"><span class="stat-number">4 800</span><span class="stat-label">Emprunts réalisés</span></div>
+      <div class="stat-card"><span class="stat-number">10</span><span class="stat-label">Catégories</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED BOOKS -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Livres à la une</h2>
+        <p class="section-sub">Découvrez nos dernières acquisitions</p>
+      </div>
+      <a routerLink="/catalogue" class="btn-link">Voir tout →</a>
+    </div>
+
+    @if (isLoading()) {
+      <div class="books-grid">
+        @for (_ of [1,2,3,4,5,6]; track $index) { <div class="book-card skeleton"></div> }
+      </div>
+    } @else if (featuredBooks().length === 0) {
+      <div class="empty-state">
+        <span class="empty-icon">📚</span>
+        <p>Aucun livre disponible pour le moment.</p>
+        <p class="empty-sub">Vérifiez que le serveur backend est démarré.</p>
+      </div>
+    } @else {
+      <div class="books-grid">
+        @for (book of featuredBooks(); track book.id) {
+          <article class="book-card" [routerLink]="['/catalogue']">
+            <div class="book-cover" [class.no-cover]="!book.coverUrl">
+              @if (book.coverUrl) {
+                <img [src]="book.coverUrl" [alt]="book.title" loading="lazy" />
+              } @else {
+                <span class="cover-placeholder">📖</span>
+              }
+              <span class="availability-badge" [class.available]="book.availableCopies > 0" [class.unavailable]="book.availableCopies === 0">
+                {{ book.availableCopies > 0 ? 'Disponible' : 'Emprunté' }}
+              </span>
+            </div>
+            <div class="book-info">
+              <span class="book-category">{{ book.category }}</span>
+              <h3 class="book-title">{{ book.title }}</h3>
+              <p class="book-author">{{ book.author }}</p>
+              <div class="book-rating">
+                @for (star of getStars(book.averageRating); track $index) {
+                  <span class="star" [class.full]="star === 'full'" [class.half]="star === 'half'">★</span>
+                }
+                <span class="rating-count">({{ book.ratingCount }})</span>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section categories-section">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Parcourir par catégorie</h2>
+        <p class="section-sub">Trouvez votre genre préféré</p>
+      </div>
+    </div>
+    <div class="categories-grid">
+      @for (cat of categories; track cat.key) {
+        <a [routerLink]="['/catalogue']" [queryParams]="{ category: cat.key }" class="category-card">
+          <span class="cat-icon">{{ cat.icon }}</span>
+          <span class="cat-label">{{ cat.label }}</span>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-card">
+      <h2>Prêt à emprunter ?</h2>
+      <p>Inscrivez-vous gratuitement et accédez à plus de 1 200 livres. Empruntez jusqu'à 3 livres simultanément pendant 14 jours.</p>
+      <div class="cta-actions">
+        <a routerLink="/inscription" class="btn-cta-primary">Créer mon compte</a>
+        <a routerLink="/catalogue" class="btn-cta-outline">Explorer le catalogue</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <span>📚 BookHub</span>
+        <p>Bibliothèque communautaire du Quartier Solidaire</p>
+      </div>
+      <div class="footer-links">
+        <a routerLink="/catalogue">Catalogue</a>
+        <a routerLink="/mes-emprunts">Mes emprunts</a>
+        <a routerLink="/connexion">Connexion</a>
+      </div>
+    </div>
+    <p class="footer-copy">© 2025 BookHub — Projet ENI DEV25_0364B</p>
+  </div>
+</footer>
