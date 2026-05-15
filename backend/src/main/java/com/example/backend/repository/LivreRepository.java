@@ -63,7 +63,7 @@ public interface LivreRepository extends JpaRepository<Livre, Integer> {
      */
     @Query("SELECT COUNT(e) > 0 FROM Emprunt e " +
             "JOIN e.statut s " +
-            "WHERE e.livre.id = :idLivre AND s.libelleStatut = 'EN COURS'")
+            "WHERE e.livre.id = :idLivre AND s.libelle = 'EN COURS'")
     boolean hasEmpruntsActifs(@Param("idLivre") Integer idLivre);
 
 }
