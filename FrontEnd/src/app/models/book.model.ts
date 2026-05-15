@@ -35,4 +35,11 @@ export interface Book {
   availableCopies: number;
   averageRating: number;
   ratingCount: number;
+  datePublication?: string;
+  idCategory?: number;
+  idStatus?: number;
+  nbCopies: number;
+  nbAvailables: number;
+
 }
+

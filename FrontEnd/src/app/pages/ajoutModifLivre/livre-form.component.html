@@ -1,0 +1,191 @@
+<div class="page-wrapper">
+  <div class="container">
+
+    <!-- En-tête -->
+    <div class="page-header">
+      <a routerLink="/catalogue" class="btn-back">← Retour au catalogue</a>
+      <div>
+        <h1 class="page-title">{{ isEditMode() ? 'Modifier le livre' : 'Ajouter un livre' }}</h1>
+        <p class="page-sub">{{ isEditMode() ? 'Mettez à jour les informations du livre' : 'Renseignez les informations du nouveau livre' }}</p>
+      </div>
+    </div>
+
+    <!-- Chargement -->
+    @if (isLoading()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement du livre...</p>
+      </div>
+    } @else {
+
+      <!-- Messages -->
+      @if (errorMessage()) {
+        <div class="alert alert-error">⚠️ {{ errorMessage() }}</div>
+      }
+      @if (successMessage()) {
+        <div class="alert alert-success">✅ {{ successMessage() }}</div>
+      }
+
+      <!-- Formulaire -->
+      <form class="form-card" (ngSubmit)="onSubmit()" #livreForm="ngForm">
+
+        <div class="form-section">
+          <h2 class="form-section-title">Informations générales</h2>
+
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="titre">Titre <span class="required">*</span></label>
+              <input
+                id="titre"
+                type="text"
+                [(ngModel)]="livre.title"
+                name="titre"
+                required
+                placeholder="Ex : Le Seigneur des Anneaux"
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="auteur">Auteur <span class="required">*</span></label>
+              <input
+                id="auteur"
+                type="text"
+                [(ngModel)]="livre.author"
+                name="auteur"
+                required
+                placeholder="Ex : J.R.R. Tolkien"
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="isbn">ISBN</label>
+              <input
+                id="isbn"
+                type="text"
+                [(ngModel)]="livre.isbn"
+                name="isbn"
+                placeholder="Ex : 978-2-07-061522-7"
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="datePublication">Date de publication</label>
+              <input
+                id="datePublication"
+                type="date"
+                [(ngModel)]="livre.datePublication"
+                name="datePublication"
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="couverture">URL de la couverture</label>
+              <input
+                id="couverture"
+                type="url"
+                [(ngModel)]="livre.coverUrl"
+                name="couverture"
+                placeholder="https://..."
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group full-width">
+              <label for="description">Description</label>
+              <textarea
+                id="description"
+                [(ngModel)]="livre.description"
+                name="description"
+                rows="4"
+                placeholder="Résumé du livre..."
+                class="form-control"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="form-section-title">Classification & Stock</h2>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="idCategorie">Catégorie <span class="required">*</span></label>
+              <select
+                id="idCategorie"
+                [(ngModel)]="livre.idCategory"
+                name="idCategorie"
+                required
+                class="form-control"
+              >
+                <option [ngValue]="undefined" disabled>-- Choisir une catégorie --</option>
+                @for (cat of categories; track cat.id) {
+                  <option [ngValue]="cat.id">{{ cat.label }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="idStatut">Statut <span class="required">*</span></label>
+              <select
+                id="idStatut"
+                [(ngModel)]="livre.idStatus"
+                name="idStatut"
+                required
+                class="form-control"
+              >
+                <option [ngValue]="undefined" disabled>-- Choisir un statut --</option>
+                @for (statut of statuts; track statut.id) {
+                  <option [ngValue]="statut.id">{{ statut.label }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="nbExemplaires">Nombre d'exemplaires <span class="required">*</span></label>
+              <input
+                id="nbExemplaires"
+                type="number"
+                [(ngModel)]="livre.nbCopies"
+                name="nbExemplaires"
+                required
+                min="1"
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="nbDisponibles">Exemplaires disponibles <span class="required">*</span></label>
+              <input
+                id="nbDisponibles"
+                type="number"
+                [(ngModel)]="livre.nbAvailables"
+                name="nbDisponibles"
+                required
+                min="0"
+                class="form-control"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <a routerLink="/catalogue" class="btn-cancel">Annuler</a>
+          <button type="submit" class="btn-submit" [disabled]="isSaving() || livreForm.invalid">
+            @if (isSaving()) {
+              <span class="btn-spinner"></span> Enregistrement...
+            } @else {
+              {{ isEditMode() ? '💾 Modifier le livre' : '➕ Ajouter le livre' }}
+            }
+          </button>
+        </div>
+
+      </form>
+    }
+
+  </div>
+</div>
