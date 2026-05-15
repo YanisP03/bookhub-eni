@@ -1,4 +1,4 @@
-package com.example.backend.model.dto;
+package com.example.backend.model.entity.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UtilisateurDto {
+class UtilisateurDto {
     private String nom;
     private String prenom;
     private String email;
