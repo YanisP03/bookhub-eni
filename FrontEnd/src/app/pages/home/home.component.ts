@@ -1,7 +1,8 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { BookService } from '../../services/book.service';
-import { Book, BookCategory, CATEGORY_LABELS } from '../../models/book.model';
+import { Subject, takeUntil } from 'rxjs';
+import { LivreService } from '../../services/book.service';
+import { Livre, Categorie } from '../../models/book.model';
 
 @Component({
   selector: 'app-home',
@@ -9,31 +10,37 @@ import { Book, BookCategory, CATEGORY_LABELS } from '../../models/book.model';
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
 })
-export class HomeComponent implements OnInit {
-  private readonly bookService = inject(BookService);
+export class HomeComponent implements OnInit, OnDestroy {
+  private readonly livreService = inject(LivreService);
+  private readonly destroy$ = new Subject<void>();
 
-  featuredBooks = signal<Book[]>([]);
+  featuredLivres = signal<Livre[]>([]);
+  categories = signal<Categorie[]>([]);
   isLoading = signal(true);
 
-  readonly categories: { key: BookCategory; label: string; icon: string }[] = [
-    { key: 'ROMAN', label: CATEGORY_LABELS['ROMAN'], icon: '📖' },
-    { key: 'SCIENCE_FICTION', label: CATEGORY_LABELS['SCIENCE_FICTION'], icon: '🚀' },
-    { key: 'FANTASY', label: CATEGORY_LABELS['FANTASY'], icon: '🧙' },
-    { key: 'POLICIER', label: CATEGORY_LABELS['POLICIER'], icon: '🔍' },
-    { key: 'BIOGRAPHIE', label: CATEGORY_LABELS['BIOGRAPHIE'], icon: '👤' },
-    { key: 'MANGA', label: CATEGORY_LABELS['MANGA'], icon: '🎌' },
-  ];
+  private readonly categoryIcons: Record<string, string> = {
+    'Roman': '📖', 'Science-fiction': '🚀', 'Fantasy': '🧙', 'Policier': '🔍',
+    'Biographie': '👤', 'Manga': '🎌', 'Histoire': '🏛️', 'Jeunesse': '🎈',
+    'Développement personnel': '💡', 'Informatique': '💻',
+  };
 
-  ngOnInit(): void {
-    this.bookService.getAll().subscribe({
-      next: books => { this.featuredBooks.set(books.slice(0, 6)); this.isLoading.set(false); },
-      error: () => { this.isLoading.set(false); },
-    });
+  getCatIcon(nom: string): string {
+    return this.categoryIcons[nom] ?? '📚';
   }
 
-  getStars(rating: number): string[] {
-    return Array.from({ length: 5 }, (_, i) =>
-      i < Math.floor(rating) ? 'full' : i < rating ? 'half' : 'empty'
-    );
+  ngOnInit(): void {
+    this.livreService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
+      next: livres => { this.featuredLivres.set(livres.slice(0, 6)); this.isLoading.set(false); },
+      error: () => { this.isLoading.set(false); },
+    });
+    this.livreService.getCategories().pipe(takeUntil(this.destroy$))
+      .subscribe(cats => this.categories.set(cats));
+  }
+
+  ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
+
+  getStars(note: number | undefined): string[] {
+    const n = note ?? 0;
+    return Array.from({ length: 5 }, (_, i) => i < Math.floor(n) ? 'full' : i < n ? 'half' : 'empty');
   }
 }
