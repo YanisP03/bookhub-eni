@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.model.dto.LivreDto;
 import com.example.backend.model.entity.Livre;
 import com.example.backend.services.LivreService;
 import org.springframework.http.ResponseEntity;
@@ -58,5 +59,12 @@ public class LivreController {
             livreService.deleteById(id);
             return ResponseEntity.ok().<Void>build();
         }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/details")
+    public ResponseEntity<LivreDto> getLivreDetail(@PathVariable Integer id) {
+        return livreService.getLivreDetail(id)
+                .map(ResponseEntity::ok) // Si le livre existe (Optional présent), on renvoie 200 OK avec le DTO
+                .orElse(ResponseEntity.notFound().build()); // Sinon on renvoie 404 Not Found
     }
 }
