@@ -42,13 +42,13 @@ public class LivreController {
     }
 
     @PostMapping
-    public Livre create(@RequestBody Livre livre) { return livreService.save(livre); }
+    public Livre create(@RequestBody Livre livre) { return livreService.saveLivre(livre); }
 
     @PutMapping("/{id}")
     public ResponseEntity<Livre> update(@PathVariable Integer id, @RequestBody Livre livre) {
         return livreService.findById(id).map(e -> {
             livre.setId(id);
-            return ResponseEntity.ok(livreService.save(livre));
+            return ResponseEntity.ok(livreService.saveLivre(livre));
         }).orElse(ResponseEntity.notFound().build());
     }
 
