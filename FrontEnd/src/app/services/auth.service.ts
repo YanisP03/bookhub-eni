@@ -15,15 +15,15 @@ export class AuthService {
 
   private readonly _user = signal<CurrentUser | null>(this.loadUser());
 
-  readonly currentUser  = this._user.asReadonly();
-  readonly isLoggedIn   = computed(() => this._user() !== null);
-  readonly isAdmin      = computed(() => this._user()?.role === 'ADMIN');
+  readonly currentUser = this._user.asReadonly();
+  readonly isLoggedIn  = computed(() => this._user() !== null);
+  readonly isAdmin     = computed(() => this._user()?.role === 'ROLE_ADMIN');
 
   login(credentials: LoginRequest) {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/connexion`, credentials).pipe(
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(res => {
         localStorage.setItem(TOKEN_KEY, res.token);
-        const user: CurrentUser = { mail: res.mail, nom: res.nom, prenom: res.prenom, role: res.role };
+        const user: CurrentUser = { email: res.email, role: res.role };
         localStorage.setItem(USER_KEY, JSON.stringify(user));
         this._user.set(user);
       })

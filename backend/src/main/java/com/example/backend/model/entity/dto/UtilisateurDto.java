@@ -17,13 +17,10 @@ public class UtilisateurDto {
     @Email(message = "Format d'email invalide")
     private String mail;
 
-    // Le libellé du rôle (ex: "LECTEUR", "LIBRARIAN") plutôt que l'objet Role entier
     private String roleLibelle;
 
-    // Constructeur vide (Obligatoire pour Spring / Jackson)
     public UtilisateurDto() {}
 
-    // Constructeur complet (Pratique pour transformer rapidement une entité en DTO)
     public UtilisateurDto(Integer id, String nom, String prenom, String mail, String roleLibelle) {
         this.id = id;
         this.nom = nom;
@@ -32,7 +29,6 @@ public class UtilisateurDto {
         this.roleLibelle = roleLibelle;
     }
 
-    // Getters et Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 

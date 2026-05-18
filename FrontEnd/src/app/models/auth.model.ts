@@ -6,15 +6,11 @@ export interface LoginRequest {
 export interface LoginResponse {
   token: string;
   type: string;
-  mail: string;
-  nom: string;
-  prenom: string;
+  email: string;
   role: string;
 }
 
 export interface CurrentUser {
-  mail: string;
-  nom: string;
-  prenom: string;
+  email: string;
   role: string;
 }

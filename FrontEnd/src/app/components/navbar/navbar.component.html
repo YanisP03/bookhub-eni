@@ -15,7 +15,7 @@
 
     <div class="navbar-actions">
       @if (auth.isLoggedIn()) {
-        <span class="navbar-user">{{ auth.currentUser()?.prenom }}</span>
+        <span class="navbar-user">{{ auth.currentUser()?.email }}</span>
         <button class="btn-outline" (click)="auth.logout()">Déconnexion</button>
       } @else {
         <a routerLink="/connexion" class="btn-outline">Connexion</a>
