@@ -1,0 +1,133 @@
+<div class="emprunts-page">
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">Mes emprunts</h1>
+      <p class="page-sub">{{ auth.currentUser()?.email }} — gérez vos emprunts et réservations</p>
+    </div>
+  </div>
+
+  <div class="container page-body">
+
+    @if (actionOk()) {
+      <div class="alert alert-success">✅ {{ actionOk() }}</div>
+    }
+    @if (actionError()) {
+      <div class="alert alert-error">⚠️ {{ actionError() }}</div>
+    }
+
+    <!-- EMPRUNTS EN COURS -->
+    <section class="section-block">
+      <h2 class="block-title">📖 Emprunts en cours</h2>
+
+      @if (isLoading()) {
+        <div class="skeleton-list">
+          @for (_ of [1,2,3]; track $index) { <div class="skeleton-row"></div> }
+        </div>
+      } @else if (error()) {
+        <p class="empty-msg">{{ error() }}</p>
+      } @else {
+        @let actifs = emprunts().filter(e => !e.dateRetour);
+        @if (actifs.length === 0) {
+          <div class="empty-state">
+            <span class="empty-icon">📭</span>
+            <p>Aucun emprunt en cours.</p>
+            <a routerLink="/catalogue" class="btn-primary">Parcourir le catalogue</a>
+          </div>
+        } @else {
+          <div class="cards-list">
+            @for (e of actifs; track e.id) {
+              <div class="emprunt-card" [class.retard]="isEnRetard(e)">
+                <div class="card-cover">
+                  @if (e.livre.couverture) {
+                    <img [src]="e.livre.couverture" [alt]="e.livre.titre" />
+                  } @else {
+                    <span class="cover-placeholder">📖</span>
+                  }
+                </div>
+                <div class="card-info">
+                  <span class="card-category">{{ e.livre.categorie?.nom }}</span>
+                  <h3 class="card-title">{{ e.livre.titre }}</h3>
+                  <p class="card-author">{{ e.livre.auteur }}</p>
+                  <div class="card-dates">
+                    <span>Emprunté le {{ formatDate(e.dateEmprunt) }}</span>
+                    <span class="separator">·</span>
+                    <span [class.text-danger]="isEnRetard(e)">
+                      Retour prévu le {{ formatDate(e.dateRetourPrevue) }}
+                      @if (isEnRetard(e)) { <strong> — EN RETARD</strong> }
+                    </span>
+                  </div>
+                </div>
+                <button class="btn-rendre" (click)="rendre(e.id)">Rendre</button>
+              </div>
+            }
+          </div>
+        }
+      }
+    </section>
+
+    <!-- RÉSERVATIONS -->
+    <section class="section-block">
+      <h2 class="block-title">🔖 Mes réservations</h2>
+      @let resaActives = reservations().filter(r => r.statut.libelle === 'EN_ATTENTE' || r.statut.libelle === 'NOTIFIEE');
+      @if (resaActives.length === 0) {
+        <div class="empty-state">
+          <span class="empty-icon">📋</span>
+          <p>Aucune réservation active.</p>
+        </div>
+      } @else {
+        <div class="cards-list">
+          @for (r of resaActives; track r.id) {
+            <div class="emprunt-card" [class.notifiee]="r.statut.libelle === 'NOTIFIEE'">
+              <div class="card-cover">
+                @if (r.livre.couverture) {
+                  <img [src]="r.livre.couverture" [alt]="r.livre.titre" />
+                } @else {
+                  <span class="cover-placeholder">📖</span>
+                }
+              </div>
+              <div class="card-info">
+                <span class="card-category">{{ r.livre.categorie?.nom }}</span>
+                <h3 class="card-title">{{ r.livre.titre }}</h3>
+                <p class="card-author">{{ r.livre.auteur }}</p>
+                <div class="card-dates">
+                  <span>Réservé le {{ formatDate(r.dateReservation) }}</span>
+                  <span class="separator">·</span>
+                  @if (r.statut.libelle === 'NOTIFIEE') {
+                    <strong class="text-success">📬 Livre disponible — empruntez-le !</strong>
+                  } @else {
+                    <span>Position {{ r.positionFileAttente }} dans la file</span>
+                  }
+                </div>
+              </div>
+              <button class="btn-annuler" (click)="annulerReservation(r.id)">Annuler</button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- HISTORIQUE -->
+    <section class="section-block">
+      <h2 class="block-title">🕓 Historique</h2>
+      @let historique = emprunts().filter(e => e.dateRetour);
+      @if (historique.length === 0) {
+        <p class="empty-msg">Aucun emprunt terminé.</p>
+      } @else {
+        <div class="historique-table">
+          <div class="table-header">
+            <span>Livre</span><span>Emprunté le</span><span>Rendu le</span><span>Retard</span>
+          </div>
+          @for (e of historique; track e.id) {
+            <div class="table-row" [class.retard]="e.joursRetard > 0">
+              <span class="table-titre">{{ e.livre.titre }}</span>
+              <span>{{ formatDate(e.dateEmprunt) }}</span>
+              <span>{{ formatDate(e.dateRetour!) }}</span>
+              <span>{{ e.joursRetard > 0 ? e.joursRetard + ' j' : '—' }}</span>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+  </div>
+</div>

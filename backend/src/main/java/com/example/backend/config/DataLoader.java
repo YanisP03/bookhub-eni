@@ -12,46 +12,78 @@ public class DataLoader implements CommandLineRunner {
     private final LivreRepository livreRepository;
     private final CategorieRepository categorieRepository;
     private final StatutRepository statutRepository;
+    private final RoleRepository roleRepository;
 
     public DataLoader(LivreRepository livreRepository,
                       CategorieRepository categorieRepository,
-                      StatutRepository statutRepository) {
+                      StatutRepository statutRepository,
+                      RoleRepository roleRepository) {
         this.livreRepository = livreRepository;
         this.categorieRepository = categorieRepository;
         this.statutRepository = statutRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
     public void run(String... args) {
+        // Rôles
+        getOrCreateRole("LECTEUR");
+        getOrCreateRole("ADMIN");
+
+        // Statuts livre
+        Statut disponible = getOrCreateStatut("DISPONIBLE");
+        Statut emprunte   = getOrCreateStatut("EMPRUNTE");
+        // Statuts emprunt
+        getOrCreateStatut("EN_COURS");
+        getOrCreateStatut("RENDU");
+        getOrCreateStatut("EN_RETARD");
+        // Statuts réservation
+        getOrCreateStatut("EN_ATTENTE");
+        getOrCreateStatut("ANNULEE");
+        getOrCreateStatut("NOTIFIEE");
+
         if (livreRepository.count() > 0) return;
 
-        Categorie fantasy    = getOrCreate("Fantasy");
-        Categorie scifi      = getOrCreate("Science-Fiction");
-        Categorie roman      = getOrCreate("Roman");
-        Categorie policier   = getOrCreate("Policier");
-        Categorie manga      = getOrCreate("Manga");
-        Categorie histoire   = getOrCreate("Histoire");
-        Categorie jeunesse   = getOrCreate("Jeunesse");
-        Categorie biographie = getOrCreate("Biographie");
-        Categorie sciences   = getOrCreate("Sciences");
+        Categorie fantasy    = getOrCreateCategorie("Fantasy");
+        Categorie scifi      = getOrCreateCategorie("Science-Fiction");
+        Categorie roman      = getOrCreateCategorie("Roman");
+        Categorie policier   = getOrCreateCategorie("Policier");
+        Categorie manga      = getOrCreateCategorie("Manga");
+        Categorie histoire   = getOrCreateCategorie("Histoire");
+        Categorie jeunesse   = getOrCreateCategorie("Jeunesse");
+        Categorie biographie = getOrCreateCategorie("Biographie");
+        Categorie sciences   = getOrCreateCategorie("Sciences");
 
-        Statut disponible = statutRepository.findByLibelle("DISPONIBLE").orElseThrow();
-        Statut emprunte   = statutRepository.findByLibelle("EMPRUNTE").orElseThrow();
-
-        save("Le Seigneur des Anneaux", "J.R.R. Tolkien",  "978-2-07-061351-6", fantasy,    "La grande épopée fantastique.", 3, 2, disponible);
-        save("Dune",                   "Frank Herbert",    "978-2-07-036024-1", scifi,      "Le destin de Paul Atréides sur Arrakis.", 2, 1, disponible);
-        save("Harry Potter",           "J.K. Rowling",     "978-2-07-054127-1", fantasy,    "Harry découvre qu'il est sorcier.", 4, 3, disponible);
-        save("Le Comte de Monte-Cristo","Alexandre Dumas", "978-2-07-040850-4", roman,      "Edmond Dantès prépare sa vengeance.", 2, 2, disponible);
-        save("1984",                   "George Orwell",    "978-2-07-036822-3", scifi,      "Winston résiste au Parti totalitaire.", 3, 0, emprunte);
-        save("Sherlock Holmes",        "Arthur Conan Doyle","978-2-07-041239-6",policier,   "Les enquêtes du célèbre détective.", 2, 2, disponible);
-        save("Naruto",                 "Masashi Kishimoto","978-2-87-182636-4", manga,      "Un jeune ninja rêve de devenir Hokage.", 5, 4, disponible);
-        save("Sapiens",                "Yuval Noah Harari","978-2-07-273698-6", histoire,   "Une brève histoire de l'humanité.", 3, 3, disponible);
-        save("Le Petit Prince",        "Saint-Exupéry",    "978-2-07-040850-1", jeunesse,   "Un aviateur rencontre un petit prince.", 4, 4, disponible);
-        save("Steve Jobs",             "Walter Isaacson",  "978-2-07-044588-2", biographie, "La bio officielle du cofondateur d'Apple.", 2, 1, disponible);
-        save("Une brève histoire du temps","Stephen Hawking","978-2-07-053478-5",sciences, "Des trous noirs aux origines de l'univers.", 2, 2, disponible);
+        save("Le Seigneur des Anneaux",     "J.R.R. Tolkien",     "978-2-07-061351-6", fantasy,    "La grande épopée fantastique.", 3, 2, disponible);
+        save("Dune",                        "Frank Herbert",       "978-2-07-036024-1", scifi,      "Le destin de Paul Atréides sur Arrakis.", 2, 1, disponible);
+        save("Harry Potter",                "J.K. Rowling",        "978-2-07-054127-1", fantasy,    "Harry découvre qu'il est sorcier.", 4, 3, disponible);
+        save("Le Comte de Monte-Cristo",    "Alexandre Dumas",     "978-2-07-040850-4", roman,      "Edmond Dantès prépare sa vengeance.", 2, 2, disponible);
+        save("1984",                        "George Orwell",       "978-2-07-036822-3", scifi,      "Winston résiste au Parti totalitaire.", 3, 0, emprunte);
+        save("Sherlock Holmes",             "Arthur Conan Doyle",  "978-2-07-041239-6", policier,   "Les enquêtes du célèbre détective.", 2, 2, disponible);
+        save("Naruto",                      "Masashi Kishimoto",   "978-2-87-182636-4", manga,      "Un jeune ninja rêve de devenir Hokage.", 5, 4, disponible);
+        save("Sapiens",                     "Yuval Noah Harari",   "978-2-07-273698-6", histoire,   "Une brève histoire de l'humanité.", 3, 3, disponible);
+        save("Le Petit Prince",             "Saint-Exupéry",       "978-2-07-040850-1", jeunesse,   "Un aviateur rencontre un petit prince.", 4, 4, disponible);
+        save("Steve Jobs",                  "Walter Isaacson",     "978-2-07-044588-2", biographie, "La bio officielle du cofondateur d'Apple.", 2, 1, disponible);
+        save("Une brève histoire du temps", "Stephen Hawking",     "978-2-07-053478-5", sciences,   "Des trous noirs aux origines de l'univers.", 2, 2, disponible);
     }
 
-    private Categorie getOrCreate(String nom) {
+    private Role getOrCreateRole(String libelle) {
+        return roleRepository.findByLibelle(libelle).orElseGet(() -> {
+            Role r = new Role();
+            r.setLibelle(libelle);
+            return roleRepository.save(r);
+        });
+    }
+
+    private Statut getOrCreateStatut(String libelle) {
+        return statutRepository.findByLibelle(libelle).orElseGet(() -> {
+            Statut s = new Statut();
+            s.setLibelle(libelle);
+            return statutRepository.save(s);
+        });
+    }
+
+    private Categorie getOrCreateCategorie(String nom) {
         return categorieRepository.findAll().stream()
                 .filter(c -> c.getNom().equalsIgnoreCase(nom))
                 .findFirst().orElseGet(() -> {
