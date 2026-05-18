@@ -98,6 +98,34 @@
         </div>
       </section>
 
+      <!-- VALIDATION EMPRUNTS -->
+      <section class="moderation-section">
+        <h2>📋 Demandes d'emprunt en attente</h2>
+        @if (empruntMsg()) { <div class="moder-msg">{{ empruntMsg() }}</div> }
+        @if (demandesEmprunt().length === 0) {
+          <p class="moder-empty">Aucune demande en attente. ✅</p>
+        } @else {
+          <div class="moder-list">
+            @for (e of demandesEmprunt(); track e.id) {
+              <div class="moder-card">
+                <div class="moder-info">
+                  <span class="moder-livre">{{ e.livre.titre }}</span>
+                  <span class="moder-user">par {{ e.livre.auteur }}</span>
+                  <span class="moder-user" style="margin-top:.2rem">
+                    Demandé par <strong>{{ e.utilisateur?.nom ?? '—' }}</strong>
+                    le {{ formatDate(e.dateEmprunt) }}
+                  </span>
+                </div>
+                <div class="moder-actions">
+                  <button class="btn-approuver" (click)="validerEmprunt(e.id)">✅ Valider</button>
+                  <button class="btn-rejeter"   (click)="refuserEmprunt(e.id)">✗ Refuser</button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
       <!-- MODÉRATION AVIS -->
       <section class="moderation-section">
         <h2>🔍 Modération des avis</h2>

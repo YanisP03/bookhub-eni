@@ -1,5 +1,6 @@
 package com.example.backend.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -15,7 +16,7 @@ public class Emprunt {
     @Column(nullable = false)
     private LocalDateTime dateEmprunt;
 
-    @Column(nullable = false)
+    // Null tant que la demande n'est pas validée
     private LocalDateTime dateRetourPrevue;
 
     private LocalDateTime dateRetour;
@@ -25,10 +26,12 @@ public class Emprunt {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_utilisateur", nullable = false)
+    @JsonIgnoreProperties({"emprunts","reservations","avis","motDePasse"})
     private Utilisateur utilisateur;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_livre", nullable = false)
+    @JsonIgnoreProperties({"emprunts","reservations","avis"})
     private Livre livre;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -38,7 +41,8 @@ public class Emprunt {
     public Emprunt() {}
 
     public boolean isEnRetard() {
-        return dateRetour == null && LocalDateTime.now().isAfter(dateRetourPrevue);
+        return dateRetour == null && dateRetourPrevue != null
+                && LocalDateTime.now().isAfter(dateRetourPrevue);
     }
 
     public Integer getId() { return id; }

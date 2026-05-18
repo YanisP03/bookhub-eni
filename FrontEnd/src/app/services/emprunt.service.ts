@@ -12,6 +12,7 @@ export class EmpruntService {
     return this.http.get<Emprunt[]>(`${this.baseUrl}/emprunts/mes-emprunts`);
   }
 
+  /** Lecteur : soumet une demande d'emprunt */
   emprunter(livreId: number): Observable<Emprunt> {
     return this.http.post<Emprunt>(`${this.baseUrl}/emprunts/${livreId}`, {});
   }
@@ -19,6 +20,22 @@ export class EmpruntService {
   rendre(empruntId: number): Observable<Emprunt> {
     return this.http.put<Emprunt>(`${this.baseUrl}/emprunts/${empruntId}/retour`, {});
   }
+
+  // ── Admin ──────────────────────────────────────────────────────────────────
+
+  getDemandesEnAttente(): Observable<Emprunt[]> {
+    return this.http.get<Emprunt[]>(`${this.baseUrl}/emprunts/demandes`);
+  }
+
+  validerEmprunt(empruntId: number): Observable<Emprunt> {
+    return this.http.put<Emprunt>(`${this.baseUrl}/emprunts/${empruntId}/valider`, {});
+  }
+
+  refuserEmprunt(empruntId: number): Observable<Emprunt> {
+    return this.http.put<Emprunt>(`${this.baseUrl}/emprunts/${empruntId}/refuser`, {});
+  }
+
+  // ── Réservations ───────────────────────────────────────────────────────────
 
   getMesReservations(): Observable<Reservation[]> {
     return this.http.get<Reservation[]>(`${this.baseUrl}/reservations/mes-reservations`);
