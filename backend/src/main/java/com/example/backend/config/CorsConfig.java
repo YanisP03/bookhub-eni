@@ -1,14 +1,18 @@
 package com.example.backend.config;
 
+import com.example.backend.services.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -19,37 +23,48 @@ import java.util.List;
 @EnableWebSecurity
 public class CorsConfig {
 
+    @Autowired private CustomUserDetailsService userDetailsService;
+    @Autowired private JwtAuthFilter jwtAuthFilter;
+
     @Bean
-    public BCryptPasswordEncoder passwordEndcoder(){
-    return new BCryptPasswordEncoder(12);
+    public BCryptPasswordEncoder passwordEndcoder() {
+        return new BCryptPasswordEncoder(12);
     }
+
     @Bean
-    public AuthenticationManager authentificationManager(AuthenticationConfiguration configuration){
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEndcoder());
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authentificationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Activation du CORS (lié à ton Angular)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-                // Désactivation du CSRF car on utilise des Tokens JWT (Stateless)
-                .csrf(csrf -> csrf.disable())
-
-                // Règles d'accès
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/livres", "/api/livres/**", "/api/categories", "/api/categories/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-
-                // OWASP : Pas de session côté serveur
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET,
+                        "/api/livres", "/api/livres/**",
+                        "/api/categories", "/api/categories/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -62,6 +77,4 @@ public class CorsConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-    }
-
+}

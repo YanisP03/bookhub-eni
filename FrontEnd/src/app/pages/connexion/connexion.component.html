@@ -1,0 +1,33 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-header">
+      <span class="login-icon">📚</span>
+      <h1>Connexion</h1>
+      <p>Accédez à vos emprunts et réservations</p>
+    </div>
+
+    @if (error()) {
+      <div class="alert-error">⚠️ {{ error() }}</div>
+    }
+
+    <form (ngSubmit)="onSubmit()" #f="ngForm">
+      <div class="form-group">
+        <label for="mail">Email</label>
+        <input id="mail" type="email" [(ngModel)]="mail" name="mail" required
+               placeholder="votre@email.fr" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label for="mdp">Mot de passe</label>
+        <input id="mdp" type="password" [(ngModel)]="motDePasse" name="motDePasse" required
+               placeholder="••••••••" class="form-control" />
+      </div>
+      <button type="submit" class="btn-submit" [disabled]="isLoading() || f.invalid">
+        @if (isLoading()) { Connexion en cours... } @else { Se connecter }
+      </button>
+    </form>
+
+    <p class="login-footer">
+      Pas encore inscrit ? <a routerLink="/inscription">Créer un compte</a>
+    </p>
+  </div>
+</div>
