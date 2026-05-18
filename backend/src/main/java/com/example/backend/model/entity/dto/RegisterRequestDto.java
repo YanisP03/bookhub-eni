@@ -1,12 +1,10 @@
+
 package com.example.backend.model.entity.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.*;
+import jakarta.validation.constraints.Pattern;
 
-@Data
-@AllArgsConstructor
 public class RegisterRequestDto {
 
     @NotBlank(message = "Le nom est obligatoire")
@@ -16,25 +14,26 @@ public class RegisterRequestDto {
     private String prenom;
 
     @NotBlank(message = "L'email est obligatoire")
-    @Email(message = "Format invalide")
+    @Email(message = "Format d'email invalide")
     private String mail;
 
     @NotBlank(message = "Le mot de passe est obligatoire")
-    @Size(min = 8, message = "8 caractères minimum")
+    // Expression régulière : Minimum 12 caractères, 1 Maj, 1 Min, 1 Chiffre, 1 Caractère spécial
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{12,}$",
+            message = "Le mot de passe doit contenir au moins 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial."
+    )
     private String motDePasse;
 
-    // Constructeur vide (obligatoire pour Spring)
     public RegisterRequestDto() {}
 
-    // Getters
+    // Getters et Setters
     public String getNom() { return nom; }
-    public String getPrenom() { return prenom; }
-    public String getMail() { return mail; }
-    public String getMotDePasse() { return motDePasse; }
-
-    // Setters
     public void setNom(String nom) { this.nom = nom; }
+    public String getPrenom() { return prenom; }
     public void setPrenom(String prenom) { this.prenom = prenom; }
+    public String getMail() { return mail; }
     public void setMail(String mail) { this.mail = mail; }
+    public String getMotDePasse() { return motDePasse; }
     public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
 }

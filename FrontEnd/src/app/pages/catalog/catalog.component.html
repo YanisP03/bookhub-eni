@@ -51,7 +51,7 @@
     } @else {
       <div class="books-grid">
         @for (book of paginatedBooks(); track book.id) {
-          <article class="book-card">
+          <article class="book-card" [routerLink]="['/catalogue', book.id]" style="cursor:pointer">
             <div class="book-cover" [class.no-cover]="!book.couverture">
               @if (book.couverture) { <img [src]="book.couverture" [alt]="book.titre" loading="lazy" /> }
               @else { <span class="cover-placeholder">📖</span> }
