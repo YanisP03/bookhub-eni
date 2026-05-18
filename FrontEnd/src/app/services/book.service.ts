@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Book } from '../models/book.model';
+import { Book, BookCategory } from '../models/book.model';
+import { LivreDto } from '../models/livre.dto';
 
 @Injectable({ providedIn: 'root' })
 export class BookService {
@@ -21,8 +22,8 @@ export class BookService {
     return this.http.get<Book[]>(`${this.apiUrl}/search`, { params });
   }
 
-  getByCategory(categorieId: number): Observable<Book[]> {
-    return this.http.get<Book[]>(`${this.apiUrl}/category/${categorieId}`);
+  getByCategory(category: BookCategory): Observable<Book[]> {
+    return this.http.get<Book[]>(`${this.apiUrl}/category/${category}`);
   }
 
   getAvailable(): Observable<Book[]> {
@@ -39,5 +40,9 @@ export class BookService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  getLivreDetails  (id: number): Observable<LivreDto> {
+    return this.http.get<LivreDto>(`${this.apiUrl}/${id}/details`);
   }
 }

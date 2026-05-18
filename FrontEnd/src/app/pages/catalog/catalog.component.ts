@@ -1,11 +1,10 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { BookService } from '../../services/book.service';
 import { AuthService } from '../../services/auth.service';
-import { Book, CATEGORY_LABELS } from '../../models/book.model';
+import { Book, BookCategory, CATEGORY_LABELS } from '../../models/book.model';
 
 type SortOption = 'title' | 'author' | 'rating' | 'availability' | 'date';
 type FilterAvailability = 'all' | 'available';

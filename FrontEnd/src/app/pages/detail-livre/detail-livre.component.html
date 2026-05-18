@@ -1,0 +1,55 @@
+@if (livre$ | async; as livre) {
+  <div class="detail-page">
+    <header class="detail-header">
+      <div class="container">
+        <span class="book-category">{{ livre.nomCategorie || 'Général' }}</span>
+        <h1 class="detail-title">{{ livre.titre }}</h1>
+        <p class="detail-author">Par {{ livre.auteur }}</p>
+      </div>
+    </header>
+
+    <main class="container">
+      <article class="detail-card">
+
+        <div class="description-section">
+          <h3>Résumé</h3>
+          <p class="book-desc">{{ livre.description || 'Aucun résumé disponible pour ce livre.' }}</p>
+        </div>
+
+        <div class="status-badge">
+          📖 <span>Exemplaires disponibles : <strong>{{ livre.nbDisponibles }}</strong></span>
+        </div>
+
+        <div class="action-zone">
+          @if ((livre.nbDisponibles ?? 0) > 0) {
+            <button class="btn-action btn-success" (click)="emprunter(livre.id)">Emprunter le livre</button>
+          } @else {
+            <button class="btn-action btn-primary" (click)="reserver(livre.id)">Réservez maintenant</button>
+            <p class="text-info">💡 Ce livre est victime de son succès, réservez-le pour être prioritaire.</p>
+          }
+        </div>
+
+        <section class="avis-section">
+          <h3>Avis des lecteurs ({{ livre.commentaires?.length || 0 }})</h3>
+
+          @for (avis of livre.commentaires; track $index) {
+            <div class="avis-card">
+              <div class="avis-meta">
+                <span class="avis-pseudo">👤 {{ avis.pseudo || 'Lecteur Anonyme' }}</span>
+                <span class="avis-note">★ {{ avis.note }}/5</span>
+              </div>
+              <p class="avis-text">{{ avis.commentaire }}</p>
+            </div>
+          } @empty {
+            <p class="no-avis">Aucun avis n'a été publié pour ce livre pour le moment.</p>
+          }
+        </section>
+
+      </article>
+    </main>
+  </div>
+} @else {
+  <div class="loading-state">
+    <p>Chargement des détails du livre en cours...</p>
+  </div>
+}

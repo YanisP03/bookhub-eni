@@ -83,6 +83,13 @@
               <button class="btn-borrow" [class.btn-borrow--disabled]="book.nbDisponibles === 0" [disabled]="book.nbDisponibles === 0">
                 {{ book.nbDisponibles > 0 ? 'Emprunter' : 'Réserver' }}
               </button>
+              <button class="btn-details" [routerLink]="['/livre', book.id]">
+                Détails du livre
+                import com.example.backend.model.dto.LivreDto;
+              </button>
+              <button class="btn-borrow" [class.btn-borrow--disabled]="book.nbDisponibles === 0" [disabled]="book.nbDisponibles === 0">
+                {{ book.nbDisponibles > 0 ? 'Emprunter' : 'Réserver' }}
+              </button>
             </div>
           </article>
         }

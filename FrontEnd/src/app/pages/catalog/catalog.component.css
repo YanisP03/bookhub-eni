@@ -59,3 +59,23 @@
   .filter-select { flex: 1; min-width: 0; }
   .books-grid { grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); }
 }
+
+.btn-details {
+  margin-top: auto; /* Aligne le bouton en bas de la carte si les descriptions varient */
+  margin-bottom: .5rem; /* Crée un petit espace avec le bouton d'emprunt */
+  width: 100%;
+  height: 38px;
+  background: #1a2744; /* Le bleu nuit de ton header */
+  color: #fff;
+  border: 1px solid #243460;
+  border-radius: 8px;
+  font-size: .875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+
+.btn-details:hover {
+  background: #243460; /* Un bleu légèrement plus clair au survol */
+  border-color: #f59e0b; /* Une fine lueur ambrée */
+}

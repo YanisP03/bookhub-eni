@@ -9,6 +9,8 @@ const adminGuard = () => {
   inject(Router).navigate(['/']);
   return false;
 };
+import {DetailLivreComponent} from './pages/detail-livre/detail-livre.component';
+import { CatalogComponent } from './pages/catalog/catalog.component';
 
 export const routes: Routes = [
   {
@@ -56,5 +58,12 @@ export const routes: Routes = [
     path: 'inscription',
     loadComponent: () => import('./pages/inscription/inscription.component').then(m => m.InscriptionComponent),
   },
+  {
+    path: 'livre/:id',
+    loadComponent: () =>
+      import('./pages/detail-livre/detail-livre.component').then(m => m.DetailLivreComponent),
+  },
+
   { path: '**', redirectTo: '' },
+
 ];
