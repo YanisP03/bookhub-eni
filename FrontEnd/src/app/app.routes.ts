@@ -11,17 +11,21 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/catalog/catalog.component').then(m => m.CatalogComponent),
   },
   {
+    path: 'catalogue/:id',
+    loadComponent: () => import('./pages/livre-detail/livre-detail.component').then(m => m.LivreDetailComponent),
+  },
+  {
     path: 'mes-emprunts',
     loadComponent: () => import('./pages/mes-emprunts/mes-emprunts.component').then(m => m.MesEmpruntsComponent),
     canActivate: [authGuard],
   },
   {
-    path: 'catalogue/:id',
-    loadComponent: () => import('./pages/livre-detail/livre-detail.component').then(m => m.LivreDetailComponent),
-  },
-  {
     path: 'connexion',
     loadComponent: () => import('./pages/connexion/connexion.component').then(m => m.ConnexionComponent),
+  },
+  {
+    path: 'inscription',
+    loadComponent: () => import('./pages/inscription/inscription.component').then(m => m.InscriptionComponent),
   },
   { path: '**', redirectTo: '' },
 ];

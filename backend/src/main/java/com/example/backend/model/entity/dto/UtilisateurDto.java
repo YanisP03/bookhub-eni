@@ -3,7 +3,7 @@ package com.example.backend.model.entity.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public class UtilisateurDto {
+public class  UtilisateurDto {
 
     private Integer id;
 
