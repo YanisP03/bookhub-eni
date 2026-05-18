@@ -150,9 +150,9 @@ export class CatalogComponent implements OnInit, OnDestroy {
         setTimeout(() => this.feedback.set(null), 4000);
       },
       error: (e: any) => {
-        const msg = typeof e.error === 'string' ? e.error : 'Une erreur est survenue.';
-        this.feedback.set({ livreId: book.id, message: `⚠️ ${msg}`, ok: false });
         this.actingId.set(null);
+        const msg = e.error?.error ?? e.error ?? 'Une erreur est survenue.';
+        this.feedback.set({ livreId: book.id, message: `⚠️ ${msg}`, ok: false });
         setTimeout(() => this.feedback.set(null), 4000);
       },
     });

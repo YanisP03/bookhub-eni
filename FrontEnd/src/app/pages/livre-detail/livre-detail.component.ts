@@ -87,7 +87,10 @@ export class LivreDetailComponent implements OnInit {
         this.bookService.getById(id).subscribe(b => this.livre.set(b));
         this.isActing.set(false);
       },
-      error: (e: any) => { this.actionErr.set(e.error ?? 'Erreur lors de l\'emprunt.'); this.isActing.set(false); },
+      error: (e: any) => {
+        this.isActing.set(false);
+        this.actionErr.set(e.error?.error ?? e.error ?? 'Erreur lors de la demande.');
+      },
     });
   }
 
