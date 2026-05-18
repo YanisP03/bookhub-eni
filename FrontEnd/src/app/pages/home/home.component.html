@@ -7,7 +7,11 @@
       <p class="hero-sub">Consultez le catalogue, empruntez vos livres préférés et partagez vos avis avec les membres du quartier.</p>
       <div class="hero-actions">
         <a routerLink="/catalogue" class="btn-hero-primary">Parcourir le catalogue</a>
-        <a routerLink="/inscription" class="btn-hero-outline">Rejoindre gratuitement</a>
+        @if (!auth.isLoggedIn()) {
+          <a routerLink="/inscription" class="btn-hero-outline">Rejoindre gratuitement</a>
+        } @else {
+          <a routerLink="/mon-espace" class="btn-hero-outline">Mon espace</a>
+        }
       </div>
     </div>
     <div class="hero-illustration">
@@ -106,18 +110,20 @@
 </section>
 
 <!-- CTA -->
-<section class="cta-section">
-  <div class="container">
-    <div class="cta-card">
-      <h2>Prêt à emprunter ?</h2>
-      <p>Inscrivez-vous gratuitement et accédez à plus de 1 200 livres. Empruntez jusqu'à 3 livres simultanément pendant 14 jours.</p>
-      <div class="cta-actions">
-        <a routerLink="/inscription" class="btn-cta-primary">Créer mon compte</a>
-        <a routerLink="/catalogue" class="btn-cta-outline">Explorer le catalogue</a>
+@if (!auth.isLoggedIn()) {
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-card">
+        <h2>Prêt à emprunter ?</h2>
+        <p>Inscrivez-vous gratuitement et accédez à plus de 1 200 livres. Empruntez jusqu'à 3 livres simultanément pendant 14 jours.</p>
+        <div class="cta-actions">
+          <a routerLink="/inscription" class="btn-cta-primary">Créer mon compte</a>
+          <a routerLink="/catalogue" class="btn-cta-outline">Explorer le catalogue</a>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+}
 
 <!-- FOOTER -->
 <footer class="footer">

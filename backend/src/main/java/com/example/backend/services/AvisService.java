@@ -8,6 +8,7 @@ import com.example.backend.model.entity.Utilisateur;
 import com.example.backend.model.entity.dto.AvisRequestDTO;
 import com.example.backend.model.entity.dto.AvisResponseDTO;
 import com.example.backend.repository.AvisRepository;
+import com.example.backend.repository.EmpruntRepository;
 import com.example.backend.repository.LivreRepository;
 import com.example.backend.repository.UtilisateurRepository;
 import org.springframework.stereotype.Service;
@@ -23,13 +24,16 @@ public class AvisService {
     private final AvisRepository avisRepository;
     private final LivreRepository livreRepository;
     private final UtilisateurRepository utilisateurRepository;
+    private final EmpruntRepository empruntRepository;
 
     public AvisService(AvisRepository avisRepository,
                        LivreRepository livreRepository,
-                       UtilisateurRepository utilisateurRepository) {
+                       UtilisateurRepository utilisateurRepository,
+                       EmpruntRepository empruntRepository) {
         this.avisRepository = avisRepository;
         this.livreRepository = livreRepository;
         this.utilisateurRepository = utilisateurRepository;
+        this.empruntRepository = empruntRepository;
     }
 
     @Transactional
@@ -38,6 +42,9 @@ public class AvisService {
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
         Livre livre = livreRepository.findById(dto.getIdLivre())
                 .orElseThrow(() -> new ResourceNotFoundException("Livre introuvable"));
+
+        if (!empruntRepository.aRenduLivre(utilisateur, livre))
+            throw new BusinessException("Vous ne pouvez laisser un avis que sur un livre que vous avez emprunté et rendu.");
 
         Optional<Avis> existingOpt = avisRepository.findByUtilisateurAndLivre(utilisateur, livre);
 

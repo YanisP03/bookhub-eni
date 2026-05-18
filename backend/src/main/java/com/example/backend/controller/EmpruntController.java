@@ -43,6 +43,11 @@ public class EmpruntController {
         return empruntService.getDemandesEnAttente();
     }
 
+    @GetMapping("/{id}/position")
+    public ResponseEntity<Integer> getPosition(@PathVariable Integer id) {
+        return ResponseEntity.ok(empruntService.getPositionFileAttente(id));
+    }
+
     @PutMapping("/{id}/valider")
     public ResponseEntity<Emprunt> valider(@PathVariable Integer id) {
         return ResponseEntity.ok(empruntService.validerEmprunt(id));

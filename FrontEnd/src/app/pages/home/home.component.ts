@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { BookService } from '../../services/book.service';
+import { AuthService } from '../../services/auth.service';
 import { Book } from '../../models/book.model';
 
 interface CategoryItem { key: string; label: string; icon: string; }
@@ -14,6 +15,7 @@ interface CategoryItem { key: string; label: string; icon: string; }
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private readonly bookService = inject(BookService);
+  readonly auth = inject(AuthService);
   private readonly destroy$ = new Subject<void>();
 
   featuredLivres = signal<Book[]>([]);

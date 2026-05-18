@@ -134,7 +134,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
     (obs$ as any).subscribe({
       next: (result: any) => {
         const msg = emprunter
-          ? '✅ Emprunt enregistré ! Retour dans 14 jours.'
+          ? '⏳ Demande envoyée ! En attente de validation du bibliothécaire.'
           : `🔖 Réservation n°${result?.positionFileAttente ?? 1} enregistrée.`;
         this.feedback.set({ livreId: book.id, message: msg, ok: true });
         this.actingId.set(null);

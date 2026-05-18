@@ -70,6 +70,7 @@
 .avis-header h2 { font-size: 1.25rem; font-weight: 800; color: #1a2744; margin: 0; }
 .avis-count { font-size: 1rem; color: #94a3b8; font-weight: 500; }
 .btn-add-avis { background: #f59e0b; color: #1a2744; border: none; padding: .5rem 1.25rem; border-radius: 8px; font-weight: 700; font-size: .875rem; cursor: pointer; }
+.avis-locked { font-size: .8125rem; color: #94a3b8; font-style: italic; }
 .avis-form { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }
 .star-picker { display: flex; align-items: center; gap: .25rem; margin-bottom: .875rem; }
 .star-pick { font-size: 2rem; color: #d1d5db; cursor: pointer; transition: color .15s; }

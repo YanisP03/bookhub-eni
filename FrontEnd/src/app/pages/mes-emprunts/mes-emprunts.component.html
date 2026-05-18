@@ -15,7 +15,43 @@
       <div class="alert alert-error">⚠️ {{ actionError() }}</div>
     }
 
-    <!-- EMPRUNTS EN COURS -->
+    <!-- DEMANDES EN ATTENTE DE VALIDATION -->
+    @if (!isLoading()) {
+      @let demandes = emprunts().filter(e => e.statut.libelle === 'DEMANDE');
+      @if (demandes.length > 0) {
+        <section class="section-block">
+          <h2 class="block-title">⏳ Demandes en attente de validation</h2>
+          <div class="cards-list">
+            @for (e of demandes; track e.id) {
+              <div class="emprunt-card demande-card">
+                <div class="card-cover">
+                  @if (e.livre.couverture) {
+                    <img [src]="e.livre.couverture" [alt]="e.livre.titre" />
+                  } @else {
+                    <span class="cover-placeholder">📖</span>
+                  }
+                </div>
+                <div class="card-info">
+                  <span class="card-category">{{ e.livre.categorie?.nom }}</span>
+                  <h3 class="card-title">{{ e.livre.titre }}</h3>
+                  <p class="card-author">{{ e.livre.auteur }}</p>
+                  <div class="card-dates">
+                    <span>Demande le {{ formatDate(e.dateEmprunt) }}</span>
+                    @if (getPosition(e.id) > 0) {
+                      <span class="separator">·</span>
+                      <span>Position <strong>n°{{ getPosition(e.id) }}</strong> dans la file</span>
+                    }
+                  </div>
+                </div>
+                <span class="badge-demande">En attente</span>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    }
+
+    <!-- EMPRUNTS VALIDÉS EN COURS -->
     <section class="section-block">
       <h2 class="block-title">📖 Emprunts en cours</h2>
 
@@ -26,11 +62,11 @@
       } @else if (error()) {
         <p class="empty-msg">{{ error() }}</p>
       } @else {
-        @let actifs = emprunts().filter(e => !e.dateRetour);
+        @let actifs = emprunts().filter(e => !e.dateRetour && e.statut.libelle === 'EN_COURS');
         @if (actifs.length === 0) {
           <div class="empty-state">
             <span class="empty-icon">📭</span>
-            <p>Aucun emprunt en cours.</p>
+            <p>Aucun emprunt validé en cours.</p>
             <a routerLink="/catalogue" class="btn-primary">Parcourir le catalogue</a>
           </div>
         } @else {
@@ -49,12 +85,14 @@
                   <h3 class="card-title">{{ e.livre.titre }}</h3>
                   <p class="card-author">{{ e.livre.auteur }}</p>
                   <div class="card-dates">
-                    <span>Emprunté le {{ formatDate(e.dateEmprunt) }}</span>
-                    <span class="separator">·</span>
-                    <span [class.text-danger]="isEnRetard(e)">
-                      Retour prévu le {{ formatDate(e.dateRetourPrevue) }}
-                      @if (isEnRetard(e)) { <strong> — EN RETARD</strong> }
-                    </span>
+                    <span>Validé le {{ formatDate(e.dateEmprunt) }}</span>
+                    @if (e.dateRetourPrevue) {
+                      <span class="separator">·</span>
+                      <span [class.text-danger]="isEnRetard(e)">
+                        Retour prévu le {{ formatDate(e.dateRetourPrevue) }}
+                        @if (isEnRetard(e)) { <strong> — EN RETARD</strong> }
+                      </span>
+                    }
                   </div>
                 </div>
                 <button class="btn-rendre" (click)="rendre(e.id)">Rendre</button>
@@ -115,7 +153,7 @@
       } @else {
         <div class="historique-table">
           <div class="table-header">
-            <span>Livre</span><span>Emprunté le</span><span>Rendu le</span><span>Retard</span>
+            <span>Livre</span><span>Validé le</span><span>Rendu le</span><span>Retard</span>
           </div>
           @for (e of historique; track e.id) {
             <div class="table-row" [class.retard]="e.joursRetard > 0">

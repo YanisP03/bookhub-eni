@@ -97,7 +97,7 @@
                         (click)="agir(book, $event)">
                   @if (dejaEmprunte) { ✔ Déjà emprunté }
                   @else if (actingId() === book.id) { En cours… }
-                  @else { {{ book.nbDisponibles > 0 ? 'Emprunter' : 'Réserver' }} }
+                  @else { {{ book.nbDisponibles > 0 ? 'Demander l\'emprunt' : 'Réserver' }} }
                 </button>
               }
             </div>

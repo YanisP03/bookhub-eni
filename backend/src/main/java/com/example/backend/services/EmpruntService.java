@@ -97,10 +97,26 @@ public class EmpruntService {
         return emprunt;
     }
 
-    /** Bibliothécaire : liste toutes les demandes en attente */
+    /** Bibliothécaire : liste toutes les demandes en attente, triées par date */
     @Transactional(readOnly = true)
     public List<Emprunt> getDemandesEnAttente() {
-        return empruntRepository.findByStatut(getStatut("DEMANDE"));
+        return empruntRepository.findByStatut(getStatut("DEMANDE"))
+                .stream()
+                .sorted(java.util.Comparator.comparing(Emprunt::getDateEmprunt))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    /** Retourne la position (1-based) de cet emprunt dans la file d'attente du livre */
+    @Transactional(readOnly = true)
+    public int getPositionFileAttente(Integer empruntId) {
+        Emprunt emprunt = empruntRepository.findById(empruntId)
+                .orElseThrow(() -> new ResourceNotFoundException("Emprunt introuvable"));
+        List<Emprunt> file = empruntRepository
+                .findDemandesByLivreOrderByDate(emprunt.getLivre().getId());
+        for (int i = 0; i < file.size(); i++) {
+            if (file.get(i).getId().equals(empruntId)) return i + 1;
+        }
+        return -1;
     }
 
     public Emprunt rendreLivre(Integer empruntId, String mail) {

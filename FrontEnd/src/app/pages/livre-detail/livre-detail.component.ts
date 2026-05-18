@@ -27,8 +27,9 @@ export class LivreDetailComponent implements OnInit {
   actionMsg     = signal<string | null>(null);
   actionErr     = signal<string | null>(null);
   isActing      = signal(false);
-  confirmDelete = signal(false);
-  dejaEmprunte  = signal(false);
+  confirmDelete  = signal(false);
+  dejaEmprunte   = signal(false);
+  peutDonnerAvis = signal(false);
 
   // Avis
   avisList      = signal<AvisDTO[]>([]);
@@ -56,7 +57,11 @@ export class LivreDetailComponent implements OnInit {
           this.empruntService.getMesEmprunts().subscribe({
             next: emprunts => {
               this.dejaEmprunte.set(
-                emprunts.some(e => !e.dateRetour && e.livre.id === id)
+                emprunts.some(e => !e.dateRetour && e.livre.id === id
+                  && (e.statut.libelle === 'EN_COURS' || e.statut.libelle === 'DEMANDE'))
+              );
+              this.peutDonnerAvis.set(
+                emprunts.some(e => e.dateRetour && e.livre.id === id && e.statut.libelle === 'RENDU')
               );
             },
           });
@@ -78,7 +83,7 @@ export class LivreDetailComponent implements OnInit {
     this.isActing.set(true); this.actionMsg.set(null); this.actionErr.set(null);
     this.empruntService.emprunter(id).subscribe({
       next: () => {
-        this.actionMsg.set('Emprunt enregistré ! Retour prévu dans 14 jours.');
+        this.actionMsg.set('⏳ Demande envoyée ! Le bibliothécaire doit la valider.');
         this.bookService.getById(id).subscribe(b => this.livre.set(b));
         this.isActing.set(false);
       },
@@ -113,6 +118,10 @@ export class LivreDetailComponent implements OnInit {
   soumettreAvis(): void {
     const livreId = this.livre()?.id;
     if (!livreId || this.newNote() === 0) return;
+    if (!this.peutDonnerAvis()) {
+      this.avisErr.set('Vous devez avoir emprunté et rendu ce livre pour laisser un avis.');
+      return;
+    }
     this.isSavingAvis.set(true); this.avisMsg.set(null); this.avisErr.set(null);
     this.avisService.posterAvis(livreId, this.newNote(), this.newCommentaire).subscribe({
       next: () => {
