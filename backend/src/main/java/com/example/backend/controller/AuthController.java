@@ -1,11 +1,13 @@
 package com.example.backend.controller;
 
 import com.example.backend.config.JwtUtils;
+import com.example.backend.model.entity.Utilisateur;
 import com.example.backend.model.entity.dto.LoginRequestDto;
 import com.example.backend.model.entity.dto.LoginResponseDto;
 import com.example.backend.model.entity.dto.RegisterRequestDto;
 import com.example.backend.services.AuthService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +28,7 @@ public class AuthController {
     private final JwtUtils jwtUtils;
     private final AuthService authService;
 
+    @Autowired
     // Injection par constructeur (meilleure pratique que @Autowired sur les champs)
     public AuthController(AuthenticationManager authenticationManager, JwtUtils jwtUtils, AuthService authService) {
         this.authenticationManager = authenticationManager;

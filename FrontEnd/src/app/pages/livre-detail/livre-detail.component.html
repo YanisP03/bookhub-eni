@@ -1,0 +1,89 @@
+<div class="detail-page">
+  <div class="container">
+
+    <a routerLink="/catalogue" class="btn-back">← Retour au catalogue</a>
+
+    @if (isLoading()) {
+      <div class="skeleton-detail"></div>
+    } @else if (error()) {
+      <div class="error-state">
+        <span>⚠️</span>
+        <p>{{ error() }}</p>
+        <a routerLink="/catalogue" class="btn-back">Retour au catalogue</a>
+      </div>
+    } @else if (livre(); as l) {
+
+      @if (actionMsg()) { <div class="alert alert-success">✅ {{ actionMsg() }}</div> }
+      @if (actionErr()) { <div class="alert alert-error">⚠️ {{ actionErr() }}</div> }
+
+      <div class="detail-card">
+
+        <!-- Couverture -->
+        <div class="detail-cover" [class.no-cover]="!l.couverture">
+          @if (l.couverture) {
+            <img [src]="l.couverture" [alt]="l.titre" />
+          } @else {
+            <span class="cover-placeholder">📖</span>
+          }
+          <span class="availability-badge" [class.available]="l.nbDisponibles > 0" [class.unavailable]="l.nbDisponibles === 0">
+            {{ l.nbDisponibles > 0 ? 'Disponible' : 'Emprunté' }}
+          </span>
+        </div>
+
+        <!-- Infos -->
+        <div class="detail-info">
+          <span class="detail-category">{{ l.categorie?.nom }}</span>
+          <h1 class="detail-title">{{ l.titre }}</h1>
+          <p class="detail-author">{{ l.auteur }}</p>
+
+          <!-- Note -->
+          <div class="detail-rating">
+            @for (star of getStars(l.noteMoyenne); track $index) {
+              <span class="star" [class.full]="star === 'full'" [class.half]="star === 'half'">★</span>
+            }
+            <span class="rating-val">{{ l.noteMoyenne ? l.noteMoyenne.toFixed(1) : '—' }} / 5</span>
+          </div>
+
+          <!-- Métadonnées -->
+          <dl class="detail-meta">
+            @if (l.isbn) {
+              <dt>ISBN</dt><dd>{{ l.isbn }}</dd>
+            }
+            @if (l.datePublication) {
+              <dt>Publication</dt><dd>{{ formatDate(l.datePublication) }}</dd>
+            }
+            <dt>Exemplaires</dt>
+            <dd>{{ l.nbDisponibles }} disponible{{ l.nbDisponibles > 1 ? 's' : '' }} sur {{ l.nbExemplaires }}</dd>
+          </dl>
+
+          <!-- Description -->
+          @if (l.description) {
+            <div class="detail-desc">
+              <h2>Description</h2>
+              <p>{{ l.description }}</p>
+            </div>
+          }
+
+          <!-- Actions -->
+          <div class="detail-actions">
+            @if (!auth.isLoggedIn()) {
+              <p class="login-hint">
+                <a routerLink="/connexion">Connectez-vous</a> pour emprunter ou réserver ce livre.
+              </p>
+            } @else if (l.nbDisponibles > 0) {
+              <button class="btn-emprunter" (click)="emprunter()" [disabled]="isActing()">
+                {{ isActing() ? 'En cours…' : '📖 Emprunter' }}
+              </button>
+            } @else {
+              <button class="btn-reserver" (click)="reserver()" [disabled]="isActing()">
+                {{ isActing() ? 'En cours…' : '🔖 Réserver' }}
+              </button>
+              <p class="reserve-hint">Ce livre est actuellement emprunté. Réservez votre place dans la file d'attente.</p>
+            }
+          </div>
+        </div>
+
+      </div>
+    }
+  </div>
+</div>

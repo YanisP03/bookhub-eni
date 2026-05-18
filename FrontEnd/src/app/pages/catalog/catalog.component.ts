@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { BookService } from '../../services/book.service';
@@ -10,7 +11,7 @@ type FilterAvailability = 'all' | 'available';
 
 @Component({
   selector: 'app-catalog',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './catalog.component.html',
   styleUrl: './catalog.component.css',
 })
@@ -29,7 +30,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
   filterAvailability = signal<FilterAvailability>('all');
   sortBy = signal<SortOption>('title');
   currentPage = signal(1);
-  readonly pageSize = 12;
+  readonly pageSize = 20;
 
   readonly categoryOptions: { key: string; label: string }[] = [
     { key: 'ALL', label: 'Toutes les catégories' },

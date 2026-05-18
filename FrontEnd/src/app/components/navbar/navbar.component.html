@@ -4,15 +4,25 @@
       <span class="brand-icon">📚</span>
       <span class="brand-name">BookHub</span>
     </a>
+
     <div class="navbar-links" [class.open]="menuOpen()">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Accueil</a>
       <a routerLink="/catalogue" routerLinkActive="active" (click)="closeMenu()">Catalogue</a>
-      <a routerLink="/mes-emprunts" routerLinkActive="active" (click)="closeMenu()">Mes emprunts</a>
+      @if (auth.isLoggedIn()) {
+        <a routerLink="/mes-emprunts" routerLinkActive="active" (click)="closeMenu()">Mes emprunts</a>
+      }
     </div>
+
     <div class="navbar-actions">
-      <a routerLink="/connexion" class="btn-outline">Connexion</a>
-      <a routerLink="/inscription" class="btn-primary">S'inscrire</a>
+      @if (auth.isLoggedIn()) {
+        <span class="navbar-user">{{ auth.currentUser()?.prenom }}</span>
+        <button class="btn-outline" (click)="auth.logout()">Déconnexion</button>
+      } @else {
+        <a routerLink="/connexion" class="btn-outline">Connexion</a>
+        <a routerLink="/inscription" class="btn-primary">S'inscrire</a>
+      }
     </div>
+
     <button class="burger" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
