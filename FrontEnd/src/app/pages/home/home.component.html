@@ -1,20 +1,22 @@
 <!-- HERO -->
 <section class="hero">
   <div class="hero-content">
-    <span class="hero-badge">Bibliothèque communautaire</span>
-    <h1 class="hero-title">Des milliers de livres,<br><span class="hero-highlight">une communauté</span></h1>
-    <p class="hero-sub">Consultez le catalogue, empruntez vos livres préférés et partagez vos avis avec les membres du quartier.</p>
-    <div class="hero-actions">
-      <a routerLink="/catalogue" class="btn-hero-primary">Parcourir le catalogue</a>
-      <a routerLink="/inscription" class="btn-hero-outline">Rejoindre gratuitement</a>
+    <div>
+      <span class="hero-badge">Bibliothèque communautaire</span>
+      <h1 class="hero-title">Des milliers de livres,<br><span class="hero-highlight">une communauté</span></h1>
+      <p class="hero-sub">Consultez le catalogue, empruntez vos livres préférés et partagez vos avis avec les membres du quartier.</p>
+      <div class="hero-actions">
+        <a routerLink="/catalogue" class="btn-hero-primary">Parcourir le catalogue</a>
+        <a routerLink="/inscription" class="btn-hero-outline">Rejoindre gratuitement</a>
+      </div>
     </div>
-  </div>
-  <div class="hero-illustration">
-    <div class="book-stack">
-      <div class="book book-1"></div>
-      <div class="book book-2"></div>
-      <div class="book book-3"></div>
-      <div class="book book-4"></div>
+    <div class="hero-illustration">
+      <div class="book-stack">
+        <div class="book book-1"></div>
+        <div class="book book-2"></div>
+        <div class="book book-3"></div>
+        <div class="book book-4"></div>
+      </div>
     </div>
   </div>
 </section>
@@ -31,7 +33,7 @@
   </div>
 </section>
 
-<!-- FEATURED BOOKS -->
+<!-- LIVRES À LA UNE -->
 <section class="section">
   <div class="container">
     <div class="section-header">
@@ -46,7 +48,7 @@
       <div class="books-grid">
         @for (_ of [1,2,3,4,5,6]; track $index) { <div class="book-card skeleton"></div> }
       </div>
-    } @else if (featuredBooks().length === 0) {
+    } @else if (featuredLivres().length === 0) {
       <div class="empty-state">
         <span class="empty-icon">📚</span>
         <p>Aucun livre disponible pour le moment.</p>
@@ -54,27 +56,26 @@
       </div>
     } @else {
       <div class="books-grid">
-        @for (book of featuredBooks(); track book.id) {
+        @for (livre of featuredLivres(); track livre.id) {
           <article class="book-card" [routerLink]="['/catalogue']">
-            <div class="book-cover" [class.no-cover]="!book.coverUrl">
-              @if (book.coverUrl) {
-                <img [src]="book.coverUrl" [alt]="book.title" loading="lazy" />
+            <div class="book-cover" [class.no-cover]="!livre.couverture">
+              @if (livre.couverture) {
+                <img [src]="livre.couverture" [alt]="livre.titre" loading="lazy" />
               } @else {
                 <span class="cover-placeholder">📖</span>
               }
-              <span class="availability-badge" [class.available]="book.availableCopies > 0" [class.unavailable]="book.availableCopies === 0">
-                {{ book.availableCopies > 0 ? 'Disponible' : 'Emprunté' }}
+              <span class="availability-badge" [class.available]="livre.nbDisponibles > 0" [class.unavailable]="livre.nbDisponibles === 0">
+                {{ livre.nbDisponibles > 0 ? 'Disponible' : 'Emprunté' }}
               </span>
             </div>
             <div class="book-info">
-              <span class="book-category">{{ book.category }}</span>
-              <h3 class="book-title">{{ book.title }}</h3>
-              <p class="book-author">{{ book.author }}</p>
+              <span class="book-category">{{ livre.categorie?.nom }}</span>
+              <h3 class="book-title">{{ livre.titre }}</h3>
+              <p class="book-author">{{ livre.auteur }}</p>
               <div class="book-rating">
-                @for (star of getStars(book.averageRating); track $index) {
+                @for (star of getStars(livre.noteMoyenne); track $index) {
                   <span class="star" [class.full]="star === 'full'" [class.half]="star === 'half'">★</span>
                 }
-                <span class="rating-count">({{ book.ratingCount }})</span>
               </div>
             </div>
           </article>
@@ -84,7 +85,7 @@
   </div>
 </section>
 
-<!-- CATEGORIES -->
+<!-- CATÉGORIES -->
 <section class="section categories-section">
   <div class="container">
     <div class="section-header">
@@ -94,7 +95,7 @@
       </div>
     </div>
     <div class="categories-grid">
-      @for (cat of categories; track cat.key) {
+      @for (cat of categories(); track cat.key) {
         <a [routerLink]="['/catalogue']" [queryParams]="{ category: cat.key }" class="category-card">
           <span class="cat-icon">{{ cat.icon }}</span>
           <span class="cat-label">{{ cat.label }}</span>

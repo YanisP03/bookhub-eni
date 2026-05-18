@@ -24,9 +24,10 @@
         <option value="title">Trier : Titre A-Z</option>
         <option value="author">Trier : Auteur A-Z</option>
         <option value="rating">Trier : Meilleures notes</option>
+        <option value="date">Trier : Date d'ajout</option>
         <option value="availability">Trier : Disponibilité</option>
       </select>
-      @if (searchQuery() || selectedCategory() !== 'ALL' || filterAvailability() !== 'all') {
+      @if (searchQuery() || selectedCategory() !== 'ALL' || filterAvailability() !== 'all' || sortBy() !== 'title') {
         <button class="btn-clear" (click)="clearFilters()">✕ Réinitialiser</button>
       }
     </div>
@@ -51,30 +52,29 @@
       <div class="books-grid">
         @for (book of paginatedBooks(); track book.id) {
           <article class="book-card">
-            <div class="book-cover" [class.no-cover]="!book.coverUrl">
-              @if (book.coverUrl) { <img [src]="book.coverUrl" [alt]="book.title" loading="lazy" /> }
+            <div class="book-cover" [class.no-cover]="!book.couverture">
+              @if (book.couverture) { <img [src]="book.couverture" [alt]="book.titre" loading="lazy" /> }
               @else { <span class="cover-placeholder">📖</span> }
-              <span class="availability-badge" [class.available]="book.availableCopies > 0" [class.unavailable]="book.availableCopies === 0">
-                {{ book.availableCopies > 0 ? 'Disponible' : 'Emprunté' }}
+              <span class="availability-badge" [class.available]="book.nbDisponibles > 0" [class.unavailable]="book.nbDisponibles === 0">
+                {{ book.nbDisponibles > 0 ? 'Disponible' : 'Emprunté' }}
               </span>
             </div>
             <div class="book-info">
-              <span class="book-category">{{ getCategoryLabel(book.category) }}</span>
-              <h3 class="book-title">{{ book.title }}</h3>
-              <p class="book-author">{{ book.author }}</p>
+              <span class="book-category">{{ book.categorie?.nom }}</span>
+              <h3 class="book-title">{{ book.titre }}</h3>
+              <p class="book-author">{{ book.auteur }}</p>
               @if (book.description) { <p class="book-desc">{{ book.description }}</p> }
               <div class="book-meta">
                 <div class="book-rating">
-                  @for (star of getStars(book.averageRating); track $index) {
+                  @for (star of getStars(book.noteMoyenne); track $index) {
                     <span class="star" [class.full]="star === 'full'" [class.half]="star === 'half'">★</span>
                   }
-                  <span class="rating-val">{{ book.averageRating }}</span>
-                  <span class="rating-count">({{ book.ratingCount }})</span>
+                  <span class="rating-val">{{ book.noteMoyenne ?? 0 }}</span>
                 </div>
-                <span class="copies-info">{{ book.availableCopies }}/{{ book.totalCopies }} ex.</span>
+                <span class="copies-info">{{ book.nbDisponibles }}/{{ book.nbExemplaires }} ex.</span>
               </div>
-              <button class="btn-borrow" [class.btn-borrow--disabled]="book.availableCopies === 0" [disabled]="book.availableCopies === 0">
-                {{ book.availableCopies > 0 ? 'Emprunter' : 'Réserver' }}
+              <button class="btn-borrow" [class.btn-borrow--disabled]="book.nbDisponibles === 0" [disabled]="book.nbDisponibles === 0">
+                {{ book.nbDisponibles > 0 ? 'Emprunter' : 'Réserver' }}
               </button>
             </div>
           </article>

@@ -5,13 +5,12 @@ import com.example.backend.model.entity.Role;
 import com.example.backend.model.entity.Utilisateur;
 import com.example.backend.repository.RoleRepository;
 import com.example.backend.repository.UtilisateurRepository;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Data
+
 @Service
 public class AuthService {
 

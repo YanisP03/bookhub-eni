@@ -4,7 +4,9 @@ import com.example.backend.model.entity.Livre;
 import com.example.backend.services.LivreService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/livres")
@@ -17,12 +19,15 @@ public class LivreController {
     }
 
     @GetMapping
-    public List<Livre> findAll() { return livreService.findAll(); }
+    public List<Livre> findAll() {
+        return livreService.findAll();
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Livre> findById(@PathVariable Integer id) {
-        return livreService.findById(id).map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Optional<Livre> livre = livreService.findById(id);
+        if (livre.isEmpty()) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(livre.get());
     }
 
     @GetMapping("/search")
@@ -31,7 +36,9 @@ public class LivreController {
     }
 
     @GetMapping("/disponibles")
-    public List<Livre> findDisponibles() { return livreService.findDisponibles(); }
+    public List<Livre> findDisponibles() {
+        return livreService.findDisponibles();
+    }
 
     @GetMapping("/rechercher")
     public List<Livre> rechercher(
@@ -42,21 +49,23 @@ public class LivreController {
     }
 
     @PostMapping
-    public Livre create(@RequestBody Livre livre) { return livreService.save(livre); }
+    public ResponseEntity<Livre> create(@RequestBody Livre livre) {
+        Livre saved = livreService.saveLivre(livre);
+        return ResponseEntity.ok(saved);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Livre> update(@PathVariable Integer id, @RequestBody Livre livre) {
-        return livreService.findById(id).map(e -> {
-            livre.setId(id);
-            return ResponseEntity.ok(livreService.save(livre));
-        }).orElse(ResponseEntity.notFound().build());
+        if (livreService.findById(id).isEmpty()) return ResponseEntity.notFound().build();
+        livre.setId(id);
+        Livre saved = livreService.saveLivre(livre);
+        return ResponseEntity.ok(saved);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        return livreService.findById(id).map(l -> {
-            livreService.deleteById(id);
-            return ResponseEntity.ok().<Void>build();
-        }).orElse(ResponseEntity.notFound().build());
+        if (livreService.findById(id).isEmpty()) return ResponseEntity.notFound().build();
+        livreService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

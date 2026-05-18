@@ -38,8 +38,9 @@ public class CorsConfig {
 
                 // Règles d'accès
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Login et Inscription libres
-                        .anyRequest().authenticated()               // Tout le reste est protégé
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/livres", "/api/livres/**", "/api/categories", "/api/categories/**").permitAll()
+                        .anyRequest().authenticated()
                 )
 
                 // OWASP : Pas de session côté serveur
