@@ -50,7 +50,8 @@ public class CorsConfig {
                 // Lecture catalogue publique
                 .requestMatchers(HttpMethod.GET,
                         "/api/livres", "/api/livres/**",
-                        "/api/categories", "/api/categories/**").permitAll()
+                        "/api/categories", "/api/categories/**",
+                        "/api/avis/livre/**").permitAll()
                 // Tout le reste nécessite un token JWT valide
                 .anyRequest().authenticated()
             )

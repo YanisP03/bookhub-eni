@@ -10,10 +10,11 @@
       <a routerLink="/catalogue" routerLinkActive="active" (click)="closeMenu()">Catalogue</a>
       @if (auth.isLoggedIn()) {
         <a routerLink="/mes-emprunts" routerLinkActive="active" (click)="closeMenu()">Mes emprunts</a>
+        <a routerLink="/mon-espace" routerLinkActive="active" (click)="closeMenu()">Mon espace</a>
       }
       @if (auth.isAdmin()) {
         <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeMenu()" class="link-admin">Dashboard</a>
-        <a routerLink="/livres/nouveau" routerLinkActive="active" (click)="closeMenu()" class="link-admin">+ Ajouter un livre</a>
+        <a routerLink="/livres/nouveau" routerLinkActive="active" (click)="closeMenu()" class="link-admin">+ Livre</a>
       }
     </div>
 

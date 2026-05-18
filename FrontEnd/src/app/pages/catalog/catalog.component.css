@@ -43,6 +43,9 @@
 .btn-borrow { margin-top: auto; padding-top: .875rem; width: 100%; height: 38px; background: #f59e0b; color: #1a2744; border: none; border-radius: 8px; font-size: .875rem; font-weight: 700; cursor: pointer; transition: background .2s; }
 .btn-borrow:hover:not(:disabled) { background: #d97706; }
 .btn-borrow--disabled { background: #e2e8f0 !important; color: #94a3b8 !important; cursor: not-allowed !important; }
+.book-feedback { margin-top: auto; padding-top: .875rem; width: 100%; padding: .5rem .625rem; border-radius: 8px; font-size: .75rem; font-weight: 600; text-align: center; line-height: 1.4; }
+.book-feedback--ok  { background: #dcfce7; color: #166534; }
+.book-feedback--err { background: #fee2e2; color: #991b1b; }
 .feedback-state { display: flex; flex-direction: column; align-items: center; gap: .75rem; padding: 4rem 1rem; color: #64748b; text-align: center; }
 .feedback-icon { font-size: 3rem; }
 .feedback-state p { font-size: 1rem; max-width: 400px; margin: 0; }

@@ -1,5 +1,6 @@
 package com.example.backend.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class Utilisateur {
     @Column(nullable = false, unique = true, length = 150)
     private String mail;
 
+    @JsonIgnore
     @Column(nullable = false, length = 255)
     private String motDePasse;
 
@@ -31,12 +33,15 @@ public class Utilisateur {
     @JoinColumn(name = "id_role", nullable = false)
     private Role role;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "utilisateur", fetch = FetchType.LAZY)
     private List<Emprunt> emprunts;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "utilisateur", fetch = FetchType.LAZY)
     private List<Reservation> reservations;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "utilisateur", fetch = FetchType.LAZY)
     private List<Avis> avis;
 

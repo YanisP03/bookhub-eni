@@ -80,16 +80,20 @@
                 </div>
                 <span class="copies-info">{{ book.nbDisponibles }}/{{ book.nbExemplaires }} ex.</span>
               </div>
-              <button class="btn-borrow" [class.btn-borrow--disabled]="book.nbDisponibles === 0" [disabled]="book.nbDisponibles === 0">
-                {{ book.nbDisponibles > 0 ? 'Emprunter' : 'Réserver' }}
-              </button>
-              <button class="btn-details" [routerLink]="['/livre', book.id]">
-                Détails du livre
-                import com.example.backend.model.dto.LivreDto;
-              </button>
-              <button class="btn-borrow" [class.btn-borrow--disabled]="book.nbDisponibles === 0" [disabled]="book.nbDisponibles === 0">
-                {{ book.nbDisponibles > 0 ? 'Emprunter' : 'Réserver' }}
-              </button>
+              <button class="btn-details" [routerLink]="['/catalogue', book.id]" (click)="$event.stopPropagation()">Détails du livre</button>
+              @if (feedback()?.livreId === book.id) {
+                <div class="book-feedback" [class.book-feedback--ok]="feedback()!.ok" [class.book-feedback--err]="!feedback()!.ok">
+                  {{ feedback()!.message }}
+                </div>
+              } @else {
+                <button class="btn-borrow"
+                        [class.btn-borrow--disabled]="book.nbDisponibles === 0"
+                        [disabled]="book.nbDisponibles === 0 || actingId() === book.id"
+                        (click)="agir(book, $event)">
+                  @if (actingId() === book.id) { En cours… }
+                  @else { {{ book.nbDisponibles > 0 ? 'Emprunter' : 'Réserver' }} }
+                </button>
+              }
             </div>
           </article>
         }

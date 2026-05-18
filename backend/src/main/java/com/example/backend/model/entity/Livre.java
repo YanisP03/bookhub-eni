@@ -1,5 +1,6 @@
 package com.example.backend.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -38,7 +39,6 @@ public class Livre {
     @Column(columnDefinition = "INT DEFAULT 0")
     private int nbDisponibles = 0;
 
-    // Calculé par trigger SQL depuis AVIS — lecture seule côté JPA
     @Column(precision = 3, scale = 2, insertable = false, updatable = false)
     private BigDecimal noteMoyenne;
 
@@ -53,12 +53,15 @@ public class Livre {
     @JoinColumn(name = "id_statut", nullable = false)
     private Statut statut;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "livre", fetch = FetchType.LAZY)
     private List<Emprunt> emprunts;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "livre", fetch = FetchType.LAZY)
     private List<Reservation> reservations;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "livre", fetch = FetchType.LAZY)
     private List<Avis> avis;
 

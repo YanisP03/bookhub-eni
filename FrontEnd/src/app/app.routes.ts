@@ -9,8 +9,6 @@ const adminGuard = () => {
   inject(Router).navigate(['/']);
   return false;
 };
-import {DetailLivreComponent} from './pages/detail-livre/detail-livre.component';
-import { CatalogComponent } from './pages/catalog/catalog.component';
 
 export const routes: Routes = [
   {
@@ -26,8 +24,18 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/livre-detail/livre-detail.component').then(m => m.LivreDetailComponent),
   },
   {
+    path: 'catalogue/:id/modifier',
+    loadComponent: () => import('./pages/ajoutModifLivre/livre-form.component').then(m => m.LivreFormComponent),
+    canActivate: [authGuard, adminGuard],
+  },
+  {
     path: 'mes-emprunts',
     loadComponent: () => import('./pages/mes-emprunts/mes-emprunts.component').then(m => m.MesEmpruntsComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'mon-espace',
+    loadComponent: () => import('./pages/dashboard-lecteur/dashboard-lecteur.component').then(m => m.DashboardLecteurComponent),
     canActivate: [authGuard],
   },
   {
@@ -46,11 +54,6 @@ export const routes: Routes = [
     canActivate: [authGuard, adminGuard],
   },
   {
-    path: 'catalogue/:id/modifier',
-    loadComponent: () => import('./pages/ajoutModifLivre/livre-form.component').then(m => m.LivreFormComponent),
-    canActivate: [authGuard, adminGuard],
-  },
-  {
     path: 'connexion',
     loadComponent: () => import('./pages/connexion/connexion.component').then(m => m.ConnexionComponent),
   },
@@ -58,12 +61,5 @@ export const routes: Routes = [
     path: 'inscription',
     loadComponent: () => import('./pages/inscription/inscription.component').then(m => m.InscriptionComponent),
   },
-  {
-    path: 'livre/:id',
-    loadComponent: () =>
-      import('./pages/detail-livre/detail-livre.component').then(m => m.DetailLivreComponent),
-  },
-
   { path: '**', redirectTo: '' },
-
 ];

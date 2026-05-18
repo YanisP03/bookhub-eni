@@ -1,0 +1,82 @@
+<div class="dl-page">
+  <div class="dl-header">
+    <div class="container">
+      <span class="dl-badge">Mon espace</span>
+      <h1 class="dl-title">Bonjour {{ auth.currentUser()?.email }}</h1>
+      <p class="dl-sub">Votre tableau de bord lecteur</p>
+    </div>
+  </div>
+
+  <div class="container dl-body">
+
+    <!-- STATS -->
+    <div class="dl-stats">
+      <div class="dl-stat" [class.warn]="empruntsEnRetard().length > 0">
+        <span class="dl-stat-icon">📖</span>
+        <p class="dl-stat-num">{{ empruntsActifs().length }}</p>
+        <p class="dl-stat-label">Emprunts en cours</p>
+        @if (empruntsEnRetard().length > 0) {
+          <span class="retard-badge">{{ empruntsEnRetard().length }} en retard</span>
+        }
+      </div>
+      <div class="dl-stat">
+        <span class="dl-stat-icon">🔖</span>
+        <p class="dl-stat-num">{{ reservationsActives().length }}</p>
+        <p class="dl-stat-label">Réservations actives</p>
+      </div>
+      <div class="dl-stat">
+        <span class="dl-stat-icon">🕓</span>
+        <p class="dl-stat-num">{{ historiqueCount() }}</p>
+        <p class="dl-stat-label">Livres rendus</p>
+      </div>
+      <div class="dl-stat">
+        <span class="dl-stat-icon">⭐</span>
+        <p class="dl-stat-num">{{ mesAvis().length }}</p>
+        <p class="dl-stat-label">Avis postés</p>
+      </div>
+    </div>
+
+    <!-- ACTIONS RAPIDES -->
+    <div class="dl-actions">
+      <a routerLink="/catalogue" class="dl-action-card">
+        <span>📚</span><span>Parcourir le catalogue</span>
+      </a>
+      <a routerLink="/mes-emprunts" class="dl-action-card">
+        <span>📋</span><span>Mes emprunts & retours</span>
+      </a>
+      <a routerLink="/profil" class="dl-action-card">
+        <span>👤</span><span>Mon profil</span>
+      </a>
+    </div>
+
+    <!-- EMPRUNTS EN RETARD -->
+    @if (empruntsEnRetard().length > 0) {
+      <section class="dl-section warn-section">
+        <h2>⏰ Emprunts en retard</h2>
+        @for (e of empruntsEnRetard(); track e.id) {
+          <div class="dl-row">
+            <span class="dl-row-title">{{ e.livre.titre }}</span>
+            <span class="dl-row-date retard">Prévu le {{ formatDate(e.dateRetourPrevue) }}</span>
+          </div>
+        }
+        <a routerLink="/mes-emprunts" class="dl-link">Gérer mes emprunts →</a>
+      </section>
+    }
+
+    <!-- RÉSERVATIONS NOTIFIÉES -->
+    @let notifiees = reservationsActives().filter(r => r.statut.libelle === 'NOTIFIEE');
+    @if (notifiees.length > 0) {
+      <section class="dl-section notif-section">
+        <h2>📬 Livres disponibles à récupérer</h2>
+        @for (r of notifiees; track r.id) {
+          <div class="dl-row">
+            <span class="dl-row-title">{{ r.livre.titre }}</span>
+            <span class="dl-row-date success">Disponible maintenant !</span>
+          </div>
+        }
+        <a routerLink="/mes-emprunts" class="dl-link">Gérer mes réservations →</a>
+      </section>
+    }
+
+  </div>
+</div>
