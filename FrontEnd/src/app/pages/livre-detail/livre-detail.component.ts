@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BookService } from '../../services/book.service';
@@ -28,9 +28,16 @@ export class LivreDetailComponent implements OnInit {
   actionErr     = signal<string | null>(null);
   isActing      = signal(false);
   confirmDelete = signal(false);
+  dejaEmprunte  = signal(false);
 
   // Avis
   avisList      = signal<AvisDTO[]>([]);
+  readonly moyenneAvis = computed(() => {
+    const list = this.avisList();
+    if (!list.length) return null;
+    return list.reduce((s, a) => s + a.note, 0) / list.length;
+  });
+  readonly nbAvis = computed(() => this.avisList().length);
   newNote       = signal(0);
   newCommentaire = '';
   avisMsg       = signal<string | null>(null);
@@ -41,7 +48,20 @@ export class LivreDetailComponent implements OnInit {
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.bookService.getById(id).subscribe({
-      next:  b  => { this.livre.set(b); this.isLoading.set(false); this.loadAvis(id); },
+      next: b => {
+        this.livre.set(b);
+        this.isLoading.set(false);
+        this.loadAvis(id);
+        if (this.auth.isLoggedIn()) {
+          this.empruntService.getMesEmprunts().subscribe({
+            next: emprunts => {
+              this.dejaEmprunte.set(
+                emprunts.some(e => !e.dateRetour && e.livre.id === id)
+              );
+            },
+          });
+        }
+      },
       error: () => { this.error.set('Livre introuvable.'); this.isLoading.set(false); },
     });
   }

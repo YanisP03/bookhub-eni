@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,24 +39,30 @@ public class AvisService {
         Livre livre = livreRepository.findById(dto.getIdLivre())
                 .orElseThrow(() -> new ResourceNotFoundException("Livre introuvable"));
 
-        avisRepository.findByUtilisateurAndLivre(utilisateur, livre).ifPresent(existing -> {
-            // Mise à jour de l'avis existant
-            existing.setNote(dto.getNote());
-            existing.setCommentaire(dto.getCommentaire());
-            if (dto.getPseudo() != null) existing.setPseudo(dto.getPseudo());
-            existing.setStatut("EN_ATTENTE");
-            avisRepository.save(existing);
-            throw new BusinessException("UPDATED"); // signal de sortie
-        });
+        Optional<Avis> existingOpt = avisRepository.findByUtilisateurAndLivre(utilisateur, livre);
 
-        Avis avis = new Avis();
-        avis.setLivre(livre);
-        avis.setUtilisateur(utilisateur);
-        avis.setNote(dto.getNote());
-        avis.setCommentaire(dto.getCommentaire());
-        avis.setPseudo(dto.getPseudo() != null ? dto.getPseudo()
-                : utilisateur.getPrenom() + " " + utilisateur.getNom().charAt(0) + ".");
-        avis.setStatut("EN_ATTENTE");
+        Avis avis;
+        if (existingOpt.isPresent()) {
+            // Mise à jour de l'avis existant — repasse en attente de modération
+            avis = existingOpt.get();
+            avis.setNote(dto.getNote());
+            avis.setCommentaire(dto.getCommentaire());
+            if (dto.getPseudo() != null && !dto.getPseudo().isBlank()) {
+                avis.setPseudo(dto.getPseudo());
+            }
+            avis.setStatut("EN_ATTENTE");
+        } else {
+            avis = new Avis();
+            avis.setLivre(livre);
+            avis.setUtilisateur(utilisateur);
+            avis.setNote(dto.getNote());
+            avis.setCommentaire(dto.getCommentaire());
+            avis.setPseudo(dto.getPseudo() != null && !dto.getPseudo().isBlank()
+                    ? dto.getPseudo()
+                    : utilisateur.getPrenom() + " " + utilisateur.getNom().charAt(0) + ".");
+            avis.setStatut("EN_ATTENTE");
+        }
+
         return toResponseDTO(avisRepository.save(avis));
     }
 
@@ -85,10 +92,16 @@ public class AvisService {
     public AvisResponseDTO modererAvis(Integer idAvis, String decision) {
         if (!decision.equals("APPROUVE") && !decision.equals("REJETE"))
             throw new BusinessException("Décision invalide : APPROUVE ou REJETE attendu");
+
         Avis avis = avisRepository.findById(idAvis)
                 .orElseThrow(() -> new ResourceNotFoundException("Avis introuvable"));
         avis.setStatut(decision);
-        return toResponseDTO(avisRepository.save(avis));
+        AvisResponseDTO result = toResponseDTO(avisRepository.save(avis));
+
+        // Recalcule la note moyenne du livre après modération
+        livreRepository.recalculerNoteMoyenne(avis.getLivre().getId());
+
+        return result;
     }
 
     private AvisResponseDTO toResponseDTO(Avis avis) {

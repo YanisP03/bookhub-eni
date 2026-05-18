@@ -50,12 +50,19 @@
           <h1 class="detail-title">{{ l.titre }}</h1>
           <p class="detail-author">{{ l.auteur }}</p>
 
-          <!-- Note -->
+          <!-- Note moyenne -->
           <div class="detail-rating">
-            @for (star of getStars(l.noteMoyenne); track $index) {
+            @for (star of getStars(moyenneAvis() ?? l.noteMoyenne); track $index) {
               <span class="star" [class.full]="star === 'full'" [class.half]="star === 'half'">★</span>
             }
-            <span class="rating-val">{{ l.noteMoyenne ? l.noteMoyenne.toFixed(1) : '—' }} / 5</span>
+            @if (moyenneAvis() !== null) {
+              <span class="rating-val">{{ moyenneAvis()!.toFixed(1) }} / 5</span>
+              <span class="rating-count">({{ nbAvis() }} avis)</span>
+            } @else if (l.noteMoyenne) {
+              <span class="rating-val">{{ l.noteMoyenne.toFixed(1) }} / 5</span>
+            } @else {
+              <span class="rating-empty">Aucun avis pour l'instant</span>
+            }
           </div>
 
           <!-- Métadonnées -->
@@ -84,6 +91,10 @@
               <p class="login-hint">
                 <a routerLink="/connexion">Connectez-vous</a> pour emprunter ou réserver ce livre.
               </p>
+            } @else if (dejaEmprunte()) {
+              <button class="btn-emprunter" disabled style="opacity:.5;cursor:not-allowed">
+                ✔ Déjà emprunté
+              </button>
             } @else if (l.nbDisponibles > 0) {
               <button class="btn-emprunter" (click)="emprunter()" [disabled]="isActing()">
                 {{ isActing() ? 'En cours…' : '📖 Emprunter' }}

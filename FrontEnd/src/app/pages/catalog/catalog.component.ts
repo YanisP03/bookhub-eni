@@ -27,11 +27,12 @@ export class CatalogComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   private readonly searchSubject = new Subject<string>();
 
-  allBooks    = signal<Book[]>([]);
-  isLoading   = signal(true);
-  error       = signal<string | null>(null);
-  actingId    = signal<number | null>(null);
-  feedback    = signal<ActionFeedback | null>(null);
+  allBooks          = signal<Book[]>([]);
+  isLoading         = signal(true);
+  error             = signal<string | null>(null);
+  actingId          = signal<number | null>(null);
+  feedback          = signal<ActionFeedback | null>(null);
+  borrowedLivreIds  = signal<Set<number>>(new Set());
 
   searchQuery       = signal('');
   selectedCategory  = signal<string>('ALL');
@@ -88,6 +89,16 @@ export class CatalogComponent implements OnInit, OnDestroy {
     this.searchSubject.pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(query => { this.searchQuery.set(query); this.currentPage.set(1); });
     this.loadBooks();
+    if (this.auth.isLoggedIn()) {
+      this.empruntService.getMesEmprunts().pipe(takeUntil(this.destroy$)).subscribe({
+        next: emprunts => {
+          const ids = new Set(
+            emprunts.filter(e => !e.dateRetour).map(e => e.livre.id)
+          );
+          this.borrowedLivreIds.set(ids);
+        },
+      });
+    }
   }
 
   ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
@@ -134,6 +145,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
               ? { ...b, nbDisponibles: Math.max(0, b.nbDisponibles - 1) }
               : b)
           );
+          this.borrowedLivreIds.update(ids => new Set([...ids, book.id]));
         }
         setTimeout(() => this.feedback.set(null), 4000);
       },

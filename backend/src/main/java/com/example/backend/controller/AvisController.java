@@ -9,7 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/avis")
@@ -29,13 +28,7 @@ public class AvisController {
     @PostMapping
     public ResponseEntity<AvisResponseDTO> soumettreAvis(@Valid @RequestBody AvisRequestDTO dto,
                                                           Authentication auth) {
-        try {
-            return ResponseEntity.ok(avisService.soumettreAvis(auth.getName(), dto));
-        } catch (Exception e) {
-            if ("UPDATED".equals(e.getMessage()))
-                return ResponseEntity.ok().build();
-            throw e;
-        }
+        return ResponseEntity.ok(avisService.soumettreAvis(auth.getName(), dto));
     }
 
     @GetMapping("/mes-avis")

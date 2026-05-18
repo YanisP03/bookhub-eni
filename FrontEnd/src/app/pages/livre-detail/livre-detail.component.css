@@ -36,7 +36,9 @@
 .star { color: #d1d5db; font-size: 1.125rem; }
 .star.full { color: #f59e0b; }
 .star.half { color: #f59e0b; opacity: .6; }
-.rating-val { font-size: .9375rem; color: #64748b; margin-left: .5rem; }
+.rating-val { font-size: 1rem; font-weight: 700; color: #1a2744; margin-left: .5rem; }
+.rating-count { font-size: .875rem; color: #94a3b8; margin-left: .25rem; }
+.rating-empty { font-size: .875rem; color: #94a3b8; margin-left: .5rem; font-style: italic; }
 
 .detail-meta { display: grid; grid-template-columns: auto 1fr; gap: .35rem 1rem; margin: 0 0 1.25rem; font-size: .875rem; }
 .detail-meta dt { color: #94a3b8; font-weight: 600; }

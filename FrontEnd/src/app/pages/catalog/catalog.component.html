@@ -76,7 +76,11 @@
                   @for (star of getStars(book.noteMoyenne); track $index) {
                     <span class="star" [class.full]="star === 'full'" [class.half]="star === 'half'">★</span>
                   }
-                  <span class="rating-val">{{ book.noteMoyenne ?? 0 }}</span>
+                  @if (book.noteMoyenne) {
+                    <span class="rating-val">{{ book.noteMoyenne.toFixed(1) }}</span>
+                  } @else {
+                    <span class="rating-val" style="color:#d1d5db">—</span>
+                  }
                 </div>
                 <span class="copies-info">{{ book.nbDisponibles }}/{{ book.nbExemplaires }} ex.</span>
               </div>
@@ -86,11 +90,13 @@
                   {{ feedback()!.message }}
                 </div>
               } @else {
+                @let dejaEmprunte = borrowedLivreIds().has(book.id);
                 <button class="btn-borrow"
-                        [class.btn-borrow--disabled]="book.nbDisponibles === 0"
-                        [disabled]="book.nbDisponibles === 0 || actingId() === book.id"
+                        [class.btn-borrow--disabled]="book.nbDisponibles === 0 || dejaEmprunte"
+                        [disabled]="book.nbDisponibles === 0 || actingId() === book.id || dejaEmprunte"
                         (click)="agir(book, $event)">
-                  @if (actingId() === book.id) { En cours… }
+                  @if (dejaEmprunte) { ✔ Déjà emprunté }
+                  @else if (actingId() === book.id) { En cours… }
                   @else { {{ book.nbDisponibles > 0 ? 'Emprunter' : 'Réserver' }} }
                 </button>
               }
