@@ -13,9 +13,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError(err => {
-      // Token expiré ou invalide : déconnexion automatique
+      // Token expiré ou invalide → déconnexion automatique
       if ((err.status === 401 || err.status === 403) && auth.isLoggedIn()) {
-        auth.logout();
+        auth.logout(); // efface localStorage + navigue vers /
       }
       return throwError(() => err);
     })
