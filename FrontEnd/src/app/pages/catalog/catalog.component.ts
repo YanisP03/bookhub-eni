@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import {ActivatedRoute, RouterLink} from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { BookService } from '../../services/book.service';
 import { Book, BookCategory, CATEGORY_LABELS } from '../../models/book.model';
@@ -10,7 +10,7 @@ type FilterAvailability = 'all' | 'available';
 
 @Component({
   selector: 'app-catalog',
-  imports: [FormsModule],
+  imports: [FormsModule,RouterLink],
   templateUrl: './catalog.component.html',
   styleUrl: './catalog.component.css',
 })

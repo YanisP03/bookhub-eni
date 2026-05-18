@@ -73,6 +73,11 @@
                 </div>
                 <span class="copies-info">{{ book.availableCopies }}/{{ book.totalCopies }} ex.</span>
               </div>
+
+              <button class="btn-details" [routerLink]="['/livre', book.id]">
+                Détails du livre
+              </button>
+
               <button class="btn-borrow" [class.btn-borrow--disabled]="book.availableCopies === 0" [disabled]="book.availableCopies === 0">
                 {{ book.availableCopies > 0 ? 'Emprunter' : 'Réserver' }}
               </button>

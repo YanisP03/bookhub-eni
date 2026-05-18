@@ -2,11 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Book, BookCategory } from '../models/book.model';
+import { LivreDto } from '../models/livre.dto';
 
 @Injectable({ providedIn: 'root' })
 export class BookService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api/books';
+  private readonly apiUrl = 'http://localhost:8080/api/livres';
 
   getAll(): Observable<Book[]> {
     return this.http.get<Book[]>(this.apiUrl);
@@ -39,5 +40,9 @@ export class BookService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  getLivreDetails  (id: number): Observable<LivreDto> {
+    return this.http.get<LivreDto>(`${this.apiUrl}/${id}/details`);
   }
 }
