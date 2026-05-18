@@ -1,31 +1,22 @@
 package com.example.backend.model.entity.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-
 public class UtilisateurDto {
 
     private Integer id;
-
-    @NotBlank(message = "Le nom est obligatoire")
     private String nom;
-
-    @NotBlank(message = "Le prénom est obligatoire")
     private String prenom;
-
-    @NotBlank(message = "L'email est obligatoire")
-    @Email(message = "Format d'email invalide")
     private String mail;
-
+    private String telephone;
     private String roleLibelle;
 
     public UtilisateurDto() {}
 
-    public UtilisateurDto(Integer id, String nom, String prenom, String mail, String roleLibelle) {
+    public UtilisateurDto(Integer id, String nom, String prenom, String mail, String telephone, String roleLibelle) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;
         this.mail = mail;
+        this.telephone = telephone;
         this.roleLibelle = roleLibelle;
     }
 
@@ -40,6 +31,9 @@ public class UtilisateurDto {
 
     public String getMail() { return mail; }
     public void setMail(String mail) { this.mail = mail; }
+
+    public String getTelephone() { return telephone; }
+    public void setTelephone(String telephone) { this.telephone = telephone; }
 
     public String getRoleLibelle() { return roleLibelle; }
     public void setRoleLibelle(String roleLibelle) { this.roleLibelle = roleLibelle; }

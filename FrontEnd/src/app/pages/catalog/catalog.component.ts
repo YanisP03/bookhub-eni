@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { BookService } from '../../services/book.service';
+import { AuthService } from '../../services/auth.service';
 import { Book, BookCategory, CATEGORY_LABELS } from '../../models/book.model';
 
 type SortOption = 'title' | 'author' | 'rating' | 'availability' | 'date';
@@ -17,6 +18,7 @@ type FilterAvailability = 'all' | 'available';
 export class CatalogComponent implements OnInit, OnDestroy {
   private readonly bookService = inject(BookService);
   private readonly route = inject(ActivatedRoute);
+  readonly auth = inject(AuthService);
   private readonly destroy$ = new Subject<void>();
   private readonly searchSubject = new Subject<string>();
 

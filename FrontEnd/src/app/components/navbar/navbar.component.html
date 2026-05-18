@@ -11,11 +11,15 @@
       @if (auth.isLoggedIn()) {
         <a routerLink="/mes-emprunts" routerLinkActive="active" (click)="closeMenu()">Mes emprunts</a>
       }
+      @if (auth.isAdmin()) {
+        <a routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeMenu()" class="link-admin">Dashboard</a>
+        <a routerLink="/livres/nouveau" routerLinkActive="active" (click)="closeMenu()" class="link-admin">+ Ajouter un livre</a>
+      }
     </div>
 
     <div class="navbar-actions">
       @if (auth.isLoggedIn()) {
-        <span class="navbar-user">{{ auth.currentUser()?.email }}</span>
+        <a routerLink="/profil" class="navbar-user">{{ auth.currentUser()?.email }}</a>
         <button class="btn-outline" (click)="auth.logout()">Déconnexion</button>
       } @else {
         <a routerLink="/connexion" class="btn-outline">Connexion</a>
