@@ -21,6 +21,10 @@ public class Avis {
     @Column(length = 1000)
     private String commentaire;
 
+    // ajout du statut pour un avis
+    @Column(length = 20, nullable = false)
+    private String statut = "EN_ATTENTE"; // EN_ATTENTE | APPROUVE | REJETE
+
     @Column(columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime datePublication = LocalDateTime.now();
 
@@ -54,4 +58,7 @@ public class Avis {
 
     public Livre getLivre() { return livre; }
     public void setLivre(Livre livre) { this.livre = livre; }
+
+    public String getStatut() { return statut; }
+    public void setStatut(String statut) { this.statut = statut; }
 }
