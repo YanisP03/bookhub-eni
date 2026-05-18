@@ -24,9 +24,10 @@
         <option value="title">Trier : Titre A-Z</option>
         <option value="author">Trier : Auteur A-Z</option>
         <option value="rating">Trier : Meilleures notes</option>
+        <option value="date">Trier : Date d'ajout</option>
         <option value="availability">Trier : Disponibilité</option>
       </select>
-      @if (searchQuery() || selectedCategory() !== 'ALL' || filterAvailability() !== 'all') {
+      @if (searchQuery() || selectedCategory() !== 'ALL' || filterAvailability() !== 'all' || sortBy() !== 'title') {
         <button class="btn-clear" (click)="clearFilters()">✕ Réinitialiser</button>
       }
     </div>

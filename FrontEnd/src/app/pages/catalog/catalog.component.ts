@@ -5,7 +5,7 @@ import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { BookService } from '../../services/book.service';
 import { Book, CATEGORY_LABELS } from '../../models/book.model';
 
-type SortOption = 'title' | 'author' | 'rating' | 'availability';
+type SortOption = 'title' | 'author' | 'rating' | 'availability' | 'date';
 type FilterAvailability = 'all' | 'available';
 
 @Component({
@@ -48,6 +48,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
       if (sort === 'author') return (a.auteur ?? '').localeCompare(b.auteur ?? '');
       if (sort === 'rating') return (b.noteMoyenne ?? 0) - (a.noteMoyenne ?? 0);
       if (sort === 'availability') return b.nbDisponibles - a.nbDisponibles;
+      if (sort === 'date') return (b.dateAjout ?? '').localeCompare(a.dateAjout ?? '');
       return 0;
     });
   });
@@ -90,7 +91,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
   onSearchInput(value: string): void { this.searchSubject.next(value); }
   onCategoryChange(value: string): void { this.selectedCategory.set(value); this.currentPage.set(1); }
   onAvailabilityChange(value: string): void { this.filterAvailability.set(value as FilterAvailability); this.currentPage.set(1); }
-  onSortChange(value: string): void { this.sortBy.set(value as SortOption); }
+  onSortChange(value: string): void { this.sortBy.set(value as SortOption); this.currentPage.set(1); }
   clearFilters(): void { this.searchQuery.set(''); this.selectedCategory.set('ALL'); this.filterAvailability.set('all'); this.sortBy.set('title'); this.currentPage.set(1); }
   goToPage(page: number | '...'): void { if (typeof page === 'number') { this.currentPage.set(page); window.scrollTo({ top: 0, behavior: 'smooth' }); } }
   getStars(rating: number | undefined): string[] { const n = rating ?? 0; return Array.from({ length: 5 }, (_, i) => i < Math.floor(n) ? 'full' : i < n ? 'half' : 'empty'); }

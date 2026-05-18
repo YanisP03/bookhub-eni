@@ -23,21 +23,16 @@ export class LivreFormComponent implements OnInit {
 
   livre: Book = {
     id: 0,
-    title: '',
-    author: '',
+    titre: '',
+    auteur: '',
     isbn: '',
-    category: 'AUTRE',
     description: '',
-    coverUrl: '',
+    couverture: '',
     datePublication: '',
-    totalCopies: 0,
-    availableCopies: 0,
-    averageRating: 0,
-    ratingCount: 0,
-    nbCopies: 1,
-    nbAvailables: 1,
-    idCategory: undefined,
-    idStatus: undefined,
+    nbExemplaires: 1,
+    nbDisponibles: 1,
+    categorie: { id: undefined },
+    statut: { id: undefined },
   };
 
   readonly categories: { id: number; label: string }[] = [
