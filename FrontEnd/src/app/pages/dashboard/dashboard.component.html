@@ -1,0 +1,102 @@
+<div class="dash-page">
+  <div class="dash-header">
+    <div class="container">
+      <div class="header-top">
+        <div>
+          <span class="dash-badge">Espace bibliothécaire</span>
+          <h1 class="dash-title">Tableau de bord</h1>
+          <p class="dash-sub">Vue d'ensemble de la bibliothèque</p>
+        </div>
+        <div class="header-actions">
+          <a routerLink="/livres/nouveau" class="btn-add">+ Ajouter un livre</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container dash-body">
+
+    @if (isLoading()) {
+      <div class="stats-grid">
+        @for (_ of [1,2,3,4,5,6,7]; track $index) {
+          <div class="stat-card skeleton"></div>
+        }
+      </div>
+    } @else if (error()) {
+      <div class="error-state">⚠️ {{ error() }}</div>
+    } @else if (stats(); as s) {
+
+      <!-- STATS CARDS -->
+      <div class="stats-grid">
+        <div class="stat-card stat-blue">
+          <span class="stat-icon">📚</span>
+          <div>
+            <p class="stat-num">{{ s.totalLivres }}</p>
+            <p class="stat-label">Livres au catalogue</p>
+          </div>
+        </div>
+        <div class="stat-card stat-green">
+          <span class="stat-icon">✅</span>
+          <div>
+            <p class="stat-num">{{ s.livresDisponibles }}</p>
+            <p class="stat-label">Disponibles</p>
+          </div>
+        </div>
+        <div class="stat-card stat-amber">
+          <span class="stat-icon">📤</span>
+          <div>
+            <p class="stat-num">{{ s.livresEmpruntes }}</p>
+            <p class="stat-label">Empruntés</p>
+          </div>
+        </div>
+        <div class="stat-card stat-indigo">
+          <span class="stat-icon">👥</span>
+          <div>
+            <p class="stat-num">{{ s.totalUtilisateurs }}</p>
+            <p class="stat-label">Membres</p>
+          </div>
+        </div>
+        <div class="stat-card stat-sky">
+          <span class="stat-icon">🔄</span>
+          <div>
+            <p class="stat-num">{{ s.empruntsEnCours }}</p>
+            <p class="stat-label">Emprunts en cours</p>
+          </div>
+        </div>
+        <div class="stat-card" [class.stat-red]="s.empruntsEnRetard > 0" [class.stat-slate]="s.empruntsEnRetard === 0">
+          <span class="stat-icon">⏰</span>
+          <div>
+            <p class="stat-num">{{ s.empruntsEnRetard }}</p>
+            <p class="stat-label">En retard</p>
+          </div>
+        </div>
+        <div class="stat-card stat-violet">
+          <span class="stat-icon">🔖</span>
+          <div>
+            <p class="stat-num">{{ s.reservationsEnAttente }}</p>
+            <p class="stat-label">Réservations en attente</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIONS RAPIDES -->
+      <section class="quick-actions">
+        <h2>Actions rapides</h2>
+        <div class="actions-grid">
+          <a routerLink="/livres/nouveau" class="action-card">
+            <span class="action-icon">➕</span>
+            <span>Ajouter un livre</span>
+          </a>
+          <a routerLink="/catalogue" class="action-card">
+            <span class="action-icon">📖</span>
+            <span>Gérer le catalogue</span>
+          </a>
+          <a routerLink="/mes-emprunts" class="action-card">
+            <span class="action-icon">📋</span>
+            <span>Voir les emprunts</span>
+          </a>
+        </div>
+      </section>
+    }
+  </div>
+</div>

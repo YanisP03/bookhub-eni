@@ -1,8 +1,15 @@
 <div class="catalog-page">
   <div class="catalog-header">
     <div class="container">
-      <h1 class="catalog-title">Catalogue</h1>
-      <p class="catalog-sub">{{ filteredBooks().length }} livre{{ filteredBooks().length > 1 ? 's' : '' }} trouvé{{ filteredBooks().length > 1 ? 's' : '' }}</p>
+      <div class="catalog-title-row">
+        <div>
+          <h1 class="catalog-title">Catalogue</h1>
+          <p class="catalog-sub">{{ filteredBooks().length }} livre{{ filteredBooks().length > 1 ? 's' : '' }} trouvé{{ filteredBooks().length > 1 ? 's' : '' }}</p>
+        </div>
+        @if (auth.isAdmin()) {
+          <a routerLink="/livres/nouveau" class="btn-admin-add">+ Ajouter un livre</a>
+        }
+      </div>
     </div>
   </div>
 

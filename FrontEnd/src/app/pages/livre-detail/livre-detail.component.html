@@ -1,7 +1,21 @@
 <div class="detail-page">
   <div class="container">
 
-    <a routerLink="/catalogue" class="btn-back">← Retour au catalogue</a>
+    <div class="detail-topbar">
+      <a routerLink="/catalogue" class="btn-back">← Retour au catalogue</a>
+      @if (auth.isAdmin() && livre()) {
+        <div class="admin-actions">
+          <a [routerLink]="['/catalogue', livre()!.id, 'modifier']" class="btn-admin-edit">✏️ Modifier</a>
+          @if (!confirmDelete()) {
+            <button class="btn-admin-delete" (click)="confirmDelete.set(true)">🗑 Supprimer</button>
+          } @else {
+            <span class="delete-confirm-text">Confirmer ?</span>
+            <button class="btn-admin-delete-ok" (click)="supprimerLivre()">Oui, supprimer</button>
+            <button class="btn-cancel-delete" (click)="confirmDelete.set(false)">Annuler</button>
+          }
+        </div>
+      }
+    </div>
 
     @if (isLoading()) {
       <div class="skeleton-detail"></div>

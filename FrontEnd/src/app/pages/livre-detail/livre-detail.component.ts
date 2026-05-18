@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { BookService } from '../../services/book.service';
 import { EmpruntService } from '../../services/emprunt.service';
 import { AuthService } from '../../services/auth.service';
@@ -12,10 +12,12 @@ import { Book } from '../../models/book.model';
   styleUrl: './livre-detail.component.css',
 })
 export class LivreDetailComponent implements OnInit {
-  private readonly route        = inject(ActivatedRoute);
-  private readonly bookService  = inject(BookService);
+  private readonly route          = inject(ActivatedRoute);
+  private readonly router         = inject(Router);
+  private readonly bookService    = inject(BookService);
   private readonly empruntService = inject(EmpruntService);
   readonly auth = inject(AuthService);
+  confirmDelete = signal(false);
 
   livre      = signal<Book | null>(null);
   isLoading  = signal(true);
@@ -56,6 +58,15 @@ export class LivreDetailComponent implements OnInit {
         this.isActing.set(false);
       },
       error: e => { this.actionErr.set(e.error ?? 'Erreur lors de la réservation.'); this.isActing.set(false); },
+    });
+  }
+
+  supprimerLivre(): void {
+    const id = this.livre()?.id;
+    if (!id) return;
+    this.bookService.delete(id).subscribe({
+      next: () => this.router.navigate(['/catalogue']),
+      error: e => this.actionErr.set(e.error ?? 'Erreur lors de la suppression.'),
     });
   }
 

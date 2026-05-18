@@ -1,8 +1,6 @@
 package com.example.backend.model.entity;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Cascade;
-
 import java.util.List;
 
 @Entity
@@ -25,6 +23,9 @@ public class Utilisateur {
 
     @Column(nullable = false, length = 255)
     private String motDePasse;
+
+    @Column(length = 20)
+    private String telephone;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_role", nullable = false)
@@ -55,6 +56,9 @@ public class Utilisateur {
 
     public String getMotDePasse() { return motDePasse; }
     public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
+
+    public String getTelephone() { return telephone; }
+    public void setTelephone(String telephone) { this.telephone = telephone; }
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
