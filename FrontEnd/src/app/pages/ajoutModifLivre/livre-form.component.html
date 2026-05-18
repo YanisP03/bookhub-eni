@@ -38,7 +38,7 @@
               <input
                 id="titre"
                 type="text"
-                [(ngModel)]="livre.title"
+                [(ngModel)]="livre.titre"
                 name="titre"
                 required
                 placeholder="Ex : Le Seigneur des Anneaux"
@@ -51,7 +51,7 @@
               <input
                 id="auteur"
                 type="text"
-                [(ngModel)]="livre.author"
+                [(ngModel)]="livre.auteur"
                 name="auteur"
                 required
                 placeholder="Ex : J.R.R. Tolkien"
@@ -87,7 +87,7 @@
               <input
                 id="couverture"
                 type="url"
-                [(ngModel)]="livre.coverUrl"
+                [(ngModel)]="livre.couverture"
                 name="couverture"
                 placeholder="https://..."
                 class="form-control"
@@ -116,7 +116,7 @@
               <label for="idCategorie">Catégorie <span class="required">*</span></label>
               <select
                 id="idCategorie"
-                [(ngModel)]="livre.idCategory"
+                [(ngModel)]="livre.categorie!.id"
                 name="idCategorie"
                 required
                 class="form-control"
@@ -132,7 +132,7 @@
               <label for="idStatut">Statut <span class="required">*</span></label>
               <select
                 id="idStatut"
-                [(ngModel)]="livre.idStatus"
+                [(ngModel)]="livre.statut!.id"
                 name="idStatut"
                 required
                 class="form-control"
@@ -149,7 +149,7 @@
               <input
                 id="nbExemplaires"
                 type="number"
-                [(ngModel)]="livre.nbCopies"
+                [(ngModel)]="livre.nbExemplaires"
                 name="nbExemplaires"
                 required
                 min="1"
@@ -162,7 +162,7 @@
               <input
                 id="nbDisponibles"
                 type="number"
-                [(ngModel)]="livre.nbAvailables"
+                [(ngModel)]="livre.nbDisponibles"
                 name="nbDisponibles"
                 required
                 min="0"

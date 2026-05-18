@@ -1,12 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Book, BookCategory } from '../models/book.model';
+import { Book } from '../models/book.model';
 
 @Injectable({ providedIn: 'root' })
 export class BookService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api/books';
+  private readonly apiUrl = 'http://localhost:8080/api/livres';
 
   getAll(): Observable<Book[]> {
     return this.http.get<Book[]>(this.apiUrl);
@@ -21,8 +21,8 @@ export class BookService {
     return this.http.get<Book[]>(`${this.apiUrl}/search`, { params });
   }
 
-  getByCategory(category: BookCategory): Observable<Book[]> {
-    return this.http.get<Book[]>(`${this.apiUrl}/category/${category}`);
+  getByCategory(categorieId: number): Observable<Book[]> {
+    return this.http.get<Book[]>(`${this.apiUrl}/category/${categorieId}`);
   }
 
   getAvailable(): Observable<Book[]> {

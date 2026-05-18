@@ -23,23 +23,29 @@ export const CATEGORY_LABELS: Record<BookCategory, string> = {
   AUTRE: 'Autre',
 };
 
-export interface Book {
-  id: number;
-  title: string;
-  author: string;
-  isbn: string;
-  category: BookCategory;
-  description: string;
-  coverUrl: string;
-  totalCopies: number;
-  availableCopies: number;
-  averageRating: number;
-  ratingCount: number;
-  datePublication?: string;
-  idCategory?: number;
-  idStatus?: number;
-  nbCopies: number;
-  nbAvailables: number;
-
+export interface Categorie {
+  id?: number;
+  nom?: string;
+  description?: string;
 }
 
+export interface Statut {
+  id?: number;
+  libelle?: string;
+}
+
+export interface Book {
+  id: number;
+  titre: string;
+  auteur: string;
+  isbn?: string;
+  description?: string;
+  couverture?: string;
+  datePublication?: string;
+  nbExemplaires: number;
+  nbDisponibles: number;
+  noteMoyenne?: number;
+  dateAjout?: string;
+  categorie?: Categorie;
+  statut?: Statut;
+}
