@@ -3,6 +3,7 @@ package com.example.backend.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,8 +32,8 @@ public class Utilisateur {
     @Column(length = 20)
     private String telephone;
 
-    @Column(name = "dateInscription", nullable = false, updatable = false)
-    private LocalDateTime dateInscription;
+    @Column(name = "dateInscription", insertable = false, updatable = false)
+    private LocalDate dateInscription;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_role", nullable = false)
@@ -70,8 +71,8 @@ public class Utilisateur {
     public String getTelephone() { return telephone; }
     public void setTelephone(String telephone) { this.telephone = telephone; }
 
-    public LocalDateTime getDateInscription() { return dateInscription; }
-    public void setDateInscription(LocalDateTime dateInscription) { this.dateInscription = dateInscription; }
+    public LocalDate getDateInscription() { return dateInscription; }
+    public void setDateInscription(LocalDate dateInscription) { this.dateInscription = dateInscription; }
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
