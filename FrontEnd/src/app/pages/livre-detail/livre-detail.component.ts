@@ -103,7 +103,7 @@ export class LivreDetailComponent implements OnInit {
         this.actionMsg.set(`Réservation enregistrée — vous êtes n°${r.positionFileAttente} dans la file.`);
         this.isActing.set(false);
       },
-      error: (e: any) => { this.actionErr.set(e.error ?? 'Erreur lors de la réservation.'); this.isActing.set(false); },
+      error: (e: any) => { this.actionErr.set(e.error?.error ?? 'Erreur lors de la réservation.'); this.isActing.set(false); },
     });
   }
 
@@ -112,7 +112,7 @@ export class LivreDetailComponent implements OnInit {
     if (!id) return;
     this.bookService.delete(id).subscribe({
       next: () => this.router.navigate(['/catalogue']),
-      error: (e: any) => this.actionErr.set(e.error ?? 'Erreur lors de la suppression.'),
+      error: (e: any) => this.actionErr.set(e.error?.error ?? 'Erreur lors de la suppression.'),
     });
   }
 

@@ -61,7 +61,7 @@
     } @else {
       <div class="books-grid">
         @for (livre of featuredLivres(); track livre.id) {
-          <article class="book-card" [routerLink]="['/catalogue']">
+          <article class="book-card" [routerLink]="['/catalogue', livre.id]">
             <div class="book-cover" [class.no-cover]="!livre.couverture">
               @if (livre.couverture) {
                 <img [src]="livre.couverture" [alt]="livre.titre" loading="lazy" />

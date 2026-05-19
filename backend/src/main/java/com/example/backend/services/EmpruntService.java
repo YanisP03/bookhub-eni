@@ -47,6 +47,9 @@ public class EmpruntService {
         if (nbActifs >= MAX_EMPRUNTS_ACTIFS)
             throw new BusinessException("Vous avez atteint la limite de " + MAX_EMPRUNTS_ACTIFS + " emprunts simultanés.");
 
+        if (empruntRepository.hasEmpruntActifPourLivre(user, livre))
+            throw new BusinessException("Vous avez déjà un emprunt en cours pour ce livre.");
+
         if (livre.getNbDisponibles() <= 0)
             throw new BusinessException("Aucun exemplaire disponible pour ce livre.");
 
@@ -167,7 +170,7 @@ public class EmpruntService {
     }
 
     private Statut getStatut(String libelle) {
-        return statutRepository.findByLibelle(libelle)
+        return statutRepository.findFirstByLibelle(libelle)
                 .orElseThrow(() -> new ResourceNotFoundException("Statut introuvable : " + libelle));
     }
 }

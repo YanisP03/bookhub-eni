@@ -96,13 +96,13 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private Role getOrCreateRole(String libelle) {
-        return roleRepository.findByLibelle(libelle).orElseGet(() -> {
+        return roleRepository.findFirstByLibelle(libelle).orElseGet(() -> {
             Role r = new Role(); r.setLibelle(libelle); return roleRepository.save(r);
         });
     }
 
     private Statut getOrCreateStatut(String libelle) {
-        return statutRepository.findByLibelle(libelle).orElseGet(() -> {
+        return statutRepository.findFirstByLibelle(libelle).orElseGet(() -> {
             Statut s = new Statut(); s.setLibelle(libelle); return statutRepository.save(s);
         });
     }

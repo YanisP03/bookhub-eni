@@ -85,7 +85,7 @@ public class ReservationService {
     }
 
     private Statut getStatut(String libelle) {
-        return statutRepository.findByLibelle(libelle)
+        return statutRepository.findFirstByLibelle(libelle)
                 .orElseThrow(() -> new ResourceNotFoundException("Statut introuvable : " + libelle));
     }
 }

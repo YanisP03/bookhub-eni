@@ -38,8 +38,8 @@ public class DashboardService {
         long livresEmpruntes = totalLivres - livresDisponibles;
         long totalUtilisateurs = utilisateurRepository.count();
 
-        Statut enCours = statutRepository.findByLibelle("EN_COURS").orElse(null);
-        Statut enAttente = statutRepository.findByLibelle("EN_ATTENTE").orElse(null);
+        Statut enCours = statutRepository.findFirstByLibelle("EN_COURS").orElse(null);
+        Statut enAttente = statutRepository.findFirstByLibelle("EN_ATTENTE").orElse(null);
 
         long empruntsEnCours = 0;
         long empruntsEnRetard = 0;
