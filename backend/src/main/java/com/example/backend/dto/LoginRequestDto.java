@@ -1,8 +1,7 @@
-package com.example.backend.model.entity.dto;
+package com.example.backend.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import org.jspecify.annotations.Nullable;
 
 public class LoginRequestDto {
     @NotBlank(message = "L'email est obligatoire")

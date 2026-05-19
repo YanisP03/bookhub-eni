@@ -1,10 +1,9 @@
 package com.example.backend.controller;
 
 import com.example.backend.config.JwtUtils;
-import com.example.backend.model.entity.Utilisateur;
-import com.example.backend.model.entity.dto.LoginRequestDto;
-import com.example.backend.model.entity.dto.LoginResponseDto;
-import com.example.backend.model.entity.dto.RegisterRequestDto;
+import com.example.backend.dto.LoginRequestDto;
+import com.example.backend.dto.LoginResponseDto;
+import com.example.backend.dto.RegisterRequestDto;
 import com.example.backend.services.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

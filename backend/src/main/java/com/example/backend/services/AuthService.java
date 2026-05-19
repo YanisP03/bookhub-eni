@@ -1,6 +1,6 @@
 package com.example.backend.services;
 
-import com.example.backend.model.entity.dto.RegisterRequestDto;
+import com.example.backend.dto.RegisterRequestDto;
 import com.example.backend.model.entity.Role;
 import com.example.backend.model.entity.Utilisateur;
 import com.example.backend.repository.RoleRepository;

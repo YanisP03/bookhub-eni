@@ -1,4 +1,4 @@
-package com.example.backend.model.entity.dto;
+package com.example.backend.dto;
 
 public class ProfilUpdateDto {
     private String nom;

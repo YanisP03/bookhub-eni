@@ -1,4 +1,4 @@
-package com.example.backend.model.entity.dto;
+package com.example.backend.dto;
 
 public class LoginResponseDto {
     private String token;

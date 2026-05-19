@@ -1,7 +1,7 @@
 package com.example.backend.services;
 
-import com.example.backend.model.entity.dto.AvisRequestDTO;
-import com.example.backend.model.entity.dto.AvisResponseDTO;
+import com.example.backend.dto.AvisRequestDTO;
+import com.example.backend.dto.AvisResponseDTO;
 import com.example.backend.model.entity.Avis;
 import com.example.backend.model.entity.Livre;
 import com.example.backend.model.entity.Utilisateur;
