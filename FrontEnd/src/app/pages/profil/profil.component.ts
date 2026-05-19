@@ -1,11 +1,13 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import { ProfilService, UtilisateurProfil } from '../../services/profil.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-profil',
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink, DatePipe],
   templateUrl: './profil.component.html',
   styleUrl: './profil.component.css',
 })

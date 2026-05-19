@@ -1,5 +1,7 @@
 package com.example.backend.dto;
 
+import java.time.LocalDate;
+
 public class UtilisateurDto {
 
     private Integer id;
@@ -8,16 +10,18 @@ public class UtilisateurDto {
     private String mail;
     private String telephone;
     private String roleLibelle;
+    private LocalDate dateInscription;
 
     public UtilisateurDto() {}
 
-    public UtilisateurDto(Integer id, String nom, String prenom, String mail, String telephone, String roleLibelle) {
+    public UtilisateurDto(Integer id, String nom, String prenom, String mail, String telephone, String roleLibelle,  LocalDate dateInscription) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;
         this.mail = mail;
         this.telephone = telephone;
         this.roleLibelle = roleLibelle;
+        this.dateInscription = dateInscription;
     }
 
     public Integer getId() { return id; }
@@ -34,6 +38,9 @@ public class UtilisateurDto {
 
     public String getTelephone() { return telephone; }
     public void setTelephone(String telephone) { this.telephone = telephone; }
+
+    public LocalDate getDateInscription() { return dateInscription; }
+    public void setDateInscription(LocalDate dateInscription) { this.dateInscription = dateInscription; }
 
     public String getRoleLibelle() { return roleLibelle; }
     public void setRoleLibelle(String roleLibelle) { this.roleLibelle = roleLibelle; }

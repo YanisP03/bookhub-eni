@@ -63,7 +63,8 @@ public class UtilisateurService {
         return new UtilisateurDto(
                 u.getId(), u.getNom(), u.getPrenom(), u.getMail(),
                 u.getTelephone(),
-                u.getRole() != null ? u.getRole().getLibelle() : null
+                u.getRole() != null ? u.getRole().getLibelle() : null,
+                u.getDateInscription() != null ? u.getDateInscription().toLocalDate() : null
         );
     }
 }

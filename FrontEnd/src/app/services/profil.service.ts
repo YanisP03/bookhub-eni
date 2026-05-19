@@ -9,6 +9,7 @@ export interface UtilisateurProfil {
   mail: string;
   telephone?: string;
   roleLibelle: string;
+  dateInscription?: string | Date;
 }
 
 export interface DashboardStats {
