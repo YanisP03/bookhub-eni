@@ -77,6 +77,16 @@ public class LivreController {
         return livreService.findDisponibles();
     }
 
+    @GetMapping("/populaires")
+    public List<Livre> findPopulaires(@RequestParam(defaultValue = "5") int limit) {
+        return livreService.findPopulaires(limit);
+    }
+
+    @GetMapping("/mieux-notes")
+    public List<Livre> findMieuxNotes(@RequestParam(defaultValue = "4") int limit) {
+        return livreService.findMieuxNotes(limit);
+    }
+
     /**
      * Recherche avancée avec filtres optionnels
      * Endpoint : GET /api/livres/rechercher

@@ -49,6 +49,8 @@
 .action-title { font-size: .875rem; font-weight: 700; color: #0f2218; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .action-sub { font-size: .75rem; color: #64748b; }
 .action-comment { font-size: .75rem; color: #94a3b8; font-style: italic; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.action-row--retard { border-left: 3px solid #ef4444; background: #fff7f7; }
+.text-retard { color: #dc2626 !important; font-weight: 600; }
 .action-btns { display: flex; gap: .375rem; flex-shrink: 0; }
 .star { font-size: .6875rem; color: #d1d5db; }
 .star.full { color: #16a34a; }

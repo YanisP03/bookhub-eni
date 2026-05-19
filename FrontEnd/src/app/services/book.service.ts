@@ -10,6 +10,20 @@ export class BookService {
   private readonly apiUrl = 'http://localhost:8080/api/livres';
   private readonly baseUrl = 'http://localhost:8080/api';
 
+  getPopulaires(limit = 5): Observable<Book[]> {
+    return this.http.get<Book[]>(`${this.apiUrl}/populaires?limit=${limit}`);
+  }
+
+  getMieuxNotes(limit = 4): Observable<Book[]> {
+    return this.http.get<Book[]>(`${this.apiUrl}/mieux-notes?limit=${limit}`);
+  }
+
+  uploadCouverture(file: File): Observable<{ url: string }> {
+    const fd = new FormData();
+    fd.append('file', file);
+    return this.http.post<{ url: string }>('http://localhost:8080/api/upload/couverture', fd);
+  }
+
   getCategories(): Observable<Categorie[]> {
     return this.http.get<Categorie[]>(`${this.baseUrl}/categories`);
   }

@@ -19,10 +19,11 @@ export class LivreFormComponent implements OnInit {
   private readonly route        = inject(ActivatedRoute);
   private readonly router       = inject(Router);
 
-  isEditMode    = signal(false);
-  isLoading     = signal(true);
-  isSaving      = signal(false);
-  errorMessage  = signal<string | null>(null);
+  isEditMode     = signal(false);
+  isLoading      = signal(true);
+  isSaving       = signal(false);
+  isUploading    = signal(false);
+  errorMessage   = signal<string | null>(null);
   successMessage = signal<string | null>(null);
 
   categories = signal<Categorie[]>([]);
@@ -69,6 +70,17 @@ export class LivreFormComponent implements OnInit {
         this.errorMessage.set('Impossible de charger les données du formulaire.');
         this.isLoading.set(false);
       },
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    this.isUploading.set(true);
+    this.errorMessage.set(null);
+    this.livreService.uploadCouverture(input.files[0]).subscribe({
+      next: res => { this.livre.couverture = res.url; this.isUploading.set(false); },
+      error: (e: any) => { this.errorMessage.set(e.error?.error ?? 'Erreur lors du téléchargement.'); this.isUploading.set(false); },
     });
   }
 

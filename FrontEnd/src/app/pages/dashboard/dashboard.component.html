@@ -83,10 +83,16 @@
             } @else {
               <div class="action-list">
                 @for (e of retoursEnAttente(); track e.id) {
-                  <div class="action-row">
+                  <div class="action-row" [class.action-row--retard]="e.dateRetourPrevue && formatDate(e.dateRetourPrevue) < formatDate(today)">
                     <div class="action-info">
                       <span class="action-title">{{ e.livre.titre }}</span>
-                      <span class="action-sub">{{ e.utilisateur?.prenom }} {{ e.utilisateur?.nom }} · prévu le {{ formatDate(e.dateRetourPrevue ?? '') }}</span>
+                      <span class="action-sub">{{ e.utilisateur?.prenom }} {{ e.utilisateur?.nom }}</span>
+                      @if (e.dateRetourPrevue) {
+                        <span class="action-sub" [class.text-retard]="e.dateRetourPrevue < today">
+                          Prévu le {{ formatDate(e.dateRetourPrevue) }}
+                          @if (e.dateRetourPrevue < today) { · <strong>EN RETARD</strong> }
+                        </span>
+                      }
                     </div>
                     <div class="action-btns">
                       <button class="btn-ok" (click)="validerRetour(e.id)">Confirmer retour</button>

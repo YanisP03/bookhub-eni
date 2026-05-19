@@ -111,6 +111,11 @@ public interface LivreRepository extends JpaRepository<Livre, Integer> {
     @Query("SELECT CASE WHEN COUNT(l) > 0 THEN true ELSE false END FROM Livre l WHERE l.isbn = :isbn AND (:id IS NULL OR l.id != :id)")
     boolean existsByIsbnAndIdNot(@Param("isbn") String isbn, @Param("id") Integer id);
 
+    @Query("SELECT l FROM Livre l ORDER BY (SELECT COUNT(e) FROM Emprunt e WHERE e.livre = l) DESC")
+    List<Livre> findOrderedByBorrowCount();
+
+    List<Livre> findByNoteMoyenneIsNotNullOrderByNoteMoyenneDesc();
+
     /**
      * Recherche full-text sur titre, auteur et ISBN.
      */

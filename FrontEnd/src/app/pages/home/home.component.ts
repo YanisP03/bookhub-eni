@@ -18,8 +18,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly auth = inject(AuthService);
   private readonly destroy$ = new Subject<void>();
 
-  featuredLivres = signal<Book[]>([]);
-  isLoading = signal(true);
+  featuredLivres  = signal<Book[]>([]);
+  populaires      = signal<Book[]>([]);
+  mieuxNotes      = signal<Book[]>([]);
+  isLoading       = signal(true);
 
   readonly categories = signal<CategoryItem[]>([
     { key: 'Roman',          label: 'Roman',          icon: '📖' },
@@ -35,9 +37,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   ]);
 
   ngOnInit(): void {
-    this.bookService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
-      next: livres => { this.featuredLivres.set(livres.slice(0, 6)); this.isLoading.set(false); },
+    this.bookService.getPopulaires(5).pipe(takeUntil(this.destroy$)).subscribe({
+      next: livres => { this.populaires.set(livres); this.isLoading.set(false); },
       error: () => { this.isLoading.set(false); },
+    });
+    this.bookService.getMieuxNotes(4).pipe(takeUntil(this.destroy$)).subscribe({
+      next: livres => this.mieuxNotes.set(livres),
+    });
+    this.bookService.getAll().pipe(takeUntil(this.destroy$)).subscribe({
+      next: livres => this.featuredLivres.set(livres.slice(0, 6)),
     });
   }
 

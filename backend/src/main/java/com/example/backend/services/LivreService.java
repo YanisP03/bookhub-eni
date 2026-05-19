@@ -131,6 +131,16 @@ public class LivreService {
     }
 
     @Transactional(readOnly = true)
+    public List<Livre> findPopulaires(int limit) {
+        return livreRepository.findOrderedByBorrowCount().stream().limit(limit).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Livre> findMieuxNotes(int limit) {
+        return livreRepository.findByNoteMoyenneIsNotNullOrderByNoteMoyenneDesc().stream().limit(limit).toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<Livre> rechercher(String titre, Integer idCategorie, Boolean disponible) {
         return livreRepository.rechercher(titre, idCategorie, disponible);
     }

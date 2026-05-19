@@ -31,6 +31,8 @@ export class DashboardComponent implements OnInit {
   retourMsg        = signal<string | null>(null);
   fileAttenteMsg   = signal<string | null>(null);
 
+  readonly today = new Date().toISOString();
+
   // Formulaire création bibliothécaire
   biblio = { nom: '', prenom: '', mail: '', motDePasse: '' };
   biblioMsg  = signal<string | null>(null);

@@ -1,42 +1,161 @@
-<!-- MASTHEAD -->
+<!-- ══════════════════════════════════════════
+     MASTHEAD
+══════════════════════════════════════════ -->
 <div class="masthead">
   <div class="masthead-inner">
     <div class="masthead-left">
       <p class="masthead-eyebrow">Bibliothèque du Quartier Solidaire</p>
-      <h1 class="masthead-title">Des livres<br>pour tous.</h1>
-      <p class="masthead-meta">
-        <span>1 200 titres</span><span class="sep">·</span>
-        <span>10 catégories</span><span class="sep">·</span>
-        <span>Accès gratuit</span>
-      </p>
+      <h1 class="masthead-title">Votre prochaine<br>lecture vous attend.</h1>
+      <p class="masthead-sub">1 200 titres à emprunter gratuitement, jusqu'à 3 livres · 14 jours.</p>
+      <div class="masthead-actions">
+        <a routerLink="/catalogue" class="btn-cta">Explorer le catalogue</a>
+        @if (!auth.isLoggedIn()) {
+          <a routerLink="/inscription" class="btn-ghost">Rejoindre gratuitement →</a>
+        }
+      </div>
     </div>
-    <div class="masthead-right">
-      <a routerLink="/catalogue" class="btn-explore">Explorer le catalogue</a>
-      @if (!auth.isLoggedIn()) {
-        <a routerLink="/inscription" class="btn-join">Créer un compte →</a>
-      } @else {
-        <a routerLink="/mon-espace" class="btn-join">Mon espace →</a>
-      }
+    <div class="masthead-kpis">
+      <div class="kpi"><span class="kpi-n">1 200</span><span class="kpi-l">Titres</span></div>
+      <div class="kpi"><span class="kpi-n">350</span><span class="kpi-l">Membres</span></div>
+      <div class="kpi"><span class="kpi-n">4 800</span><span class="kpi-l">Emprunts</span></div>
     </div>
   </div>
 </div>
 
-<!-- SHELF -->
-<section class="shelf">
-  <div class="shelf-head">
-    <h2 class="shelf-title">À la une</h2>
-    <a routerLink="/catalogue" class="shelf-link">Tout le catalogue →</a>
-  </div>
+<!-- ══════════════════════════════════════════
+     TENDANCES — les plus empruntés
+══════════════════════════════════════════ -->
+<section class="section-tendances">
+  <div class="page-wrap">
 
-  @if (isLoading()) {
-    <div class="shelf-track">
-      @for (_ of [1,2,3,4,5,6]; track $index) {
-        <div class="shelf-item skeleton"></div>
-      }
+    <div class="section-label">
+      <span class="label-pill">🔥 Tendances</span>
+      <h2 class="section-h">Les plus empruntés</h2>
+      <a routerLink="/catalogue" class="see-all">Tout voir →</a>
     </div>
-  } @else if (featuredLivres().length === 0) {
-    <p class="shelf-empty">Aucun livre pour le moment — vérifiez que le serveur est démarré.</p>
-  } @else {
+
+    @if (isLoading()) {
+      <div class="tendances-grid">
+        @for (_ of [1,2,3,4,5]; track $index) { <div class="t-card skeleton"></div> }
+      </div>
+    } @else if (populaires().length === 0) {
+      <p class="empty-hint">Aucune donnée d'emprunt — ajoutez des livres et empruntez-les !</p>
+    } @else {
+      <div class="tendances-grid">
+
+        <!-- N°1 — carte héro -->
+        @if (populaires()[0]; as top) {
+          <a class="t-hero" [routerLink]="['/catalogue', top.id]">
+            <div class="t-hero-cover">
+              @if (top.couverture) {
+                <img [src]="top.couverture" [alt]="top.titre" />
+              } @else {
+                <div class="t-no-cover"><span>📖</span><p>{{ top.titre }}</p></div>
+              }
+              <div class="rank-badge">N°1</div>
+              <div class="t-hero-overlay">
+                <span class="t-cat">{{ top.categorie?.nom }}</span>
+                <h3 class="t-hero-title">{{ top.titre }}</h3>
+                <p class="t-hero-author">{{ top.auteur }}</p>
+                <div class="t-stars">
+                  @for (star of getStars(top.noteMoyenne); track $index) {
+                    <span class="star" [class.full]="star==='full'" [class.half]="star==='half'">★</span>
+                  }
+                </div>
+                <span class="t-dispo" [class.ok]="top.nbDisponibles > 0">
+                  {{ top.nbDisponibles > 0 ? top.nbDisponibles + ' exemplaire(s) dispo.' : 'Momentanément emprunté' }}
+                </span>
+              </div>
+            </div>
+          </a>
+        }
+
+        <!-- N°2 à N°5 — cartes compactes -->
+        <div class="t-list">
+          @for (livre of populaires().slice(1, 5); track livre.id; let i = $index) {
+            <a class="t-item" [routerLink]="['/catalogue', livre.id]">
+              <span class="t-rank">{{ i + 2 }}</span>
+              <div class="t-thumb">
+                @if (livre.couverture) {
+                  <img [src]="livre.couverture" [alt]="livre.titre" />
+                } @else {
+                  <span class="t-thumb-icon">📖</span>
+                }
+              </div>
+              <div class="t-info">
+                <p class="t-title">{{ livre.titre }}</p>
+                <p class="t-author">{{ livre.auteur }}</p>
+                <div class="t-stars-sm">
+                  @for (star of getStars(livre.noteMoyenne); track $index) {
+                    <span class="star" [class.full]="star==='full'">★</span>
+                  }
+                </div>
+              </div>
+              <span class="t-badge" [class.t-badge-ok]="livre.nbDisponibles > 0" [class.t-badge-no]="livre.nbDisponibles === 0">
+                {{ livre.nbDisponibles > 0 ? 'Dispo.' : 'Emprunté' }}
+              </span>
+            </a>
+          }
+        </div>
+
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     MIEUX NOTÉS
+══════════════════════════════════════════ -->
+@if (mieuxNotes().length > 0) {
+  <section class="section-notes">
+    <div class="page-wrap">
+      <div class="section-label">
+        <span class="label-pill label-gold">⭐ Coups de cœur</span>
+        <h2 class="section-h">Les mieux notés</h2>
+      </div>
+      <div class="notes-grid">
+        @for (livre of mieuxNotes(); track livre.id) {
+          <a class="n-card" [routerLink]="['/catalogue', livre.id]">
+            <div class="n-cover">
+              @if (livre.couverture) {
+                <img [src]="livre.couverture" [alt]="livre.titre" />
+              } @else {
+                <span class="n-icon">📖</span>
+              }
+            </div>
+            <div class="n-info">
+              <span class="n-cat">{{ livre.categorie?.nom }}</span>
+              <p class="n-title">{{ livre.titre }}</p>
+              <p class="n-author">{{ livre.auteur }}</p>
+              <div class="n-rating">
+                <div class="n-stars">
+                  @for (star of getStars(livre.noteMoyenne); track $index) {
+                    <span class="star" [class.full]="star==='full'" [class.half]="star==='half'">★</span>
+                  }
+                </div>
+                <span class="n-score">{{ livre.noteMoyenne?.toFixed(1) }}</span>
+              </div>
+              <span class="n-dispo" [class.ok]="livre.nbDisponibles > 0">
+                {{ livre.nbDisponibles > 0 ? 'Disponible' : 'Emprunté' }}
+              </span>
+            </div>
+          </a>
+        }
+      </div>
+    </div>
+  </section>
+}
+
+<!-- ══════════════════════════════════════════
+     NOUVELLES ACQUISITIONS
+══════════════════════════════════════════ -->
+<section class="section-shelf">
+  <div class="page-wrap">
+    <div class="section-label">
+      <span class="label-pill label-green">✨ Nouveautés</span>
+      <h2 class="section-h">Dernières acquisitions</h2>
+      <a routerLink="/catalogue" class="see-all">Tout voir →</a>
+    </div>
     <div class="shelf-track">
       @for (livre of featuredLivres(); track livre.id) {
         <a class="shelf-item" [routerLink]="['/catalogue', livre.id]">
@@ -44,10 +163,7 @@
             @if (livre.couverture) {
               <img [src]="livre.couverture" [alt]="livre.titre" loading="lazy" />
             } @else {
-              <div class="shelf-no-cover">
-                <span>📖</span>
-                <p>{{ livre.titre }}</p>
-              </div>
+              <div class="shelf-no-cover"><span>📖</span><p>{{ livre.titre }}</p></div>
             }
             @if (livre.nbDisponibles === 0) {
               <span class="shelf-pill">Emprunté</span>
@@ -59,34 +175,43 @@
         </a>
       }
     </div>
-  }
-</section>
-
-<!-- GENRES -->
-<section class="genres">
-  <h2 class="genres-title">Parcourir par genre</h2>
-  <div class="genres-list">
-    @for (cat of categories(); track cat.key) {
-      <a [routerLink]="['/catalogue']" [queryParams]="{ category: cat.key }" class="genre-tag">
-        {{ cat.icon }}&nbsp;{{ cat.label }}
-      </a>
-    }
   </div>
 </section>
 
-<!-- BANDE D'INSCRIPTION -->
+<!-- ══════════════════════════════════════════
+     GENRES
+══════════════════════════════════════════ -->
+<section class="section-genres">
+  <div class="page-wrap">
+    <p class="genres-eyebrow">Parcourir par genre</p>
+    <div class="genres-list">
+      @for (cat of categories(); track cat.key) {
+        <a [routerLink]="['/catalogue']" [queryParams]="{ category: cat.key }" class="genre-tag">
+          {{ cat.icon }}&nbsp;{{ cat.label }}
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     JOIN STRIP
+══════════════════════════════════════════ -->
 @if (!auth.isLoggedIn()) {
   <div class="join-strip">
-    <div class="join-strip-inner">
-      <p class="join-text">Empruntez jusqu'à <strong>3 livres</strong> simultanément, <strong>14 jours</strong>, gratuitement.</p>
-      <a routerLink="/inscription" class="btn-join-strip">Rejoindre BookHub</a>
+    <div class="page-wrap join-inner">
+      <div>
+        <p class="join-title">Prêt à lire ?</p>
+        <p class="join-sub">Inscription gratuite · 3 livres simultanés · 14 jours</p>
+      </div>
+      <a routerLink="/inscription" class="btn-cta">Créer mon compte</a>
     </div>
   </div>
 }
 
 <!-- FOOTER -->
 <footer class="footer">
-  <div class="footer-inner">
+  <div class="page-wrap footer-inner">
     <span class="footer-brand">📚 BookHub</span>
     <nav class="footer-nav">
       <a routerLink="/catalogue">Catalogue</a>
