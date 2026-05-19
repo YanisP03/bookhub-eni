@@ -15,22 +15,18 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-/**
- * @deprecated Utilisez RetourService à la place.
- */
-@Deprecated
 @Service
-public class LoanService {
+public class RetourService {
 
     private final RetourRepository retourRepository;
     private final ReservationRepository reservationRepository;
     private final LivreRepository livreRepository;
     private final StatutRepository statutRepository;
 
-    public LoanService(RetourRepository retourRepository,
-                       ReservationRepository reservationRepository,
-                       LivreRepository livreRepository,
-                       StatutRepository statutRepository) {
+    public RetourService(RetourRepository retourRepository,
+                         ReservationRepository reservationRepository,
+                         LivreRepository livreRepository,
+                         StatutRepository statutRepository) {
         this.retourRepository = retourRepository;
         this.reservationRepository = reservationRepository;
         this.livreRepository = livreRepository;
@@ -55,24 +51,34 @@ public class LoanService {
             retour.setJoursDeRetard(0);
         }
 
-        retour.setStatut(statutRepository.findFirstByLibelle("RENDU")
-                .orElseThrow(() -> new RuntimeException("Statut RENDU introuvable")));
+        Statut statutRendu = statutRepository.findFirstByLibelle("RENDU")
+                .orElseThrow(() -> new RuntimeException("Statut RENDU introuvable"));
+        retour.setStatut(statutRendu);
 
         Livre livre = retour.getLivre();
+        Integer livreId = livre.getId();
+
         List<Reservation> fileAttente = reservationRepository
-                .findByLivreIdAndStatutLibelleOrderByPositionFileAttenteAsc(livre.getId(), "EN_ATTENTE");
+                .findByLivreIdAndStatutLibelleOrderByPositionFileAttenteAsc(livreId, "EN_ATTENTE");
 
         if (!fileAttente.isEmpty()) {
-            fileAttente.get(0).setStatut(statutRepository.findFirstByLibelle("NOTIFIEE")
-                    .orElseThrow(() -> new RuntimeException("Statut NOTIFIEE introuvable")));
+            fileAttente.get(0).setStatut(
+                statutRepository.findFirstByLibelle("NOTIFIEE")
+                    .orElseThrow(() -> new RuntimeException("Statut NOTIFIEE introuvable"))
+            );
             for (int i = 1; i < fileAttente.size(); i++)
                 fileAttente.get(i).setPositionFileAttente(fileAttente.get(i).getPositionFileAttente() - 1);
             reservationRepository.saveAll(fileAttente);
-            livre.setStatut(statutRepository.findFirstByLibelle("EMPRUNTE")
-                    .orElseThrow(() -> new RuntimeException("Statut EMPRUNTE introuvable")));
+
+            livre.setStatut(
+                statutRepository.findFirstByLibelle("EMPRUNTE")
+                    .orElseThrow(() -> new RuntimeException("Statut EMPRUNTE introuvable"))
+            );
         } else {
-            livre.setStatut(statutRepository.findFirstByLibelle("DISPONIBLE")
-                    .orElseThrow(() -> new RuntimeException("Statut DISPONIBLE introuvable")));
+            livre.setStatut(
+                statutRepository.findFirstByLibelle("DISPONIBLE")
+                    .orElseThrow(() -> new RuntimeException("Statut DISPONIBLE introuvable"))
+            );
         }
 
         livreRepository.save(livre);
