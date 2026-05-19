@@ -78,6 +78,12 @@ public class ReservationService {
     }
 
     @Transactional(readOnly = true)
+    public List<Reservation> getFileAttente() {
+        Statut enAttente = getStatut("EN_ATTENTE");
+        return reservationRepository.findByStatutOrderByLivreTitreAscPositionFileAttenteAsc(enAttente);
+    }
+
+    @Transactional(readOnly = true)
     public List<Reservation> getMesReservations(String mail) {
         Utilisateur user = utilisateurRepository.findByMail(mail)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
@@ -85,7 +91,7 @@ public class ReservationService {
     }
 
     private Statut getStatut(String libelle) {
-        return statutRepository.findByLibelle(libelle)
+        return statutRepository.findFirstByLibelle(libelle)
                 .orElseThrow(() -> new ResourceNotFoundException("Statut introuvable : " + libelle));
     }
 }

@@ -40,7 +40,7 @@ public class AuthService {
         user.setMotDePasse(passwordEncoder.encode(registerDto.getMotDePasse()));
 
         // Récupération du rôle LECTEUR
-        Role roleLecteur = roleRepository.findByLibelle("LECTEUR")
+        Role roleLecteur = roleRepository.findFirstByLibelle("LECTEUR")
                 .orElseThrow(() -> new RuntimeException("Erreur : Le rôle LECTEUR n'existe pas en base"));
 
         user.setRole(roleLecteur);

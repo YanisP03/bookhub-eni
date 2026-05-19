@@ -2,8 +2,11 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.ChangerMotDePasseDto;
 import com.example.backend.dto.ProfilUpdateDto;
+import com.example.backend.dto.RegisterRequestDto;
 import com.example.backend.dto.UtilisateurDto;
 import com.example.backend.services.UtilisateurService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -43,5 +46,15 @@ public class UtilisateurController {
                                              Authentication auth) {
         utilisateurService.supprimerCompte(auth.getName(), body.get("motDePasse"));
         return ResponseEntity.ok(Map.of("message", "Compte supprimé."));
+    }
+
+    @PostMapping("/bibliothecaire")
+    public ResponseEntity<UtilisateurDto> creerBibliothecaire(@Valid @RequestBody RegisterRequestDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(utilisateurService.creerBibliothecaire(dto));
+    }
+
+    @PutMapping("/bibliothecaire/promouvoir")
+    public ResponseEntity<UtilisateurDto> promouvoirBibliothecaire(@RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(utilisateurService.promouvoirBibliothecaire(body.get("mail")));
     }
 }

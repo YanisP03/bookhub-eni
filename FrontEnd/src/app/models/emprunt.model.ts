@@ -16,5 +16,6 @@ export interface Reservation {
   dateReservation: string;
   positionFileAttente: number;
   livre: Book;
+  utilisateur?: { id: number; nom: string; prenom: string; mail: string };
   statut: { id: number; libelle: string };
 }

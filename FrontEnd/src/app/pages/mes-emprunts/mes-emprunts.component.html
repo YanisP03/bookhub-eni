@@ -131,13 +131,19 @@
                   <span>Réservé le {{ formatDate(r.dateReservation) }}</span>
                   <span class="separator">·</span>
                   @if (r.statut.libelle === 'NOTIFIEE') {
-                    <strong class="text-success">📬 Livre disponible — empruntez-le !</strong>
+                    <strong class="text-success">📬 Livre disponible !</strong>
                   } @else {
                     <span>Position {{ r.positionFileAttente }} dans la file</span>
                   }
                 </div>
               </div>
-              <button class="btn-annuler" (click)="annulerReservation(r.id)">Annuler</button>
+              @if (r.statut.libelle === 'NOTIFIEE') {
+                <button class="btn-rendre" (click)="emprunterDepuisReservation(r.livre.id, r.id)">
+                  📖 Emprunter
+                </button>
+              } @else {
+                <button class="btn-annuler" (click)="annulerReservation(r.id)">Annuler</button>
+              }
             </div>
           }
         </div>

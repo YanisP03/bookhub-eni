@@ -35,6 +35,10 @@ export class EmpruntService {
     return this.http.put<Emprunt>(`${this.baseUrl}/emprunts/${empruntId}/refuser`, {});
   }
 
+  getFileAttente(): Observable<Reservation[]> {
+    return this.http.get<Reservation[]>(`${this.baseUrl}/reservations/file-attente`);
+  }
+
   // ── Réservations ───────────────────────────────────────────────────────────
 
   getMesReservations(): Observable<Reservation[]> {

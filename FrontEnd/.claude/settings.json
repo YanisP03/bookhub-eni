@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\" -Recurse -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -match \"^\\(db|migrations|schema|sql|flyway|liquibase\\)$\" } | Select-Object -ExpandProperty FullName)"
+    ]
+  }
+}

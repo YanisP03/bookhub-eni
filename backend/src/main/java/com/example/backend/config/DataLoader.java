@@ -35,6 +35,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) {
         // Rôles
         Role roleLecteur = getOrCreateRole("LECTEUR");
+        getOrCreateRole("BIBLIOTHECAIRE");
         Role roleAdmin   = getOrCreateRole("ADMIN");
 
         // Statuts livre
@@ -44,12 +45,12 @@ public class DataLoader implements CommandLineRunner {
         getOrCreateStatut("DEMANDE");
         getOrCreateStatut("EN_COURS");
         getOrCreateStatut("RENDU");
-        getOrCreateStatut("EN_RETARD");
         getOrCreateStatut("ANNULE");
         // Statuts réservation
         getOrCreateStatut("EN_ATTENTE");
         getOrCreateStatut("ANNULEE");
         getOrCreateStatut("NOTIFIEE");
+        getOrCreateStatut("CONVERTIE");
 
         // Utilisateurs de test (créés une seule fois)
         if (!utilisateurRepository.existsByMail("admin@bookhub.fr")) {
@@ -95,13 +96,13 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private Role getOrCreateRole(String libelle) {
-        return roleRepository.findByLibelle(libelle).orElseGet(() -> {
+        return roleRepository.findFirstByLibelle(libelle).orElseGet(() -> {
             Role r = new Role(); r.setLibelle(libelle); return roleRepository.save(r);
         });
     }
 
     private Statut getOrCreateStatut(String libelle) {
-        return statutRepository.findByLibelle(libelle).orElseGet(() -> {
+        return statutRepository.findFirstByLibelle(libelle).orElseGet(() -> {
             Statut s = new Statut(); s.setLibelle(libelle); return statutRepository.save(s);
         });
     }

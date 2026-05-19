@@ -21,29 +21,13 @@
         </div>
 
         <div class="action-zone">
-          @if ((livre.nbDisponibles ?? 0) > 0) {
+          @if (livre.nbDisponibles > 0) {
             <button class="btn-action btn-success" (click)="emprunter(livre.id)">Emprunter le livre</button>
           } @else {
             <button class="btn-action btn-primary" (click)="reserver(livre.id)">Réservez maintenant</button>
             <p class="text-info">💡 Ce livre est victime de son succès, réservez-le pour être prioritaire.</p>
           }
         </div>
-
-        <section class="avis-section">
-          <h3>Avis des lecteurs ({{ livre.commentaires?.length || 0 }})</h3>
-
-          @for (avis of livre.commentaires; track $index) {
-            <div class="avis-card">
-              <div class="avis-meta">
-                <span class="avis-pseudo">👤 {{ avis.pseudo || 'Lecteur Anonyme' }}</span>
-                <span class="avis-note">★ {{ avis.note }}/5</span>
-              </div>
-              <p class="avis-text">{{ avis.commentaire }}</p>
-            </div>
-          } @empty {
-            <p class="no-avis">Aucun avis n'a été publié pour ce livre pour le moment.</p>
-          }
-        </section>
 
       </article>
     </main>

@@ -9,6 +9,7 @@ export interface UtilisateurProfil {
   mail: string;
   telephone?: string;
   roleLibelle: string;
+  dateInscription?: string | Date;
 }
 
 export interface DashboardStats {
@@ -44,5 +45,13 @@ export class ProfilService {
 
   getDashboardStats(): Observable<DashboardStats> {
     return this.http.get<DashboardStats>(`${this.base}/dashboard/stats`);
+  }
+
+  creerBibliothecaire(data: { nom: string; prenom: string; mail: string; motDePasse: string }): Observable<unknown> {
+    return this.http.post(`${this.base}/utilisateurs/bibliothecaire`, data);
+  }
+
+  promouvoirBibliothecaire(mail: string): Observable<unknown> {
+    return this.http.put(`${this.base}/utilisateurs/bibliothecaire/promouvoir`, { mail });
   }
 }

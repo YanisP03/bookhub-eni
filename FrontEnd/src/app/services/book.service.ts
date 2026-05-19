@@ -42,7 +42,7 @@ export class BookService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getLivreDetails  (id: number): Observable<LivreDto> {
-    return this.http.get<LivreDto>(`${this.apiUrl}/${id}/details`);
+  getLivreDetails(id: number): Observable<LivreDto> {
+    return this.http.get<LivreDto>(`${this.apiUrl}/${id}`);
   }
 }
