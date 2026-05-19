@@ -1,12 +1,12 @@
 package com.example.backend.services;
 
+import com.example.backend.dto.AvisRequestDTO;
+import com.example.backend.dto.AvisResponseDTO;
 import com.example.backend.exception.BusinessException;
 import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.model.entity.Avis;
 import com.example.backend.model.entity.Livre;
 import com.example.backend.model.entity.Utilisateur;
-import com.example.backend.model.entity.dto.AvisRequestDTO;
-import com.example.backend.model.entity.dto.AvisResponseDTO;
 import com.example.backend.repository.AvisRepository;
 import com.example.backend.repository.EmpruntRepository;
 import com.example.backend.repository.LivreRepository;
@@ -111,6 +111,7 @@ public class AvisService {
         return result;
     }
 
+    // ── Mapper entité → DTO ──────────────────────────────────────────────────
     private AvisResponseDTO toResponseDTO(Avis avis) {
         AvisResponseDTO dto = new AvisResponseDTO();
         dto.setId(avis.getId());

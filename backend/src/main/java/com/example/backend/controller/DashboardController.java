@@ -1,6 +1,6 @@
 package com.example.backend.controller;
 
-import com.example.backend.model.entity.dto.DashboardStatsDto;
+import com.example.backend.dto.DashboardStatsDto;
 import com.example.backend.services.DashboardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

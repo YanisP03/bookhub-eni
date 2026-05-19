@@ -2,7 +2,10 @@ package com.example.backend.services;
 
 import com.example.backend.exception.BusinessException;
 import com.example.backend.exception.ResourceNotFoundException;
-import com.example.backend.model.entity.*;
+import com.example.backend.model.entity.Livre;
+import com.example.backend.model.entity.Reservation;
+import com.example.backend.model.entity.Statut;
+import com.example.backend.model.entity.Utilisateur;
 import com.example.backend.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

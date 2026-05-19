@@ -1,8 +1,8 @@
 package com.example.backend.controller;
 
-import com.example.backend.model.entity.dto.ChangerMotDePasseDto;
-import com.example.backend.model.entity.dto.ProfilUpdateDto;
-import com.example.backend.model.entity.dto.UtilisateurDto;
+import com.example.backend.dto.ChangerMotDePasseDto;
+import com.example.backend.dto.ProfilUpdateDto;
+import com.example.backend.dto.UtilisateurDto;
 import com.example.backend.services.UtilisateurService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

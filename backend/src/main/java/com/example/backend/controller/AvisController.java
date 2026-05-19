@@ -1,7 +1,7 @@
 package com.example.backend.controller;
 
-import com.example.backend.model.entity.dto.AvisRequestDTO;
-import com.example.backend.model.entity.dto.AvisResponseDTO;
+import com.example.backend.dto.AvisRequestDTO;
+import com.example.backend.dto.AvisResponseDTO;
 import com.example.backend.services.AvisService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
