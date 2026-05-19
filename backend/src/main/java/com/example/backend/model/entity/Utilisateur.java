@@ -31,8 +31,9 @@ public class Utilisateur {
     @Column(length = 20)
     private String telephone;
 
-    @Column(name = "dateInscription", nullable = false, updatable = false)
-    private LocalDateTime dateInscription;
+    @Column(name = "dateInscription", nullable = false, updatable = false,
+            columnDefinition = "datetime2 DEFAULT GETDATE()")
+    private LocalDateTime dateInscription = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_role", nullable = false)

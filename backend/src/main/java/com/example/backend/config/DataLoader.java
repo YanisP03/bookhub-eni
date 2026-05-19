@@ -45,7 +45,6 @@ public class DataLoader implements CommandLineRunner {
         getOrCreateStatut("DEMANDE");
         getOrCreateStatut("EN_COURS");
         getOrCreateStatut("RENDU");
-        getOrCreateStatut("EN_RETARD");
         getOrCreateStatut("ANNULE");
         // Statuts réservation
         getOrCreateStatut("EN_ATTENTE");

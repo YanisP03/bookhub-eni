@@ -1,17 +1,17 @@
-.profil-page { min-height: 100vh; background: #f8fafc; }
-.page-header { background: linear-gradient(135deg,#1a2744,#243460); padding: 2.5rem 1.5rem; }
+.profil-page { min-height: 100vh; background: #f0fdf4; }
+.page-header { background: linear-gradient(135deg,#0f2218,#14532d); padding: 2.5rem 1.5rem; }
 .container { max-width: 680px; margin: 0 auto; padding: 0 1.5rem; }
 .page-title { font-size: 1.75rem; font-weight: 800; color: #fff; margin: 0 0 .25rem; }
-.page-sub { color: #94a3b8; margin: 0; }
+.page-sub { color: #a7f3d0; margin: 0; }
 .page-body { padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
 
-.profil-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.75rem; }
+.profil-card { background: #fff; border: 1px solid #d1fae5; border-radius: 16px; padding: 1.75rem; box-shadow: 0 1px 3px rgba(0,0,0,.04); }
 
 .card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-.avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#1a2744,#f59e0b); color: #fff; font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.card-header h2 { font-size: 1.25rem; font-weight: 700; color: #1a2744; margin: 0 0 .25rem; }
-.role-badge { font-size: .75rem; font-weight: 600; padding: .2rem .625rem; border-radius: 100px; background: #e0f2fe; color: #0369a1; }
-.role-badge.admin { background: #fef3c7; color: #92400e; }
+.avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#14532d,#16a34a); color: #fff; font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.card-header h2 { font-size: 1.25rem; font-weight: 700; color: #0f2218; margin: 0 0 .25rem; }
+.role-badge { font-size: .75rem; font-weight: 600; padding: .2rem .625rem; border-radius: 100px; background: #dcfce7; color: #15803d; }
+.role-badge.admin { background: #d1fae5; color: #065f46; }
 
 .alert { padding: .75rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: .9rem; font-weight: 500; }
 .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
@@ -20,16 +20,16 @@
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .875rem; }
 .form-group { margin-bottom: 1rem; }
 .form-group label { display: block; font-size: .875rem; font-weight: 600; color: #374151; margin-bottom: .375rem; }
-.form-control { width: 100%; padding: .625rem .875rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: .9375rem; box-sizing: border-box; transition: border-color .2s; }
-.form-control:focus { outline: none; border-color: #1a2744; box-shadow: 0 0 0 3px rgba(26,39,68,.1); }
-.form-control.disabled { background: #f8fafc; color: #94a3b8; cursor: not-allowed; }
+.form-control { width: 100%; padding: .625rem .875rem; border: 1px solid #bbf7d0; border-radius: 8px; font-size: .9375rem; box-sizing: border-box; transition: border-color .2s, box-shadow .2s; }
+.form-control:focus { outline: none; border-color: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,.12); }
+.form-control.disabled { background: #f0fdf4; color: #94a3b8; cursor: not-allowed; }
 .hint { font-size: .75rem; color: #94a3b8; margin-top: .25rem; display: block; }
-.btn-save { background: #1a2744; color: #fff; border: none; padding: .625rem 1.5rem; border-radius: 8px; font-size: .9375rem; font-weight: 700; cursor: pointer; transition: background .2s; }
-.btn-save:hover:not(:disabled) { background: #243460; }
+.btn-save { background: #16a34a; color: #fff; border: none; padding: .625rem 1.5rem; border-radius: 8px; font-size: .9375rem; font-weight: 700; cursor: pointer; transition: background .2s; }
+.btn-save:hover:not(:disabled) { background: #15803d; }
 .btn-save:disabled { opacity: .6; cursor: not-allowed; }
 
 .section-toggle { display: flex; justify-content: space-between; align-items: center; cursor: pointer; margin-bottom: .75rem; }
-.section-toggle h3 { font-size: 1rem; font-weight: 700; color: #1a2744; margin: 0; }
+.section-toggle h3 { font-size: 1rem; font-weight: 700; color: #0f2218; margin: 0; }
 .toggle-icon { color: #94a3b8; font-size: .875rem; }
 .mdp-form { margin-top: 1rem; }
 
@@ -44,10 +44,8 @@
 .btn-delete-confirm { background: #ef4444; color: #fff; border: none; padding: .5rem 1.25rem; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: .875rem; transition: background .2s; }
 .btn-delete-confirm:disabled { opacity: .6; cursor: not-allowed; }
 
-.skeleton-card { height: 300px; border-radius: 16px; background: linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+.skeleton-card { height: 300px; border-radius: 16px; background: linear-gradient(90deg,#f0fdf4 25%,#dcfce7 50%,#f0fdf4 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.meta-info { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.25rem; }
+.member-since { font-size: 0.75rem; color: #64748b; font-weight: 500; }
 @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
-
-/* Alignement du badge et de la date d'inscription */
-.meta-info { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.25rem;}
-.member-since { font-size: 0.75rem; color: #64748b; font-weight: 500;}
