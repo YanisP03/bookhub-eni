@@ -2,7 +2,7 @@ package com.example.backend.services;
 
 import com.example.backend.model.entity.Emprunt;
 import com.example.backend.model.entity.Statut;
-import com.example.backend.model.entity.dto.DashboardStatsDto;
+import com.example.backend.dto.DashboardStatsDto;
 import com.example.backend.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

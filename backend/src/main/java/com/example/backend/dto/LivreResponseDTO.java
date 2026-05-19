@@ -1,4 +1,4 @@
-package com.bookhub.dto.response;
+package com.example.backend.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

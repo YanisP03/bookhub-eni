@@ -2,9 +2,9 @@ package com.example.backend.services;
 
 import com.example.backend.exception.BusinessException;
 import com.example.backend.model.entity.Utilisateur;
-import com.example.backend.model.entity.dto.ChangerMotDePasseDto;
-import com.example.backend.model.entity.dto.ProfilUpdateDto;
-import com.example.backend.model.entity.dto.UtilisateurDto;
+import com.example.backend.dto.ChangerMotDePasseDto;
+import com.example.backend.dto.ProfilUpdateDto;
+import com.example.backend.dto.UtilisateurDto;
 import com.example.backend.repository.UtilisateurRepository;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
