@@ -3,9 +3,13 @@ package com.example.backend.repository;
 import com.example.backend.model.entity.Retour;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.util.Optional;
 
+/**
+ * Repository pour l'entité Retour (table RETOUR).
+ * Entité distincte de Emprunt — représente un suivi de retour
+ * géré via LoanService / RetourService (workflow alternatif).
+ */
 @Repository
 public interface RetourRepository extends JpaRepository<Retour, Integer> {
-    Optional<Retour> findByLivreIdAndStatutLibelle(Integer livreId, String statutLibelle);
+    // findByLivreIdAndStatutLibelle supprimé : déclaré mais jamais appelé.
 }

@@ -1,6 +1,6 @@
 package com.example.backend.controller;
 
-import com.example.backend.model.dto.LivreDto;
+import com.example.backend.dto.LivreDto;
 import com.example.backend.model.entity.Livre;
 import com.example.backend.services.LivreService;
 import org.springframework.http.ResponseEntity;

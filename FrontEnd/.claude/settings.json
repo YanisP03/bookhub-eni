@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\" -Recurse -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -match \"^\\(db|migrations|schema|sql|flyway|liquibase\\)$\" } | Select-Object -ExpandProperty FullName)"
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\" -Recurse -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -match \"^\\(db|migrations|schema|sql|flyway|liquibase\\)$\" } | Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\backend\\\\src\\\\main\\\\java\\\\com\\\\example\\\\backend\" -Recurse -Filter \"*.java\")",
+      "Bash(xargs basename -a)"
     ],
     "additionalDirectories": [
       "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\backend\\src\\main\\resources"

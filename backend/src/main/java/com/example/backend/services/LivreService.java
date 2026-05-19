@@ -1,7 +1,6 @@
 package com.example.backend.services;
 
-import com.example.backend.model.dto.LivreDto;
-import com.example.backend.model.entity.Categorie;
+import com.example.backend.dto.LivreDto;
 import com.example.backend.model.entity.Livre;
 import com.example.backend.repository.LivreRepository;
 import com.example.backend.repository.StatutRepository;
