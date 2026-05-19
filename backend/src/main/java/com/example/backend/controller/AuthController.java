@@ -1,7 +1,6 @@
 package com.example.backend.controller;
 
 import com.example.backend.config.JwtUtils;
-import com.example.backend.model.entity.Utilisateur;
 import com.example.backend.model.entity.dto.LoginRequestDto;
 import com.example.backend.model.entity.dto.LoginResponseDto;
 import com.example.backend.model.entity.dto.RegisterRequestDto;
@@ -15,6 +14,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -34,6 +35,13 @@ public class AuthController {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.authService = authService;
+    }
+
+    /** Endpoint de test — vérifie que le token JWT est valide */
+    @GetMapping("/me")
+    public ResponseEntity<?> me(@AuthenticationPrincipal UserDetails user) {
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non authentifié");
+        return ResponseEntity.ok(java.util.Map.of("email", user.getUsername(), "roles", user.getAuthorities()));
     }
 
     /**

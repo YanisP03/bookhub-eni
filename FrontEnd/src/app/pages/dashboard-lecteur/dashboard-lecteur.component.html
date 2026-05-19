@@ -56,7 +56,7 @@
         @for (e of empruntsEnRetard(); track e.id) {
           <div class="dl-row">
             <span class="dl-row-title">{{ e.livre.titre }}</span>
-            <span class="dl-row-date retard">Prévu le {{ formatDate(e.dateRetourPrevue) }}</span>
+            <span class="dl-row-date retard">Prévu le {{ formatDate(e.dateRetourPrevue ?? '') }}</span>
           </div>
         }
         <a routerLink="/mes-emprunts" class="dl-link">Gérer mes emprunts →</a>

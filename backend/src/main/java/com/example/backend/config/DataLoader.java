@@ -50,6 +50,7 @@ public class DataLoader implements CommandLineRunner {
         getOrCreateStatut("EN_ATTENTE");
         getOrCreateStatut("ANNULEE");
         getOrCreateStatut("NOTIFIEE");
+        getOrCreateStatut("CONVERTIE");
 
         // Utilisateurs de test (créés une seule fois)
         if (!utilisateurRepository.existsByMail("admin@bookhub.fr")) {

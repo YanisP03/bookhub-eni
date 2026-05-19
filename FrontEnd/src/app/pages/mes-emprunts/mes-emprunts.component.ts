@@ -60,6 +60,14 @@ export class MesEmpruntsComponent implements OnInit {
     return this.positions().get(empruntId) ?? 0;
   }
 
+  emprunterDepuisReservation(livreId: number, reservationId: number): void {
+    this.actionError.set(null); this.actionOk.set(null);
+    this.empruntService.emprunter(livreId).subscribe({
+      next: () => { this.actionOk.set('Demande d\'emprunt envoyée ! En attente de validation.'); this.charger(); },
+      error: (e: any) => this.actionError.set(e.error?.error ?? 'Erreur lors de la demande.'),
+    });
+  }
+
   rendre(empruntId: number): void {
     this.actionError.set(null); this.actionOk.set(null);
     this.empruntService.rendre(empruntId).subscribe({

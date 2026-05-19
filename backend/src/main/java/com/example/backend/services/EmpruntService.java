@@ -56,6 +56,13 @@ public class EmpruntService {
             livre.setStatut(getStatut("EMPRUNTE"));
         livreRepository.save(livre);
 
+        // Si l'utilisateur avait une réservation NOTIFIEE pour ce livre, on la convertit
+        reservationRepository.findByUtilisateurAndLivreAndStatut(user, livre, getStatut("NOTIFIEE"))
+                .ifPresent(r -> {
+                    r.setStatut(getStatut("CONVERTIE"));
+                    reservationRepository.save(r);
+                });
+
         Emprunt emprunt = new Emprunt();
         emprunt.setUtilisateur(user);
         emprunt.setLivre(livre);

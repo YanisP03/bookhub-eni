@@ -7,15 +7,21 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const token = auth.getToken();
 
+  console.log(`[Interceptor] ${req.method} ${req.url}`);
+  console.log(`[Interceptor] Token présent: ${!!token}`);
   if (token) {
-    req = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
+    console.log(`[Interceptor] Token (20 premiers cars): ${token.substring(0, 20)}...`);
   }
 
-  return next(req).pipe(
+  const authReq = token
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+    : req;
+
+  return next(authReq).pipe(
     catchError(err => {
-      // Token expiré ou invalide → déconnexion automatique
-      if ((err.status === 401 || err.status === 403) && auth.isLoggedIn()) {
-        auth.logout(); // efface localStorage + navigue vers /
+      console.log(`[Interceptor] Erreur ${err.status} sur ${req.method} ${req.url}`);
+      if (err.status === 401 && auth.isLoggedIn()) {
+        auth.logout();
       }
       return throwError(() => err);
     })
