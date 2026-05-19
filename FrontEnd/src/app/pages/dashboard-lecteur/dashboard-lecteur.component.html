@@ -2,7 +2,7 @@
   <div class="dl-header">
     <div class="container">
       <span class="dl-badge">Mon espace</span>
-      <h1 class="dl-title">Bonjour {{ auth.currentUser()?.email }}</h1>
+      <h1 class="dl-title">Bonjour {{ profil()?.prenom ?? auth.currentUser()?.email }} 👋</h1>
       <p class="dl-sub">Votre tableau de bord lecteur</p>
     </div>
   </div>

@@ -1,11 +1,13 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProfilService, DashboardStats } from '../../services/profil.service';
+import { BookService } from '../../services/book.service';
 import { AvisService, AvisDTO } from '../../services/avis.service';
 import { EmpruntService } from '../../services/emprunt.service';
 import { AuthService } from '../../services/auth.service';
 import { Emprunt, Reservation } from '../../models/emprunt.model';
+import { Book } from '../../models/book.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,6 +17,7 @@ import { Emprunt, Reservation } from '../../models/emprunt.model';
 })
 export class DashboardComponent implements OnInit {
   private readonly profilService  = inject(ProfilService);
+  private readonly bookService    = inject(BookService);
   private readonly avisService    = inject(AvisService);
   private readonly empruntService = inject(EmpruntService);
   readonly auth = inject(AuthService);
@@ -32,6 +35,9 @@ export class DashboardComponent implements OnInit {
   fileAttenteMsg   = signal<string | null>(null);
 
   readonly today = new Date().toISOString();
+  top10      = signal<Book[]>([]);
+  evolution  = signal<{ mois: string; count: number }[]>([]);
+  readonly evolutionMax = computed(() => Math.max(...this.evolution().map(e => e.count), 1));
 
   // Formulaire création bibliothécaire
   biblio = { nom: '', prenom: '', mail: '', motDePasse: '' };
@@ -53,6 +59,8 @@ export class DashboardComponent implements OnInit {
     this.loadDemandes();
     this.loadRetours();
     this.loadFileAttente();
+    this.bookService.getPopulaires(10).subscribe({ next: l => this.top10.set(l) });
+    this.profilService.getEvolution().subscribe({ next: e => this.evolution.set(e) });
   }
 
   loadModeration(): void {

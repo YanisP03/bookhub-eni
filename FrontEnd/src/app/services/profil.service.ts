@@ -47,6 +47,10 @@ export class ProfilService {
     return this.http.get<DashboardStats>(`${this.base}/dashboard/stats`);
   }
 
+  getEvolution(): Observable<{ mois: string; count: number }[]> {
+    return this.http.get<{ mois: string; count: number }[]>(`${this.base}/dashboard/evolution`);
+  }
+
   creerBibliothecaire(data: { nom: string; prenom: string; mail: string; motDePasse: string }): Observable<unknown> {
     return this.http.post(`${this.base}/utilisateurs/bibliothecaire`, data);
   }

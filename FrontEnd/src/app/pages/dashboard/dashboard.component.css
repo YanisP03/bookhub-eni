@@ -86,6 +86,37 @@
 .btn-ko { background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: .35rem .875rem; border-radius: 6px; font-weight: 600; font-size: .8125rem; cursor: pointer; transition: background .2s; white-space: nowrap; }
 .btn-ko:hover { background: #fee2e2; }
 
+/* ── GRAPHIQUE BARRES ────────────────────────────────────────── */
+.chart-bars { display: flex; align-items: flex-end; gap: .375rem; height: 120px; padding-top: 1.5rem; }
+.chart-col { display: flex; flex-direction: column; align-items: center; flex: 1; height: 100%; }
+.chart-val { font-size: .625rem; font-weight: 700; color: #15803d; margin-bottom: .25rem; min-height: 14px; }
+.chart-bar-wrap { flex: 1; width: 100%; display: flex; align-items: flex-end; }
+.chart-bar { width: 100%; background: linear-gradient(to top, #15803d, #4ade80); border-radius: 4px 4px 0 0; min-height: 3px; transition: height .4s ease; }
+.chart-label { font-size: .5625rem; color: #94a3b8; margin-top: .3rem; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+/* ── TOP 10 ──────────────────────────────────────────────────── */
+.top-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.top-item {
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  padding: .45rem .5rem;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background .15s;
+  text-decoration: none;
+  color: inherit;
+}
+.top-item:hover { background: #f0fdf4; }
+.top-rank { font-size: .75rem; font-weight: 800; color: #bbf7d0; min-width: 20px; text-align: center; }
+.top-item:nth-child(1) .top-rank { color: #16a34a; font-size: .875rem; }
+.top-item:nth-child(2) .top-rank { color: #22c55e; }
+.top-item:nth-child(3) .top-rank { color: #4ade80; }
+.top-info { flex: 1; min-width: 0; }
+.top-title { font-size: .8125rem; font-weight: 700; color: #0f2218; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.top-author { font-size: .6875rem; color: #94a3b8; display: block; }
+.top-note { font-size: .6875rem; font-weight: 600; color: #15803d; white-space: nowrap; flex-shrink: 0; }
+
 /* ── RESPONSIVE ──────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .dash-columns { grid-template-columns: 1fr; }

@@ -164,6 +164,41 @@
             }
           </section>
 
+          <!-- GRAPHIQUE ÉVOLUTION -->
+          <section class="dash-section">
+            <h2 class="section-title-simple">Emprunts — 6 derniers mois</h2>
+            <div class="chart-bars">
+              @for (e of evolution(); track e.mois) {
+                <div class="chart-col">
+                  <span class="chart-val">{{ e.count }}</span>
+                  <div class="chart-bar-wrap">
+                    <div class="chart-bar" [style.height.%]="evolutionMax() > 0 ? (e.count / evolutionMax()) * 100 : 0"></div>
+                  </div>
+                  <span class="chart-label">{{ e.mois }}</span>
+                </div>
+              }
+            </div>
+          </section>
+
+          <!-- TOP 10 LIVRES -->
+          <section class="dash-section">
+            <h2 class="section-title-simple">Top 10 — plus empruntés</h2>
+            <ol class="top-list">
+              @for (livre of top10(); track livre.id; let i = $index) {
+                <li class="top-item" [routerLink]="['/catalogue', livre.id]">
+                  <span class="top-rank">{{ i + 1 }}</span>
+                  <div class="top-info">
+                    <span class="top-title">{{ livre.titre }}</span>
+                    <span class="top-author">{{ livre.auteur }}</span>
+                  </div>
+                  @if (livre.noteMoyenne) {
+                    <span class="top-note">⭐ {{ livre.noteMoyenne.toFixed(1) }}</span>
+                  }
+                </li>
+              }
+            </ol>
+          </section>
+
           <!-- ACTIONS RAPIDES -->
           <section class="dash-section">
             <h2 class="section-title-simple">Actions rapides</h2>

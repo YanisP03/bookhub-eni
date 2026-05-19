@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { EmpruntService } from '../../services/emprunt.service';
 import { AvisService, AvisDTO } from '../../services/avis.service';
 import { AuthService } from '../../services/auth.service';
+import { ProfilService, UtilisateurProfil } from '../../services/profil.service';
 import { Emprunt, Reservation } from '../../models/emprunt.model';
 
 @Component({
@@ -14,8 +15,10 @@ import { Emprunt, Reservation } from '../../models/emprunt.model';
 export class DashboardLecteurComponent implements OnInit {
   private readonly empruntService = inject(EmpruntService);
   private readonly avisService    = inject(AvisService);
+  private readonly profilService  = inject(ProfilService);
   readonly auth = inject(AuthService);
 
+  profil       = signal<UtilisateurProfil | null>(null);
   emprunts     = signal<Emprunt[]>([]);
   reservations = signal<Reservation[]>([]);
   mesAvis      = signal<AvisDTO[]>([]);
@@ -27,6 +30,7 @@ export class DashboardLecteurComponent implements OnInit {
   readonly historiqueCount   = computed(() => this.emprunts().filter(e => e.dateRetour).length);
 
   ngOnInit(): void {
+    this.profilService.getProfil().subscribe({ next: p => this.profil.set(p) });
     this.empruntService.getMesEmprunts().subscribe({
       next: e => { this.emprunts.set(e); this.isLoading.set(false); },
       error: () => this.isLoading.set(false),

@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.format.TextStyle;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DashboardService {
@@ -62,5 +64,32 @@ public class DashboardService {
                 totalLivres, livresDisponibles, livresEmpruntes,
                 totalUtilisateurs, empruntsEnCours, empruntsEnRetard, reservationsEnAttente
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> getEvolutionMensuelle() {
+        LocalDateTime debut = LocalDateTime.now().minusMonths(5).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
+        List<Emprunt> recent = empruntRepository.findAll().stream()
+                .filter(e -> e.getDateEmprunt() != null && e.getDateEmprunt().isAfter(debut))
+                .toList();
+
+        Map<String, Long> parMois = new LinkedHashMap<>();
+        for (int i = 5; i >= 0; i--) {
+            LocalDateTime mois = LocalDateTime.now().minusMonths(i);
+            String cle = mois.getMonth().getDisplayName(TextStyle.SHORT, Locale.FRENCH)
+                       + " " + mois.getYear();
+            parMois.put(cle, 0L);
+        }
+
+        recent.forEach(e -> {
+            LocalDateTime d = e.getDateEmprunt();
+            String cle = d.getMonth().getDisplayName(TextStyle.SHORT, Locale.FRENCH)
+                       + " " + d.getYear();
+            parMois.merge(cle, 1L, Long::sum);
+        });
+
+        return parMois.entrySet().stream()
+                .map(en -> { Map<String, Object> m = new LinkedHashMap<>(); m.put("mois", en.getKey()); m.put("count", en.getValue()); return m; })
+                .collect(Collectors.toList());
     }
 }
