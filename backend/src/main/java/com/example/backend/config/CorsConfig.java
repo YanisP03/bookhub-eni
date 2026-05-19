@@ -89,6 +89,8 @@ public class CorsConfig {
                 .requestMatchers(HttpMethod.POST, "/api/utilisateurs/bibliothecaire").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/utilisateurs/bibliothecaire/promouvoir").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/reservations/file-attente").hasAnyRole("ADMIN", "BIBLIOTHECAIRE")
+                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                // Tout le reste nécessite un token JWT valide
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
