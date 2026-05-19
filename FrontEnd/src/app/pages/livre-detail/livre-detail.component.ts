@@ -1,13 +1,15 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { BookService } from '../../services/book.service';
 import { EmpruntService } from '../../services/emprunt.service';
 import { AuthService } from '../../services/auth.service';
+import { AvisService, AvisDTO } from '../../services/avis.service';
 import { Book } from '../../models/book.model';
 
 @Component({
   selector: 'app-livre-detail',
-  imports: [RouterLink],
+  imports: [RouterLink, FormsModule],
   templateUrl: './livre-detail.component.html',
   styleUrl: './livre-detail.component.css',
 })
@@ -16,21 +18,62 @@ export class LivreDetailComponent implements OnInit {
   private readonly router         = inject(Router);
   private readonly bookService    = inject(BookService);
   private readonly empruntService = inject(EmpruntService);
+  private readonly avisService    = inject(AvisService);
   readonly auth = inject(AuthService);
-  confirmDelete = signal(false);
 
-  livre      = signal<Book | null>(null);
-  isLoading  = signal(true);
-  error      = signal<string | null>(null);
-  actionMsg  = signal<string | null>(null);
-  actionErr  = signal<string | null>(null);
-  isActing   = signal(false);
+  livre         = signal<Book | null>(null);
+  isLoading     = signal(true);
+  error         = signal<string | null>(null);
+  actionMsg     = signal<string | null>(null);
+  actionErr     = signal<string | null>(null);
+  isActing      = signal(false);
+  confirmDelete  = signal(false);
+  dejaEmprunte   = signal(false);
+  peutDonnerAvis = signal(false);
+
+  // Avis
+  avisList      = signal<AvisDTO[]>([]);
+  readonly moyenneAvis = computed(() => {
+    const list = this.avisList();
+    if (!list.length) return null;
+    return list.reduce((s, a) => s + a.note, 0) / list.length;
+  });
+  readonly nbAvis = computed(() => this.avisList().length);
+  newNote       = signal(0);
+  newCommentaire = '';
+  avisMsg       = signal<string | null>(null);
+  avisErr       = signal<string | null>(null);
+  isSavingAvis  = signal(false);
+  showAvisForm  = signal(false);
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.bookService.getById(id).subscribe({
-      next:  b  => { this.livre.set(b); this.isLoading.set(false); },
+      next: b => {
+        this.livre.set(b);
+        this.isLoading.set(false);
+        this.loadAvis(id);
+        if (this.auth.isLoggedIn()) {
+          this.empruntService.getMesEmprunts().subscribe({
+            next: emprunts => {
+              this.dejaEmprunte.set(
+                emprunts.some(e => !e.dateRetour && e.livre.id === id
+                  && (e.statut.libelle === 'EN_COURS' || e.statut.libelle === 'DEMANDE'))
+              );
+              this.peutDonnerAvis.set(
+                emprunts.some(e => e.dateRetour && e.livre.id === id && e.statut.libelle === 'RENDU')
+              );
+            },
+          });
+        }
+      },
       error: () => { this.error.set('Livre introuvable.'); this.isLoading.set(false); },
+    });
+  }
+
+  loadAvis(livreId: number): void {
+    this.avisService.getAvisLivre(livreId).subscribe({
+      next: list => this.avisList.set(list),
     });
   }
 
@@ -40,11 +83,14 @@ export class LivreDetailComponent implements OnInit {
     this.isActing.set(true); this.actionMsg.set(null); this.actionErr.set(null);
     this.empruntService.emprunter(id).subscribe({
       next: () => {
-        this.actionMsg.set('Emprunt enregistré ! Retour prévu dans 14 jours.');
+        this.actionMsg.set('⏳ Demande envoyée ! Le bibliothécaire doit la valider.');
         this.bookService.getById(id).subscribe(b => this.livre.set(b));
         this.isActing.set(false);
       },
-      error: e => { this.actionErr.set(e.error ?? 'Erreur lors de l\'emprunt.'); this.isActing.set(false); },
+      error: (e: any) => {
+        this.isActing.set(false);
+        this.actionErr.set(e.error?.error ?? e.error ?? 'Erreur lors de la demande.');
+      },
     });
   }
 
@@ -57,7 +103,7 @@ export class LivreDetailComponent implements OnInit {
         this.actionMsg.set(`Réservation enregistrée — vous êtes n°${r.positionFileAttente} dans la file.`);
         this.isActing.set(false);
       },
-      error: e => { this.actionErr.set(e.error ?? 'Erreur lors de la réservation.'); this.isActing.set(false); },
+      error: (e: any) => { this.actionErr.set(e.error ?? 'Erreur lors de la réservation.'); this.isActing.set(false); },
     });
   }
 
@@ -66,7 +112,31 @@ export class LivreDetailComponent implements OnInit {
     if (!id) return;
     this.bookService.delete(id).subscribe({
       next: () => this.router.navigate(['/catalogue']),
-      error: e => this.actionErr.set(e.error ?? 'Erreur lors de la suppression.'),
+      error: (e: any) => this.actionErr.set(e.error ?? 'Erreur lors de la suppression.'),
+    });
+  }
+
+  setNote(n: number): void { this.newNote.set(n); }
+
+  soumettreAvis(): void {
+    const livreId = this.livre()?.id;
+    if (!livreId || this.newNote() === 0) return;
+    if (!this.peutDonnerAvis()) {
+      this.avisErr.set('Vous devez avoir emprunté et rendu ce livre pour laisser un avis.');
+      return;
+    }
+    this.isSavingAvis.set(true); this.avisMsg.set(null); this.avisErr.set(null);
+    this.avisService.posterAvis(livreId, this.newNote(), this.newCommentaire).subscribe({
+      next: () => {
+        this.avisMsg.set('Merci ! Votre avis est en attente de modération.');
+        this.newNote.set(0); this.newCommentaire = '';
+        this.showAvisForm.set(false);
+        this.isSavingAvis.set(false);
+      },
+      error: (e: any) => {
+        this.avisErr.set(e.error?.error ?? 'Erreur lors de l\'envoi.');
+        this.isSavingAvis.set(false);
+      },
     });
   }
 

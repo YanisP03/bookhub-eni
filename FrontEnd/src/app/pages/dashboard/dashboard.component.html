@@ -97,6 +97,64 @@
           </a>
         </div>
       </section>
+
+      <!-- VALIDATION EMPRUNTS -->
+      <section class="moderation-section">
+        <h2>📋 Demandes d'emprunt en attente</h2>
+        @if (empruntMsg()) { <div class="moder-msg">{{ empruntMsg() }}</div> }
+        @if (demandesEmprunt().length === 0) {
+          <p class="moder-empty">Aucune demande en attente. ✅</p>
+        } @else {
+          <div class="moder-list">
+            @for (e of demandesEmprunt(); track e.id) {
+              <div class="moder-card">
+                <div class="moder-info">
+                  <span class="moder-livre">{{ e.livre.titre }}</span>
+                  <span class="moder-user">par {{ e.livre.auteur }}</span>
+                  <span class="moder-user" style="margin-top:.2rem">
+                    Demandé par <strong>{{ e.utilisateur?.nom ?? '—' }}</strong>
+                    le {{ formatDate(e.dateEmprunt) }}
+                  </span>
+                </div>
+                <div class="moder-actions">
+                  <button class="btn-approuver" (click)="validerEmprunt(e.id)">✅ Valider</button>
+                  <button class="btn-rejeter"   (click)="refuserEmprunt(e.id)">✗ Refuser</button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- MODÉRATION AVIS -->
+      <section class="moderation-section">
+        <h2>🔍 Modération des avis</h2>
+        @if (moderMsg()) { <div class="moder-msg">{{ moderMsg() }}</div> }
+        @if (avisEnAttente().length === 0) {
+          <p class="moder-empty">Aucun avis en attente de modération. ✅</p>
+        } @else {
+          <div class="moder-list">
+            @for (a of avisEnAttente(); track a.id) {
+              <div class="moder-card">
+                <div class="moder-info">
+                  <span class="moder-livre">{{ a.nomLivre }}</span>
+                  <span class="moder-user">par {{ a.nomUtilisateur }}</span>
+                  <div class="moder-stars">
+                    @for (star of getStars(a.note); track $index) {
+                      <span class="star" [class.full]="star === 'full'">★</span>
+                    }
+                  </div>
+                  @if (a.commentaire) { <p class="moder-comment">{{ a.commentaire }}</p> }
+                </div>
+                <div class="moder-actions">
+                  <button class="btn-approuver" (click)="approuver(a.id)">✅ Approuver</button>
+                  <button class="btn-rejeter" (click)="rejeter(a.id)">🗑 Rejeter</button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
     }
   </div>
 </div>

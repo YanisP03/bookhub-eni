@@ -25,14 +25,36 @@ public class EmpruntController {
     }
 
     @PostMapping("/{livreId}")
-    public ResponseEntity<Emprunt> emprunter(@PathVariable Integer livreId,
-                                             @AuthenticationPrincipal UserDetails user) {
-        return ResponseEntity.ok(empruntService.emprunterLivre(livreId, user.getUsername()));
+    public ResponseEntity<Emprunt> demander(@PathVariable Integer livreId,
+                                            @AuthenticationPrincipal UserDetails user) {
+        return ResponseEntity.ok(empruntService.demanderEmprunt(livreId, user.getUsername()));
     }
 
     @PutMapping("/{id}/retour")
     public ResponseEntity<Emprunt> rendre(@PathVariable Integer id,
                                           @AuthenticationPrincipal UserDetails user) {
         return ResponseEntity.ok(empruntService.rendreLivre(id, user.getUsername()));
+    }
+
+    // ── Endpoints bibliothécaire ────────────────────────────────────────────
+
+    @GetMapping("/demandes")
+    public List<Emprunt> getDemandesEnAttente() {
+        return empruntService.getDemandesEnAttente();
+    }
+
+    @GetMapping("/{id}/position")
+    public ResponseEntity<Integer> getPosition(@PathVariable Integer id) {
+        return ResponseEntity.ok(empruntService.getPositionFileAttente(id));
+    }
+
+    @PutMapping("/{id}/valider")
+    public ResponseEntity<Emprunt> valider(@PathVariable Integer id) {
+        return ResponseEntity.ok(empruntService.validerEmprunt(id));
+    }
+
+    @PutMapping("/{id}/refuser")
+    public ResponseEntity<Emprunt> refuser(@PathVariable Integer id) {
+        return ResponseEntity.ok(empruntService.refuserEmprunt(id));
     }
 }

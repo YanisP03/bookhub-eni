@@ -4,6 +4,7 @@ import com.example.backend.model.entity.Categorie;
 import com.example.backend.model.entity.Livre;
 import com.example.backend.model.entity.Statut;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -63,7 +64,14 @@ public interface LivreRepository extends JpaRepository<Livre, Integer> {
      */
     @Query("SELECT COUNT(e) > 0 FROM Emprunt e " +
             "JOIN e.statut s " +
-            "WHERE e.livre.id = :idLivre AND s.libelle = 'EN COURS'")
+            "WHERE e.livre.id = :idLivre AND s.libelle = 'EN_COURS'")
     boolean hasEmpruntsActifs(@Param("idLivre") Integer idLivre);
+
+    @Modifying
+    @Query(value = "UPDATE LIVRE SET noteMoyenne = " +
+            "(SELECT CAST(AVG(CAST(note AS FLOAT)) AS DECIMAL(3,2)) FROM AVIS WHERE id_livre = :idLivre AND statut = 'APPROUVE') " +
+            "WHERE id_livre = :idLivre",
+            nativeQuery = true)
+    void recalculerNoteMoyenne(@Param("idLivre") Integer idLivre);
 
 }

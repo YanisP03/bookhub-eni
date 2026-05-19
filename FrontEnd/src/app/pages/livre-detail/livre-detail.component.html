@@ -50,12 +50,19 @@
           <h1 class="detail-title">{{ l.titre }}</h1>
           <p class="detail-author">{{ l.auteur }}</p>
 
-          <!-- Note -->
+          <!-- Note moyenne -->
           <div class="detail-rating">
-            @for (star of getStars(l.noteMoyenne); track $index) {
+            @for (star of getStars(moyenneAvis() ?? l.noteMoyenne); track $index) {
               <span class="star" [class.full]="star === 'full'" [class.half]="star === 'half'">★</span>
             }
-            <span class="rating-val">{{ l.noteMoyenne ? l.noteMoyenne.toFixed(1) : '—' }} / 5</span>
+            @if (moyenneAvis() !== null) {
+              <span class="rating-val">{{ moyenneAvis()!.toFixed(1) }} / 5</span>
+              <span class="rating-count">({{ nbAvis() }} avis)</span>
+            } @else if (l.noteMoyenne) {
+              <span class="rating-val">{{ l.noteMoyenne.toFixed(1) }} / 5</span>
+            } @else {
+              <span class="rating-empty">Aucun avis pour l'instant</span>
+            }
           </div>
 
           <!-- Métadonnées -->
@@ -84,9 +91,13 @@
               <p class="login-hint">
                 <a routerLink="/connexion">Connectez-vous</a> pour emprunter ou réserver ce livre.
               </p>
+            } @else if (dejaEmprunte()) {
+              <button class="btn-emprunter" disabled style="opacity:.5;cursor:not-allowed">
+                ✔ Déjà emprunté
+              </button>
             } @else if (l.nbDisponibles > 0) {
               <button class="btn-emprunter" (click)="emprunter()" [disabled]="isActing()">
-                {{ isActing() ? 'En cours…' : '📖 Emprunter' }}
+                {{ isActing() ? 'En cours…' : '📋 Demander l\'emprunt' }}
               </button>
             } @else {
               <button class="btn-reserver" (click)="reserver()" [disabled]="isActing()">
@@ -98,6 +109,65 @@
         </div>
 
       </div>
+
+      <!-- SECTION AVIS -->
+      <section class="avis-section">
+        <div class="avis-header">
+          <h2>Avis lecteurs <span class="avis-count">({{ avisList().length }})</span></h2>
+          @if (peutDonnerAvis() && !showAvisForm()) {
+            <button class="btn-add-avis" (click)="showAvisForm.set(true)">+ Laisser un avis</button>
+          } @else if (auth.isLoggedIn() && dejaEmprunte() && !peutDonnerAvis()) {
+            <span class="avis-locked">🔒 Disponible après avoir rendu ce livre</span>
+          } @else if (!auth.isLoggedIn()) {
+            <span class="avis-locked"><a routerLink="/connexion">Connectez-vous</a> pour laisser un avis</span>
+          }
+        </div>
+
+        @if (avisMsg()) { <div class="alert alert-success">✅ {{ avisMsg() }}</div> }
+        @if (avisErr()) { <div class="alert alert-error">⚠️ {{ avisErr() }}</div> }
+
+        @if (showAvisForm() && peutDonnerAvis()) {
+          <form class="avis-form" (ngSubmit)="soumettreAvis()">
+            <div class="star-picker">
+              @for (n of [1,2,3,4,5]; track n) {
+                <span class="star-pick" [class.active]="n <= newNote()" (click)="setNote(n)">★</span>
+              }
+              <span class="note-label">{{ newNote() > 0 ? newNote() + '/5' : 'Choisir une note' }}</span>
+            </div>
+            <textarea [(ngModel)]="newCommentaire" name="commentaire"
+                      placeholder="Votre commentaire (optionnel)…" rows="3" class="avis-textarea"></textarea>
+            <div class="avis-form-actions">
+              <button type="button" class="btn-cancel-avis" (click)="showAvisForm.set(false)">Annuler</button>
+              <button type="submit" class="btn-submit-avis" [disabled]="newNote() === 0 || isSavingAvis()">
+                {{ isSavingAvis() ? 'Envoi…' : 'Envoyer' }}
+              </button>
+            </div>
+          </form>
+        }
+
+        @if (avisList().length === 0) {
+          <p class="avis-empty">Aucun avis approuvé pour ce livre. Soyez le premier !</p>
+        } @else {
+          <div class="avis-list">
+            @for (a of avisList(); track a.id) {
+              <div class="avis-card">
+                <div class="avis-top">
+                  <span class="avis-pseudo">{{ a.pseudo }}</span>
+                  <div class="avis-stars">
+                    @for (star of getStars(a.note); track $index) {
+                      <span class="star" [class.full]="star === 'full'" [class.half]="star === 'half'">★</span>
+                    }
+                  </div>
+                  <span class="avis-date">{{ formatDate(a.datePublication) }}</span>
+                </div>
+                @if (a.commentaire) {
+                  <p class="avis-commentaire">{{ a.commentaire }}</p>
+                }
+              </div>
+            }
+          </div>
+        }
+      </section>
     }
   </div>
 </div>

@@ -24,8 +24,18 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/livre-detail/livre-detail.component').then(m => m.LivreDetailComponent),
   },
   {
+    path: 'catalogue/:id/modifier',
+    loadComponent: () => import('./pages/ajoutModifLivre/livre-form.component').then(m => m.LivreFormComponent),
+    canActivate: [authGuard, adminGuard],
+  },
+  {
     path: 'mes-emprunts',
     loadComponent: () => import('./pages/mes-emprunts/mes-emprunts.component').then(m => m.MesEmpruntsComponent),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'mon-espace',
+    loadComponent: () => import('./pages/dashboard-lecteur/dashboard-lecteur.component').then(m => m.DashboardLecteurComponent),
     canActivate: [authGuard],
   },
   {
@@ -40,11 +50,6 @@ export const routes: Routes = [
   },
   {
     path: 'livres/nouveau',
-    loadComponent: () => import('./pages/ajoutModifLivre/livre-form.component').then(m => m.LivreFormComponent),
-    canActivate: [authGuard, adminGuard],
-  },
-  {
-    path: 'catalogue/:id/modifier',
     loadComponent: () => import('./pages/ajoutModifLivre/livre-form.component').then(m => m.LivreFormComponent),
     canActivate: [authGuard, adminGuard],
   },

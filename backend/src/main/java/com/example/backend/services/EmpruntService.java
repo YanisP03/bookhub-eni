@@ -36,21 +36,21 @@ public class EmpruntService {
         this.reservationRepository = reservationRepository;
     }
 
-    public Emprunt emprunterLivre(Integer livreId, String mail) {
+    /** Lecteur : fait une demande d'emprunt (statut DEMANDE) */
+    public Emprunt demanderEmprunt(Integer livreId, String mail) {
         Utilisateur user = utilisateurRepository.findByMail(mail)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
         Livre livre = livreRepository.findById(livreId)
                 .orElseThrow(() -> new ResourceNotFoundException("Livre introuvable"));
 
-        Statut enCours = getStatut("EN_COURS");
-
-        long nbActifs = empruntRepository.countByUtilisateurAndStatut(user, enCours);
+        long nbActifs = empruntRepository.countActifsByUtilisateur(user);
         if (nbActifs >= MAX_EMPRUNTS_ACTIFS)
             throw new BusinessException("Vous avez atteint la limite de " + MAX_EMPRUNTS_ACTIFS + " emprunts simultanés.");
 
         if (livre.getNbDisponibles() <= 0)
             throw new BusinessException("Aucun exemplaire disponible pour ce livre.");
 
+        // Réserver l'exemplaire immédiatement
         livre.setNbDisponibles(livre.getNbDisponibles() - 1);
         if (livre.getNbDisponibles() == 0)
             livre.setStatut(getStatut("EMPRUNTE"));
@@ -60,9 +60,63 @@ public class EmpruntService {
         emprunt.setUtilisateur(user);
         emprunt.setLivre(livre);
         emprunt.setDateEmprunt(LocalDateTime.now());
-        emprunt.setDateRetourPrevue(LocalDateTime.now().plusDays(DUREE_EMPRUNT_JOURS));
-        emprunt.setStatut(enCours);
+        emprunt.setStatut(getStatut("DEMANDE"));
         return empruntRepository.save(emprunt);
+    }
+
+    /** Bibliothécaire : valide la demande → EN_COURS */
+    public Emprunt validerEmprunt(Integer empruntId) {
+        Emprunt emprunt = empruntRepository.findById(empruntId)
+                .orElseThrow(() -> new ResourceNotFoundException("Emprunt introuvable"));
+
+        if (!"DEMANDE".equals(emprunt.getStatut().getLibelle()))
+            throw new BusinessException("Cet emprunt n'est pas en attente de validation.");
+
+        emprunt.setDateEmprunt(LocalDateTime.now());
+        emprunt.setDateRetourPrevue(LocalDateTime.now().plusDays(DUREE_EMPRUNT_JOURS));
+        emprunt.setStatut(getStatut("EN_COURS"));
+        return empruntRepository.save(emprunt);
+    }
+
+    /** Bibliothécaire : refuse la demande → ANNULE + rend l'exemplaire */
+    public Emprunt refuserEmprunt(Integer empruntId) {
+        Emprunt emprunt = empruntRepository.findById(empruntId)
+                .orElseThrow(() -> new ResourceNotFoundException("Emprunt introuvable"));
+
+        if (!"DEMANDE".equals(emprunt.getStatut().getLibelle()))
+            throw new BusinessException("Cet emprunt n'est pas en attente de validation.");
+
+        emprunt.setStatut(getStatut("ANNULE"));
+        empruntRepository.save(emprunt);
+
+        Livre livre = emprunt.getLivre();
+        livre.setNbDisponibles(livre.getNbDisponibles() + 1);
+        livre.setStatut(getStatut("DISPONIBLE"));
+        livreRepository.save(livre);
+
+        return emprunt;
+    }
+
+    /** Bibliothécaire : liste toutes les demandes en attente, triées par date */
+    @Transactional(readOnly = true)
+    public List<Emprunt> getDemandesEnAttente() {
+        return empruntRepository.findByStatut(getStatut("DEMANDE"))
+                .stream()
+                .sorted(java.util.Comparator.comparing(Emprunt::getDateEmprunt))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    /** Retourne la position (1-based) de cet emprunt dans la file d'attente du livre */
+    @Transactional(readOnly = true)
+    public int getPositionFileAttente(Integer empruntId) {
+        Emprunt emprunt = empruntRepository.findById(empruntId)
+                .orElseThrow(() -> new ResourceNotFoundException("Emprunt introuvable"));
+        List<Emprunt> file = empruntRepository
+                .findDemandesByLivreOrderByDate(emprunt.getLivre().getId());
+        for (int i = 0; i < file.size(); i++) {
+            if (file.get(i).getId().equals(empruntId)) return i + 1;
+        }
+        return -1;
     }
 
     public Emprunt rendreLivre(Integer empruntId, String mail) {
@@ -78,7 +132,7 @@ public class EmpruntService {
         emprunt.setDateRetour(now);
         emprunt.setStatut(getStatut("RENDU"));
 
-        if (now.isAfter(emprunt.getDateRetourPrevue())) {
+        if (emprunt.getDateRetourPrevue() != null && now.isAfter(emprunt.getDateRetourPrevue())) {
             long jours = ChronoUnit.DAYS.between(emprunt.getDateRetourPrevue(), now);
             emprunt.setJoursRetard((int) jours);
         }
@@ -88,13 +142,11 @@ public class EmpruntService {
         livre.setStatut(getStatut("DISPONIBLE"));
         livreRepository.save(livre);
 
-        // Notifier la première réservation en attente
         List<Reservation> attente = reservationRepository
                 .findByLivreAndStatutOrderByDateReservationAsc(livre, getStatut("EN_ATTENTE"));
         if (!attente.isEmpty()) {
-            Reservation prochaine = attente.get(0);
-            prochaine.setStatut(getStatut("NOTIFIEE"));
-            reservationRepository.save(prochaine);
+            attente.get(0).setStatut(getStatut("NOTIFIEE"));
+            reservationRepository.save(attente.get(0));
         }
 
         return empruntRepository.save(emprunt);
