@@ -57,4 +57,14 @@ public class EmpruntController {
     public ResponseEntity<Emprunt> refuser(@PathVariable Integer id) {
         return ResponseEntity.ok(empruntService.refuserEmprunt(id));
     }
+
+    @GetMapping("/retours")
+    public List<Emprunt> getRetoursEnAttente() {
+        return empruntService.getRetoursEnAttente();
+    }
+
+    @PutMapping("/{id}/valider-retour")
+    public ResponseEntity<Emprunt> validerRetour(@PathVariable Integer id) {
+        return ResponseEntity.ok(empruntService.validerRetour(id));
+    }
 }

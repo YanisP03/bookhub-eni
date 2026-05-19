@@ -57,7 +57,7 @@ public class LoanService {
         }
 
         // Passer le statut de l'emprunt lui-même à "RENDU"
-        Statut statutRendu = statutRepository.findByLibelle("RENDU")
+        Statut statutRendu = statutRepository.findFirstByLibelle("RENDU")
                         .orElseThrow(()-> new RuntimeException("Statut RENDU introuvable"));
         loan.setStatut(statutRendu);
 
@@ -74,8 +74,8 @@ public class LoanService {
                 if (res.getPositionFileAttente() == 1) {
                     // Le premier de la file sort de l'attente et passe en priorité retrait
                     res.setPositionFileAttente(0);
-                    Statut statutDispoRetrait = statutRepository.findByLibelle("DISPO_RETRAIT")
-                            .orElseThrow(()-> new RuntimeException("Statut DISPO_RETRAIT introuvable"));
+                    Statut statutDispoRetrait = statutRepository.findFirstByLibelle("NOTIFIEE")
+                            .orElseThrow(()-> new RuntimeException("Statut NOTIFIEE introuvable"));
                     res.setStatut(statutDispoRetrait);
                 } else {
                     // Les autres avancent d'un rang dans la file
@@ -86,12 +86,12 @@ public class LoanService {
             reservationRepository.saveAll(fileAttente);
 
             // Le livre change de statut mais reste bloqué pour la réservation prioritaire
-            Statut statutReserve = statutRepository.findByLibelle("RESERVE_ATTENTE_RETRAIT")
-                    .orElseThrow(()-> new RuntimeException("Statut RESERVE_ATTENTE_RETRAIT introuvable"));
+            Statut statutReserve = statutRepository.findFirstByLibelle("EMPRUNTE")
+                    .orElseThrow(()-> new RuntimeException("Statut EMPRUNTE introuvable"));
             livre.setStatut(statutReserve);
         } else {
             // Personne n'attend, le livre redevient disponible pour tout le monde
-            Statut statutDisponible = statutRepository.findByLibelle("DISPONIBLE")
+            Statut statutDisponible = statutRepository.findFirstByLibelle("DISPONIBLE")
                     .orElseThrow(()-> new RuntimeException("Statut DISPONIBLE introuvable"));
             livre.setStatut(statutDisponible);
         }

@@ -22,11 +22,13 @@ export class DashboardComponent implements OnInit {
   stats            = signal<DashboardStats | null>(null);
   avisEnAttente    = signal<AvisDTO[]>([]);
   demandesEmprunt  = signal<Emprunt[]>([]);
+  retoursEnAttente = signal<Emprunt[]>([]);
   fileAttente      = signal<Reservation[]>([]);
   isLoading        = signal(true);
   error            = signal<string | null>(null);
   moderMsg         = signal<string | null>(null);
   empruntMsg       = signal<string | null>(null);
+  retourMsg        = signal<string | null>(null);
   fileAttenteMsg   = signal<string | null>(null);
 
   // Formulaire création bibliothécaire
@@ -47,6 +49,7 @@ export class DashboardComponent implements OnInit {
     });
     this.loadModeration();
     this.loadDemandes();
+    this.loadRetours();
     this.loadFileAttente();
   }
 
@@ -56,6 +59,10 @@ export class DashboardComponent implements OnInit {
 
   loadDemandes(): void {
     this.empruntService.getDemandesEnAttente().subscribe({ next: list => this.demandesEmprunt.set(list) });
+  }
+
+  loadRetours(): void {
+    this.empruntService.getRetoursEnAttente().subscribe({ next: list => this.retoursEnAttente.set(list) });
   }
 
   loadFileAttente(): void {
@@ -97,6 +104,13 @@ export class DashboardComponent implements OnInit {
         setTimeout(() => this.promouvoirMsg.set(null), 4000);
       },
       error: (e: any) => this.promouvoirErr.set(e.error?.error ?? 'Utilisateur introuvable ou erreur serveur.'),
+    });
+  }
+
+  validerRetour(id: number): void {
+    this.empruntService.validerRetour(id).subscribe({
+      next: () => { this.retourMsg.set('✅ Retour validé.'); this.loadRetours(); setTimeout(() => this.retourMsg.set(null), 3000); },
+      error: (e: any) => { this.retourMsg.set('⚠️ ' + (e.error?.error ?? 'Erreur.')); setTimeout(() => this.retourMsg.set(null), 4000); },
     });
   }
 

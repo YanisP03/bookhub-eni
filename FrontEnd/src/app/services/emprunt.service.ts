@@ -27,12 +27,20 @@ export class EmpruntService {
     return this.http.get<Emprunt[]>(`${this.baseUrl}/emprunts/demandes`);
   }
 
+  getRetoursEnAttente(): Observable<Emprunt[]> {
+    return this.http.get<Emprunt[]>(`${this.baseUrl}/emprunts/retours`);
+  }
+
   validerEmprunt(empruntId: number): Observable<Emprunt> {
     return this.http.put<Emprunt>(`${this.baseUrl}/emprunts/${empruntId}/valider`, {});
   }
 
   refuserEmprunt(empruntId: number): Observable<Emprunt> {
     return this.http.put<Emprunt>(`${this.baseUrl}/emprunts/${empruntId}/refuser`, {});
+  }
+
+  validerRetour(empruntId: number): Observable<Emprunt> {
+    return this.http.put<Emprunt>(`${this.baseUrl}/emprunts/${empruntId}/valider-retour`, {});
   }
 
   getFileAttente(): Observable<Reservation[]> {

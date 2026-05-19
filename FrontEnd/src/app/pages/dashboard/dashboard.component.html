@@ -1,14 +1,17 @@
 <div class="dash-page">
+
+  <!-- EN-TÊTE -->
   <div class="dash-header">
     <div class="container">
       <div class="header-top">
         <div>
-          <span class="dash-badge">Espace bibliothécaire</span>
+          <span class="dash-badge">{{ auth.isAdmin() ? 'Administrateur' : 'Bibliothécaire' }}</span>
           <h1 class="dash-title">Tableau de bord</h1>
-          <p class="dash-sub">Vue d'ensemble de la bibliothèque</p>
         </div>
         <div class="header-actions">
-          <a routerLink="/livres/nouveau" class="btn-add">+ Ajouter un livre</a>
+          @if (auth.isAdmin()) {
+            <a routerLink="/livres/nouveau" class="btn-add">+ Ajouter un livre</a>
+          }
         </div>
       </div>
     </div>
@@ -18,209 +21,195 @@
 
     @if (isLoading()) {
       <div class="stats-grid">
-        @for (_ of [1,2,3,4,5,6,7]; track $index) {
-          <div class="stat-card skeleton"></div>
-        }
+        @for (_ of [1,2,3,4,5,6,7]; track $index) { <div class="stat-card skeleton"></div> }
       </div>
     } @else if (error()) {
       <div class="error-state">⚠️ {{ error() }}</div>
     } @else if (stats(); as s) {
 
-      <!-- STATS CARDS -->
+      <!-- STATS -->
       <div class="stats-grid">
-        <div class="stat-card stat-blue">
-          <span class="stat-icon">📚</span>
-          <div>
-            <p class="stat-num">{{ s.totalLivres }}</p>
-            <p class="stat-label">Livres au catalogue</p>
-          </div>
-        </div>
-        <div class="stat-card stat-green">
-          <span class="stat-icon">✅</span>
-          <div>
-            <p class="stat-num">{{ s.livresDisponibles }}</p>
-            <p class="stat-label">Disponibles</p>
-          </div>
-        </div>
-        <div class="stat-card stat-amber">
-          <span class="stat-icon">📤</span>
-          <div>
-            <p class="stat-num">{{ s.livresEmpruntes }}</p>
-            <p class="stat-label">Empruntés</p>
-          </div>
-        </div>
-        <div class="stat-card stat-indigo">
-          <span class="stat-icon">👥</span>
-          <div>
-            <p class="stat-num">{{ s.totalUtilisateurs }}</p>
-            <p class="stat-label">Membres</p>
-          </div>
-        </div>
-        <div class="stat-card stat-sky">
-          <span class="stat-icon">🔄</span>
-          <div>
-            <p class="stat-num">{{ s.empruntsEnCours }}</p>
-            <p class="stat-label">Emprunts en cours</p>
-          </div>
-        </div>
-        <div class="stat-card" [class.stat-red]="s.empruntsEnRetard > 0" [class.stat-slate]="s.empruntsEnRetard === 0">
-          <span class="stat-icon">⏰</span>
-          <div>
-            <p class="stat-num">{{ s.empruntsEnRetard }}</p>
-            <p class="stat-label">En retard</p>
-          </div>
-        </div>
-        <div class="stat-card stat-violet">
-          <span class="stat-icon">🔖</span>
-          <div>
-            <p class="stat-num">{{ s.reservationsEnAttente }}</p>
-            <p class="stat-label">Réservations en attente</p>
-          </div>
-        </div>
+        <div class="stat-card stat-blue"><span class="stat-icon">📚</span><div><p class="stat-num">{{ s.totalLivres }}</p><p class="stat-label">Livres</p></div></div>
+        <div class="stat-card stat-green"><span class="stat-icon">✅</span><div><p class="stat-num">{{ s.livresDisponibles }}</p><p class="stat-label">Disponibles</p></div></div>
+        <div class="stat-card stat-amber"><span class="stat-icon">📤</span><div><p class="stat-num">{{ s.livresEmpruntes }}</p><p class="stat-label">Empruntés</p></div></div>
+        <div class="stat-card stat-indigo"><span class="stat-icon">👥</span><div><p class="stat-num">{{ s.totalUtilisateurs }}</p><p class="stat-label">Membres</p></div></div>
+        <div class="stat-card stat-sky"><span class="stat-icon">🔄</span><div><p class="stat-num">{{ s.empruntsEnCours }}</p><p class="stat-label">En cours</p></div></div>
+        <div class="stat-card" [class.stat-red]="s.empruntsEnRetard > 0" [class.stat-slate]="s.empruntsEnRetard === 0"><span class="stat-icon">⏰</span><div><p class="stat-num">{{ s.empruntsEnRetard }}</p><p class="stat-label">En retard</p></div></div>
+        <div class="stat-card stat-violet"><span class="stat-icon">🔖</span><div><p class="stat-num">{{ s.reservationsEnAttente }}</p><p class="stat-label">Réservations</p></div></div>
       </div>
 
-      <!-- ACTIONS RAPIDES -->
-      <section class="quick-actions">
-        <h2>Actions rapides</h2>
-        <div class="actions-grid">
-          <a routerLink="/livres/nouveau" class="action-card">
-            <span class="action-icon">➕</span>
-            <span>Ajouter un livre</span>
-          </a>
-          <a routerLink="/catalogue" class="action-card">
-            <span class="action-icon">📖</span>
-            <span>Gérer le catalogue</span>
-          </a>
-          <a routerLink="/mes-emprunts" class="action-card">
-            <span class="action-icon">📋</span>
-            <span>Voir les emprunts</span>
-          </a>
-        </div>
-      </section>
+      <!-- DEUX COLONNES PRINCIPALES -->
+      <div class="dash-columns">
 
-      <!-- FILE D'ATTENTE RÉSERVATIONS -->
-      <section class="moderation-section">
-        <h2>🔖 File d'attente des réservations</h2>
-        @if (fileAttente().length === 0) {
-          <p class="moder-empty">Aucune réservation en attente. ✅</p>
-        } @else {
-          <div class="moder-list">
-            @for (r of fileAttente(); track r.id) {
-              <div class="moder-card">
-                <div class="moder-info">
-                  <span class="moder-livre">{{ r.livre.titre }}</span>
-                  <span class="moder-user">{{ r.livre.auteur }}</span>
-                  <span class="moder-user" style="margin-top:.2rem">
-                    Position <strong>#{{ r.positionFileAttente }}</strong> —
-                    <strong>{{ r.utilisateur?.nom ?? '—' }} {{ r.utilisateur?.prenom ?? '' }}</strong>
-                    ({{ r.utilisateur?.mail ?? '' }})
-                  </span>
-                  <span class="moder-user">Réservé le {{ formatDate(r.dateReservation) }}</span>
-                </div>
-              </div>
-            }
-          </div>
-        }
-      </section>
+        <!-- COLONNE GAUCHE — actions à traiter -->
+        <div class="dash-col">
 
-      <!-- CRÉATION BIBLIOTHÉCAIRE (admin uniquement) -->
-      @if (auth.isAdmin()) {
-        <section class="moderation-section">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
-            <h2 style="margin:0">👤 Ajouter un bibliothécaire</h2>
-            <button class="btn-add" (click)="biblioOpen.set(!biblioOpen())">
-              {{ biblioOpen() ? 'Annuler' : '+ Nouveau' }}
-            </button>
-          </div>
-          @if (biblioMsg()) { <div class="moder-msg">{{ biblioMsg() }}</div> }
-
-          <!-- Promouvoir un compte existant -->
-          <div class="biblio-form" style="margin-bottom:1rem">
-            <p style="margin:0 0 .6rem;font-weight:600;color:#1a2744;font-size:.9375rem">Promouvoir un compte existant</p>
-            @if (promouvoirMsg()) { <div class="moder-msg">{{ promouvoirMsg() }}</div> }
-            @if (promouvoirErr()) { <div class="moder-err">⚠️ {{ promouvoirErr() }}</div> }
-            <div style="display:flex;gap:.75rem;flex-wrap:wrap">
-              <input class="form-input" style="flex:1;min-width:220px" placeholder="Email du compte existant"
-                     type="email" [(ngModel)]="promouvoirMail" name="pMail" />
-              <button class="btn-approuver" (click)="promouvoir()" [disabled]="!promouvoirMail">
-                Promouvoir en bibliothécaire
-              </button>
+          <!-- DEMANDES D'EMPRUNT -->
+          <section class="dash-section">
+            <div class="section-head">
+              <h2>Demandes d'emprunt</h2>
+              <span class="badge-count" [class.badge-zero]="demandesEmprunt().length === 0">{{ demandesEmprunt().length }}</span>
             </div>
-          </div>
-
-          @if (biblioOpen()) {
-            <form class="biblio-form" (ngSubmit)="ajouterBibliothecaire()">
-              @if (biblioErr()) { <div class="moder-err">⚠️ {{ biblioErr() }}</div> }
-              <div class="biblio-grid">
-                <input class="form-input" placeholder="Nom *" [(ngModel)]="biblio.nom" name="bNom" required />
-                <input class="form-input" placeholder="Prénom *" [(ngModel)]="biblio.prenom" name="bPrenom" required />
-                <input class="form-input" placeholder="Email *" type="email" [(ngModel)]="biblio.mail" name="bMail" required />
-                <input class="form-input" placeholder="Mot de passe * (12 car., Maj, chiffre, spécial)"
-                       type="password" [(ngModel)]="biblio.motDePasse" name="bMdp" required />
-              </div>
-              <button type="submit" class="btn-approuver" style="margin-top:.75rem">Créer le compte</button>
-            </form>
-          }
-        </section>
-      }
-
-      <!-- VALIDATION EMPRUNTS -->
-      <section class="moderation-section">
-        <h2>📋 Demandes d'emprunt en attente</h2>
-        @if (empruntMsg()) { <div class="moder-msg">{{ empruntMsg() }}</div> }
-        @if (demandesEmprunt().length === 0) {
-          <p class="moder-empty">Aucune demande en attente. ✅</p>
-        } @else {
-          <div class="moder-list">
-            @for (e of demandesEmprunt(); track e.id) {
-              <div class="moder-card">
-                <div class="moder-info">
-                  <span class="moder-livre">{{ e.livre.titre }}</span>
-                  <span class="moder-user">par {{ e.livre.auteur }}</span>
-                  <span class="moder-user" style="margin-top:.2rem">
-                    Demandé par <strong>{{ e.utilisateur?.nom ?? '—' }}</strong>
-                    le {{ formatDate(e.dateEmprunt) }}
-                  </span>
-                </div>
-                <div class="moder-actions">
-                  <button class="btn-approuver" (click)="validerEmprunt(e.id)">✅ Valider</button>
-                  <button class="btn-rejeter"   (click)="refuserEmprunt(e.id)">✗ Refuser</button>
-                </div>
-              </div>
-            }
-          </div>
-        }
-      </section>
-
-      <!-- MODÉRATION AVIS -->
-      <section class="moderation-section">
-        <h2>🔍 Modération des avis</h2>
-        @if (moderMsg()) { <div class="moder-msg">{{ moderMsg() }}</div> }
-        @if (avisEnAttente().length === 0) {
-          <p class="moder-empty">Aucun avis en attente de modération. ✅</p>
-        } @else {
-          <div class="moder-list">
-            @for (a of avisEnAttente(); track a.id) {
-              <div class="moder-card">
-                <div class="moder-info">
-                  <span class="moder-livre">{{ a.nomLivre }}</span>
-                  <span class="moder-user">par {{ a.nomUtilisateur }}</span>
-                  <div class="moder-stars">
-                    @for (star of getStars(a.note); track $index) {
-                      <span class="star" [class.full]="star === 'full'">★</span>
-                    }
+            @if (empruntMsg()) { <div class="section-msg">{{ empruntMsg() }}</div> }
+            @if (demandesEmprunt().length === 0) {
+              <p class="section-empty">Aucune demande en attente.</p>
+            } @else {
+              <div class="action-list">
+                @for (e of demandesEmprunt(); track e.id) {
+                  <div class="action-row">
+                    <div class="action-info">
+                      <span class="action-title">{{ e.livre.titre }}</span>
+                      <span class="action-sub">{{ e.utilisateur?.prenom }} {{ e.utilisateur?.nom }} · {{ formatDate(e.dateEmprunt) }}</span>
+                    </div>
+                    <div class="action-btns">
+                      <button class="btn-ok" (click)="validerEmprunt(e.id)">Valider</button>
+                      <button class="btn-ko" (click)="refuserEmprunt(e.id)">Refuser</button>
+                    </div>
                   </div>
-                  @if (a.commentaire) { <p class="moder-comment">{{ a.commentaire }}</p> }
-                </div>
-                <div class="moder-actions">
-                  <button class="btn-approuver" (click)="approuver(a.id)">✅ Approuver</button>
-                  <button class="btn-rejeter" (click)="rejeter(a.id)">🗑 Rejeter</button>
-                </div>
+                }
               </div>
             }
-          </div>
-        }
-      </section>
+          </section>
+
+          <!-- RETOURS EN ATTENTE -->
+          <section class="dash-section">
+            <div class="section-head">
+              <h2>Retours à valider</h2>
+              <span class="badge-count" [class.badge-zero]="retoursEnAttente().length === 0">{{ retoursEnAttente().length }}</span>
+            </div>
+            @if (retourMsg()) { <div class="section-msg">{{ retourMsg() }}</div> }
+            @if (retoursEnAttente().length === 0) {
+              <p class="section-empty">Aucun retour en attente.</p>
+            } @else {
+              <div class="action-list">
+                @for (e of retoursEnAttente(); track e.id) {
+                  <div class="action-row">
+                    <div class="action-info">
+                      <span class="action-title">{{ e.livre.titre }}</span>
+                      <span class="action-sub">{{ e.utilisateur?.prenom }} {{ e.utilisateur?.nom }} · prévu le {{ formatDate(e.dateRetourPrevue ?? '') }}</span>
+                    </div>
+                    <div class="action-btns">
+                      <button class="btn-ok" (click)="validerRetour(e.id)">Confirmer retour</button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </section>
+
+          <!-- MODÉRATION AVIS -->
+          <section class="dash-section">
+            <div class="section-head">
+              <h2>Modération des avis</h2>
+              <span class="badge-count" [class.badge-zero]="avisEnAttente().length === 0">{{ avisEnAttente().length }}</span>
+            </div>
+            @if (moderMsg()) { <div class="section-msg">{{ moderMsg() }}</div> }
+            @if (avisEnAttente().length === 0) {
+              <p class="section-empty">Aucun avis en attente.</p>
+            } @else {
+              <div class="action-list">
+                @for (a of avisEnAttente(); track a.id) {
+                  <div class="action-row">
+                    <div class="action-info">
+                      <span class="action-title">{{ a.nomLivre }}</span>
+                      <span class="action-sub">{{ a.nomUtilisateur }} ·
+                        @for (star of getStars(a.note); track $index) {
+                          <span class="star" [class.full]="star === 'full'">★</span>
+                        }
+                      </span>
+                      @if (a.commentaire) { <span class="action-comment">{{ a.commentaire }}</span> }
+                    </div>
+                    <div class="action-btns">
+                      <button class="btn-ok" (click)="approuver(a.id)">Approuver</button>
+                      <button class="btn-ko" (click)="rejeter(a.id)">Rejeter</button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </section>
+
+        </div>
+
+        <!-- COLONNE DROITE — info + admin -->
+        <div class="dash-col">
+
+          <!-- FILE D'ATTENTE RÉSERVATIONS -->
+          <section class="dash-section">
+            <div class="section-head">
+              <h2>File d'attente</h2>
+              <span class="badge-count" [class.badge-zero]="fileAttente().length === 0">{{ fileAttente().length }}</span>
+            </div>
+            @if (fileAttente().length === 0) {
+              <p class="section-empty">Aucune réservation en attente.</p>
+            } @else {
+              <div class="queue-list">
+                @for (r of fileAttente(); track r.id) {
+                  <div class="queue-row">
+                    <span class="queue-pos">#{{ r.positionFileAttente }}</span>
+                    <div class="queue-info">
+                      <span class="action-title">{{ r.livre.titre }}</span>
+                      <span class="action-sub">{{ r.utilisateur?.prenom }} {{ r.utilisateur?.nom }}</span>
+                    </div>
+                    <span class="queue-date">{{ formatDate(r.dateReservation) }}</span>
+                  </div>
+                }
+              </div>
+            }
+          </section>
+
+          <!-- ACTIONS RAPIDES -->
+          <section class="dash-section">
+            <h2 class="section-title-simple">Actions rapides</h2>
+            <div class="quick-grid">
+              <a routerLink="/catalogue" class="quick-card"><span>📖</span>Catalogue</a>
+              @if (auth.isAdmin()) {
+                <a routerLink="/livres/nouveau" class="quick-card"><span>➕</span>Ajouter livre</a>
+              }
+            </div>
+          </section>
+
+          <!-- CRÉER / PROMOUVOIR BIBLIOTHÉCAIRE (admin uniquement) -->
+          @if (auth.isAdmin()) {
+            <section class="dash-section">
+              <h2 class="section-title-simple">Gestion bibliothécaires</h2>
+              @if (biblioMsg()) { <div class="section-msg">{{ biblioMsg() }}</div> }
+
+              <!-- Promouvoir un compte existant -->
+              <div class="biblio-block">
+                <p class="biblio-label">Promouvoir un compte existant</p>
+                @if (promouvoirMsg()) { <div class="section-msg">{{ promouvoirMsg() }}</div> }
+                @if (promouvoirErr()) { <div class="section-err">⚠️ {{ promouvoirErr() }}</div> }
+                <div class="inline-form">
+                  <input class="form-input" placeholder="Email du membre" type="email"
+                         [(ngModel)]="promouvoirMail" name="pMail" />
+                  <button class="btn-ok" (click)="promouvoir()" [disabled]="!promouvoirMail">Promouvoir</button>
+                </div>
+              </div>
+
+              <!-- Créer un nouveau compte -->
+              <div class="biblio-block">
+                <div class="biblio-toggle" (click)="biblioOpen.set(!biblioOpen())">
+                  <p class="biblio-label">Créer un nouveau compte</p>
+                  <span class="toggle-chevron">{{ biblioOpen() ? '▲' : '▼' }}</span>
+                </div>
+                @if (biblioOpen()) {
+                  @if (biblioErr()) { <div class="section-err">⚠️ {{ biblioErr() }}</div> }
+                  <form class="biblio-form" (ngSubmit)="ajouterBibliothecaire()">
+                    <input class="form-input" placeholder="Nom *" [(ngModel)]="biblio.nom" name="bNom" required />
+                    <input class="form-input" placeholder="Prénom *" [(ngModel)]="biblio.prenom" name="bPrenom" required />
+                    <input class="form-input" placeholder="Email *" type="email" [(ngModel)]="biblio.mail" name="bMail" required />
+                    <input class="form-input" placeholder="Mot de passe * (12 car. min.)" type="password" [(ngModel)]="biblio.motDePasse" name="bMdp" required />
+                    <button type="submit" class="btn-ok" style="width:100%">Créer le compte</button>
+                  </form>
+                }
+              </div>
+
+            </section>
+          }
+
+        </div>
+      </div>
     }
   </div>
 </div>
