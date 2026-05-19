@@ -16,8 +16,10 @@ export class AuthService {
   private readonly _user = signal<CurrentUser | null>(this.loadUser());
 
   readonly currentUser = this._user.asReadonly();
-  readonly isLoggedIn  = computed(() => this._user() !== null);
-  readonly isAdmin     = computed(() => this._user()?.role === 'ROLE_ADMIN');
+  readonly isLoggedIn        = computed(() => this._user() !== null);
+  readonly isAdmin           = computed(() => this._user()?.role === 'ROLE_ADMIN');
+  readonly isBibliothecaire  = computed(() => this._user()?.role === 'ROLE_BIBLIOTHECAIRE');
+  readonly isStaff           = computed(() => this.isAdmin() || this.isBibliothecaire());
 
   login(credentials: LoginRequest) {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(

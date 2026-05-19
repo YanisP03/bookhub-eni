@@ -22,7 +22,7 @@ export class DashboardLecteurComponent implements OnInit {
   isLoading    = signal(true);
 
   readonly empruntsActifs    = computed(() => this.emprunts().filter(e => !e.dateRetour));
-  readonly empruntsEnRetard  = computed(() => this.empruntsActifs().filter(e => !!e.dateRetourPrevue && new Date() > new Date(e.dateRetourPrevue)));
+  readonly empruntsEnRetard = computed(() => this.empruntsActifs().filter(e => e.dateRetourPrevue && new Date() > new Date(e.dateRetourPrevue)));
   readonly reservationsActives = computed(() => this.reservations().filter(r => r.statut.libelle === 'EN_ATTENTE' || r.statut.libelle === 'NOTIFIEE'));
   readonly historiqueCount   = computed(() => this.emprunts().filter(e => e.dateRetour).length);
 
@@ -35,7 +35,8 @@ export class DashboardLecteurComponent implements OnInit {
     this.avisService.getMesAvis().subscribe({ next: a => this.mesAvis.set(a) });
   }
 
-  formatDate(iso: string): string {
+  formatDate(iso: string | undefined): string {
+    if (!iso) return '—';
     return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
 }

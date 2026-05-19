@@ -129,14 +129,31 @@ public class EmpruntService {
         return -1;
     }
 
+    /** Lecteur : signale que le livre est rapporté → RETOUR_DEMANDE (en attente biblio) */
     public Emprunt rendreLivre(Integer empruntId, String mail) {
         Emprunt emprunt = empruntRepository.findById(empruntId)
                 .orElseThrow(() -> new ResourceNotFoundException("Emprunt introuvable"));
 
         if (!emprunt.getUtilisateur().getMail().equals(mail))
             throw new BusinessException("Cet emprunt ne vous appartient pas.");
-        if (emprunt.getDateRetour() != null)
-            throw new BusinessException("Ce livre a déjà été rendu.");
+
+        String libelle = emprunt.getStatut().getLibelle();
+        if ("RENDU".equals(libelle) || "RETOUR_DEMANDE".equals(libelle))
+            throw new BusinessException("Ce livre a déjà été rendu ou est en attente de validation.");
+        if (!"EN_COURS".equals(libelle))
+            throw new BusinessException("Cet emprunt n'est pas en cours.");
+
+        emprunt.setStatut(getStatut("RETOUR_DEMANDE"));
+        return empruntRepository.save(emprunt);
+    }
+
+    /** Bibliothécaire : valide le retour → RENDU + libère l'exemplaire */
+    public Emprunt validerRetour(Integer empruntId) {
+        Emprunt emprunt = empruntRepository.findById(empruntId)
+                .orElseThrow(() -> new ResourceNotFoundException("Emprunt introuvable"));
+
+        if (!"RETOUR_DEMANDE".equals(emprunt.getStatut().getLibelle()))
+            throw new BusinessException("Ce retour n'est pas en attente de validation.");
 
         LocalDateTime now = LocalDateTime.now();
         emprunt.setDateRetour(now);
@@ -160,6 +177,15 @@ public class EmpruntService {
         }
 
         return empruntRepository.save(emprunt);
+    }
+
+    /** Bibliothécaire : liste tous les retours en attente de validation */
+    @Transactional(readOnly = true)
+    public List<Emprunt> getRetoursEnAttente() {
+        return empruntRepository.findByStatut(getStatut("RETOUR_DEMANDE"))
+                .stream()
+                .sorted(java.util.Comparator.comparing(Emprunt::getDateEmprunt))
+                .collect(java.util.stream.Collectors.toList());
     }
 
     @Transactional(readOnly = true)

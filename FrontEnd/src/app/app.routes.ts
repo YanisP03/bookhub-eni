@@ -7,7 +7,7 @@ import { CatalogComponent } from './pages/catalog/catalog.component';
 
 const adminGuard = () => {
   const auth = inject(AuthService);
-  if (auth.isAdmin()) return true;
+  if (auth.isStaff()) return true;
   inject(Router).navigate(['/']);
   return false;
 };

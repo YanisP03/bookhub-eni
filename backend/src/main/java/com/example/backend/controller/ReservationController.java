@@ -24,6 +24,11 @@ public class ReservationController {
         return reservationService.getMesReservations(user.getUsername());
     }
 
+    @GetMapping("/file-attente")
+    public List<Reservation> getFileAttente() {
+        return reservationService.getFileAttente();
+    }
+
     @PostMapping("/{livreId}")
     public ResponseEntity<Reservation> reserver(@PathVariable Integer livreId,
                                                 @AuthenticationPrincipal UserDetails user) {

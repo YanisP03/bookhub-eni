@@ -53,6 +53,7 @@ public class LivreService {
 
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
                 .withProcedureName("sp_SaveLivre")
+                .withoutProcedureColumnMetaDataAccess() // <- CRUCIAL avec SQL Server
                 .declareParameters(
                         new SqlParameter("id_livre",        Types.INTEGER),
                         new SqlParameter("titre",           Types.VARCHAR),
@@ -72,7 +73,8 @@ public class LivreService {
         params.put("id_livre",        livre.getId());
         params.put("titre",           livre.getTitre());
         params.put("auteur",          livre.getAuteur());
-        params.put("isbn",            livre.getIsbn());
+        params.put("isbn", livre.getIsbn() != null && !livre.getIsbn().isBlank()
+                ? livre.getIsbn() : null);
         params.put("description",     livre.getDescription());
         params.put("couverture",      livre.getCouverture());
         params.put("datePublication", livre.getDatePublication() != null
@@ -86,8 +88,16 @@ public class LivreService {
 
         Map<String, Object> result = jdbcCall.execute(params);
 
+        // SQL Server peut retourner la clé avec une casse différente
         Integer resultId = (Integer) result.get("result_id");
         if (resultId == null) {
+            // Tentative avec casse différente (SQL Server)
+            resultId = (Integer) result.get("RESULT_ID");
+        }
+
+        // Log pour déboguer si toujours null
+        if (resultId == null) {
+            System.err.println("Clés disponibles dans result : " + result.keySet());
             throw new BusinessException("Erreur lors de la sauvegarde du livre.");
         }
 

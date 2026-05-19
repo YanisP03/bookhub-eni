@@ -38,7 +38,7 @@ public class JwtUtils {
                 .compact();
     }
 
-    // 2. EXTRACTION DU NOM (Cette méthode manquait à ton filtre !)
+    // 2. EXTRACTION DU NOM
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -48,7 +48,7 @@ public class JwtUtils {
                 .getSubject();
     }
 
-    // 3. VALIDATION DU TOKEN (Cette méthode manquait aussi à ton filtre !)
+    // 3. VALIDATION DU TOKEN
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(authToken);

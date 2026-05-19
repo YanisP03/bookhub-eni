@@ -35,6 +35,7 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) {
         // Rôles
         Role roleLecteur = getOrCreateRole("LECTEUR");
+        getOrCreateRole("BIBLIOTHECAIRE");
         Role roleAdmin   = getOrCreateRole("ADMIN");
 
         // Statuts livre
@@ -44,7 +45,7 @@ public class DataLoader implements CommandLineRunner {
         getOrCreateStatut("DEMANDE");
         getOrCreateStatut("EN_COURS");
         getOrCreateStatut("RENDU");
-        getOrCreateStatut("EN_RETARD");
+        getOrCreateStatut("RETOUR_DEMANDE");
         getOrCreateStatut("ANNULE");
         // Statuts réservation
         getOrCreateStatut("EN_ATTENTE");
