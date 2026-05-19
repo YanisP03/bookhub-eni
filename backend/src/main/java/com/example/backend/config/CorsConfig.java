@@ -52,6 +52,7 @@ public class CorsConfig {
                         "/api/livres", "/api/livres/**",
                         "/api/categories", "/api/categories/**",
                         "/api/avis/livre/**").permitAll()
+                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 // Tout le reste nécessite un token JWT valide
                 .anyRequest().authenticated()
             )

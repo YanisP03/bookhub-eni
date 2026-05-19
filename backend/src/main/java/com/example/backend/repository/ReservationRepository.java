@@ -12,4 +12,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     List<Reservation> findByUtilisateur(Utilisateur utilisateur);
     List<Reservation> findByLivreAndStatutOrderByDateReservationAsc(Livre livre, Statut statut);
     Optional<Reservation> findByUtilisateurAndLivreAndStatut(Utilisateur u, Livre l, Statut s);
+    List<Reservation> findByLivreIdAndStatutLibelleOrderByPositionFileAttenteAsc(Integer livreId, String statutLibelle);
 }
