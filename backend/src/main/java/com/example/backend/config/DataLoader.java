@@ -68,6 +68,7 @@ public class DataLoader implements CommandLineRunner {
             test.setMail("test@bookhub.fr");
             test.setMotDePasse(passwordEncoder.encode("Test@123456!"));
             test.setRole(roleLecteur);
+            test.setDateInscription(java.time.LocalDate.now());
             utilisateurRepository.save(test);
         }
 

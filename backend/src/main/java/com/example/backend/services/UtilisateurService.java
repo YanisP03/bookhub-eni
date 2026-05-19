@@ -95,7 +95,7 @@ public class UtilisateurService {
                 u.getId(), u.getNom(), u.getPrenom(), u.getMail(),
                 u.getTelephone(),
                 u.getRole() != null ? u.getRole().getLibelle() : null,
-                u.getDateInscription() != null ? u.getDateInscription().toLocalDate() : null
+                u.getDateInscription()
         );
     }
 }
