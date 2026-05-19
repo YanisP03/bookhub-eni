@@ -98,6 +98,72 @@
         </div>
       </section>
 
+      <!-- FILE D'ATTENTE RÉSERVATIONS -->
+      <section class="moderation-section">
+        <h2>🔖 File d'attente des réservations</h2>
+        @if (fileAttente().length === 0) {
+          <p class="moder-empty">Aucune réservation en attente. ✅</p>
+        } @else {
+          <div class="moder-list">
+            @for (r of fileAttente(); track r.id) {
+              <div class="moder-card">
+                <div class="moder-info">
+                  <span class="moder-livre">{{ r.livre.titre }}</span>
+                  <span class="moder-user">{{ r.livre.auteur }}</span>
+                  <span class="moder-user" style="margin-top:.2rem">
+                    Position <strong>#{{ r.positionFileAttente }}</strong> —
+                    <strong>{{ r.utilisateur?.nom ?? '—' }} {{ r.utilisateur?.prenom ?? '' }}</strong>
+                    ({{ r.utilisateur?.mail ?? '' }})
+                  </span>
+                  <span class="moder-user">Réservé le {{ formatDate(r.dateReservation) }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- CRÉATION BIBLIOTHÉCAIRE (admin uniquement) -->
+      @if (auth.isAdmin()) {
+        <section class="moderation-section">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+            <h2 style="margin:0">👤 Ajouter un bibliothécaire</h2>
+            <button class="btn-add" (click)="biblioOpen.set(!biblioOpen())">
+              {{ biblioOpen() ? 'Annuler' : '+ Nouveau' }}
+            </button>
+          </div>
+          @if (biblioMsg()) { <div class="moder-msg">{{ biblioMsg() }}</div> }
+
+          <!-- Promouvoir un compte existant -->
+          <div class="biblio-form" style="margin-bottom:1rem">
+            <p style="margin:0 0 .6rem;font-weight:600;color:#1a2744;font-size:.9375rem">Promouvoir un compte existant</p>
+            @if (promouvoirMsg()) { <div class="moder-msg">{{ promouvoirMsg() }}</div> }
+            @if (promouvoirErr()) { <div class="moder-err">⚠️ {{ promouvoirErr() }}</div> }
+            <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+              <input class="form-input" style="flex:1;min-width:220px" placeholder="Email du compte existant"
+                     type="email" [(ngModel)]="promouvoirMail" name="pMail" />
+              <button class="btn-approuver" (click)="promouvoir()" [disabled]="!promouvoirMail">
+                Promouvoir en bibliothécaire
+              </button>
+            </div>
+          </div>
+
+          @if (biblioOpen()) {
+            <form class="biblio-form" (ngSubmit)="ajouterBibliothecaire()">
+              @if (biblioErr()) { <div class="moder-err">⚠️ {{ biblioErr() }}</div> }
+              <div class="biblio-grid">
+                <input class="form-input" placeholder="Nom *" [(ngModel)]="biblio.nom" name="bNom" required />
+                <input class="form-input" placeholder="Prénom *" [(ngModel)]="biblio.prenom" name="bPrenom" required />
+                <input class="form-input" placeholder="Email *" type="email" [(ngModel)]="biblio.mail" name="bMail" required />
+                <input class="form-input" placeholder="Mot de passe * (12 car., Maj, chiffre, spécial)"
+                       type="password" [(ngModel)]="biblio.motDePasse" name="bMdp" required />
+              </div>
+              <button type="submit" class="btn-approuver" style="margin-top:.75rem">Créer le compte</button>
+            </form>
+          }
+        </section>
+      }
+
       <!-- VALIDATION EMPRUNTS -->
       <section class="moderation-section">
         <h2>📋 Demandes d'emprunt en attente</h2>

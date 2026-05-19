@@ -86,6 +86,9 @@ public class CorsConfig {
                         "/api/livres", "/api/livres/**",
                         "/api/categories", "/api/categories/**",
                         "/api/avis/livre/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/utilisateurs/bibliothecaire").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/utilisateurs/bibliothecaire/promouvoir").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/reservations/file-attente").hasAnyRole("ADMIN", "BIBLIOTHECAIRE")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
