@@ -2,6 +2,8 @@ import { inject } from '@angular/core';
 import { Routes, Router } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { AuthService } from './services/auth.service';
+import { DetailLivreComponent } from './pages/detail-livre/detail-livre.component';
+import { CatalogComponent } from './pages/catalog/catalog.component';
 
 const adminGuard = () => {
   const auth = inject(AuthService);
@@ -22,6 +24,10 @@ export const routes: Routes = [
   {
     path: 'catalogue/:id',
     loadComponent: () => import('./pages/livre-detail/livre-detail.component').then(m => m.LivreDetailComponent),
+  },
+  {
+    path: 'livre/:id',
+    loadComponent: () => import('./pages/detail-livre/detail-livre.component').then(m => m.DetailLivreComponent),
   },
   {
     path: 'catalogue/:id/modifier',

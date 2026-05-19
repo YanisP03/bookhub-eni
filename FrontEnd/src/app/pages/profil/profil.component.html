@@ -20,6 +20,11 @@
             <span class="role-badge" [class.admin]="p.roleLibelle === 'ADMIN'">
               {{ p.roleLibelle === 'ADMIN' ? '🔧 Bibliothécaire' : '📖 Lecteur' }}
             </span>
+            @if (p.dateInscription) {
+              <span class="member-since">
+                  📅 Membre depuis le {{ p.dateInscription | date:'dd/MM/yyyy' }}
+              </span>
+            }
           </div>
         </div>
 

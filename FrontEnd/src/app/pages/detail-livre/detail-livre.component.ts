@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BookService } from '../../services/book.service';
-import { Book } from '../../models/book.model';
+import { LivreDto } from '../../models/livre.dto';
 import { Observable, switchMap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 
@@ -16,11 +16,15 @@ export class DetailLivreComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly bookService = inject(BookService);
 
-  livre$!: Observable<Book>;
+  // 1. On transforme la variable en un Signal initialisé à undefined
+  livre$!: Observable<LivreDto>;
 
   ngOnInit(): void {
     this.livre$ = this.route.paramMap.pipe(
-      switchMap(params => this.bookService.getById(Number(params.get('id'))))
+      switchMap(params => {
+        const id = Number(params.get('id'));
+        return this.bookService.getLivreDetails(id);
+      })
     );
   }
 
