@@ -15,7 +15,6 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api/livres")
-@CrossOrigin(origins = "http://localhost:4200")
 public class LivreController {
 
     // Service contenant la logique métier des livres
@@ -107,6 +106,7 @@ public class LivreController {
      */
     @PostMapping
     public ResponseEntity<Livre> create(@RequestBody Livre livre) {
+        livre.setId(null); // forcer INSERT : la SP doit recevoir NULL, pas 0
         Livre saved = livreService.saveLivre(livre);
         return ResponseEntity.ok(saved);
     }

@@ -85,6 +85,7 @@ public class CorsConfig {
                 .requestMatchers(HttpMethod.GET,
                         "/api/livres", "/api/livres/**",
                         "/api/categories", "/api/categories/**",
+                        "/api/statuts",
                         "/api/avis/livre/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/utilisateurs/bibliothecaire").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/utilisateurs/bibliothecaire/promouvoir").hasRole("ADMIN")

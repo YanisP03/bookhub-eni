@@ -17,8 +17,13 @@
           <div class="avatar">{{ p.prenom[0] }}{{ p.nom[0] }}</div>
           <div>
             <h2>{{ p.prenom }} {{ p.nom }}</h2>
-            <span class="role-badge" [class.admin]="p.roleLibelle === 'ADMIN'">
-              {{ p.roleLibelle === 'ADMIN' ? '🔧 Bibliothécaire' : '📖 Lecteur' }}
+            <span class="role-badge"
+                  [class.role-admin]="p.roleLibelle === 'ADMIN'"
+                  [class.role-biblio]="p.roleLibelle === 'BIBLIOTHECAIRE'"
+                  [class.role-lecteur]="p.roleLibelle === 'LECTEUR'">
+              {{ p.roleLibelle === 'ADMIN' ? 'Administrateur'
+               : p.roleLibelle === 'BIBLIOTHECAIRE' ? 'Bibliothécaire'
+               : 'Lecteur' }}
             </span>
             @if (p.dateInscription) {
               <span class="member-since">

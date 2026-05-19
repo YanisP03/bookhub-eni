@@ -73,7 +73,8 @@ public class LivreService {
         params.put("id_livre",        livre.getId());
         params.put("titre",           livre.getTitre());
         params.put("auteur",          livre.getAuteur());
-        params.put("isbn",            livre.getIsbn());
+        params.put("isbn", livre.getIsbn() != null && !livre.getIsbn().isBlank()
+                ? livre.getIsbn() : null);
         params.put("description",     livre.getDescription());
         params.put("couverture",      livre.getCouverture());
         params.put("datePublication", livre.getDatePublication() != null

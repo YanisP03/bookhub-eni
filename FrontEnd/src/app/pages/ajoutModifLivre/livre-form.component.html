@@ -122,8 +122,8 @@
                 class="form-control"
               >
                 <option [ngValue]="undefined" disabled>-- Choisir une catégorie --</option>
-                @for (cat of categories; track cat.id) {
-                  <option [ngValue]="cat.id">{{ cat.label }}</option>
+                @for (cat of categories(); track cat.id) {
+                  <option [ngValue]="cat.id">{{ cat.nom }}</option>
                 }
               </select>
             </div>
@@ -138,8 +138,8 @@
                 class="form-control"
               >
                 <option [ngValue]="undefined" disabled>-- Choisir un statut --</option>
-                @for (statut of statuts; track statut.id) {
-                  <option [ngValue]="statut.id">{{ statut.label }}</option>
+                @for (statut of statuts(); track statut.id) {
+                  <option [ngValue]="statut.id">{{ statut.libelle }}</option>
                 }
               </select>
             </div>

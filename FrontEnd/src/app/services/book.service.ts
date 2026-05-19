@@ -1,13 +1,22 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Book, BookCategory } from '../models/book.model';
+import { Book, BookCategory, Categorie, Statut } from '../models/book.model';
 import { LivreDto } from '../models/livre.dto';
 
 @Injectable({ providedIn: 'root' })
 export class BookService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost:8080/api/livres';
+  private readonly baseUrl = 'http://localhost:8080/api';
+
+  getCategories(): Observable<Categorie[]> {
+    return this.http.get<Categorie[]>(`${this.baseUrl}/categories`);
+  }
+
+  getStatuts(): Observable<Statut[]> {
+    return this.http.get<Statut[]>(`${this.baseUrl}/statuts`);
+  }
 
   getAll(): Observable<Book[]> {
     return this.http.get<Book[]>(this.apiUrl);

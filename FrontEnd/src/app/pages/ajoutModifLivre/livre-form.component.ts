@@ -1,8 +1,12 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 import { BookService } from '../../services/book.service';
-import { Book } from '../../models/book.model';
+import { Book, Categorie, Statut } from '../../models/book.model';
+
+// Libellés des statuts valides pour un livre
+const LIVRE_STATUTS = ['DISPONIBLE', 'EMPRUNTE'];
 
 @Component({
   selector: 'app-livre-form',
@@ -12,14 +16,17 @@ import { Book } from '../../models/book.model';
 })
 export class LivreFormComponent implements OnInit {
   private readonly livreService = inject(BookService);
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
+  private readonly route        = inject(ActivatedRoute);
+  private readonly router       = inject(Router);
 
-  isEditMode = signal(false);
-  isLoading = signal(false);
-  isSaving = signal(false);
-  errorMessage = signal<string | null>(null);
+  isEditMode    = signal(false);
+  isLoading     = signal(true);
+  isSaving      = signal(false);
+  errorMessage  = signal<string | null>(null);
   successMessage = signal<string | null>(null);
+
+  categories = signal<Categorie[]>([]);
+  statuts    = signal<Statut[]>([]);
 
   livre: Book = {
     id: 0,
@@ -35,37 +42,34 @@ export class LivreFormComponent implements OnInit {
     statut: { id: undefined },
   };
 
-  readonly categories: { id: number; label: string }[] = [
-    { id: 1, label: 'Roman' },
-    { id: 2, label: 'Science-Fiction' },
-    { id: 3, label: 'Fantasy' },
-    { id: 4, label: 'Policier' },
-    { id: 5, label: 'Biographie' },
-    { id: 6, label: 'Manga' },
-  ];
-
-  readonly statuts: { id: number; label: string }[] = [
-    { id: 1, label: 'Disponible' },
-    { id: 2, label: 'Indisponible' },
-    { id: 3, label: 'Archivé' },
-  ];
-
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.isEditMode.set(true);
-      this.isLoading.set(true);
-      this.livreService.getById(+id).subscribe({
-        next: livre => {
-          this.livre = livre;
+    const livreId = this.route.snapshot.paramMap.get('id');
+
+    // Chargement catégories + statuts en parallèle
+    forkJoin({
+      cats: this.livreService.getCategories(),
+      stats: this.livreService.getStatuts(),
+    }).subscribe({
+      next: ({ cats, stats }) => {
+        this.categories.set(cats);
+        // Seuls DISPONIBLE et EMPRUNTE sont valides pour un livre
+        this.statuts.set(stats.filter(s => s.libelle && LIVRE_STATUTS.includes(s.libelle)));
+
+        if (livreId) {
+          this.isEditMode.set(true);
+          this.livreService.getById(+livreId).subscribe({
+            next: livre => { this.livre = livre; this.isLoading.set(false); },
+            error: () => { this.errorMessage.set('Impossible de charger le livre.'); this.isLoading.set(false); },
+          });
+        } else {
           this.isLoading.set(false);
-        },
-        error: () => {
-          this.errorMessage.set('Impossible de charger le livre.');
-          this.isLoading.set(false);
-        },
-      });
-    }
+        }
+      },
+      error: () => {
+        this.errorMessage.set('Impossible de charger les données du formulaire.');
+        this.isLoading.set(false);
+      },
+    });
   }
 
   onSubmit(): void {
@@ -75,19 +79,17 @@ export class LivreFormComponent implements OnInit {
 
     const obs = this.isEditMode()
       ? this.livreService.update(this.livre.id, this.livre)
-      : this.livreService.create(this.livre);
+      : this.livreService.create(this.livre); // le backend force id=null pour l'INSERT
 
     obs.subscribe({
       next: () => {
         this.isSaving.set(false);
-        this.successMessage.set(
-          this.isEditMode() ? 'Livre modifié avec succès !' : 'Livre ajouté avec succès !'
-        );
+        this.successMessage.set(this.isEditMode() ? 'Livre modifié avec succès !' : 'Livre ajouté avec succès !');
         setTimeout(() => this.router.navigate(['/catalogue']), 1500);
       },
-      error: () => {
+      error: (e: any) => {
         this.isSaving.set(false);
-        this.errorMessage.set('Une erreur est survenue. Veuillez réessayer.');
+        this.errorMessage.set(e.error?.error ?? 'Une erreur est survenue. Veuillez réessayer.');
       },
     });
   }
