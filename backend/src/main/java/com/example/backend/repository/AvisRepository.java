@@ -24,6 +24,8 @@ public interface AvisRepository extends JpaRepository<Avis, Integer> {
     // Vérifier si l'utilisateur a déjà un avis sur ce livre
     Optional<Avis> findByUtilisateurAndLivre(Utilisateur utilisateur, Livre livre);
 
+    void deleteByUtilisateur(Utilisateur utilisateur);
+
     // Vérifier si l'utilisateur a déjà réservé le livre (condition métier)
     @Query(value = """
     SELECT COUNT(*) FROM RESERVATION r

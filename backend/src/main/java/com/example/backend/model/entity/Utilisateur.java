@@ -3,9 +3,9 @@ package com.example.backend.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 @Entity
 @Table(name = "UTILISATEUR")
@@ -32,8 +32,17 @@ public class Utilisateur {
     @Column(length = 20)
     private String telephone;
 
-    @Column(name = "dateInscription", insertable = false, updatable = false)
-    private LocalDate dateInscription;
+    @Column(name = "dateInscription", insertable = false, updatable = false, columnDefinition = "datetime2")
+    private LocalDateTime dateInscription;
+
+    @Column(columnDefinition = "INT DEFAULT 0")
+    private Integer nbRetards = 0;
+
+    @Column(columnDefinition = "BIT DEFAULT 0")
+    private Boolean bloque = false;
+
+    @Column
+    private LocalDateTime dateBlocageAuto;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_role", nullable = false)
@@ -71,8 +80,8 @@ public class Utilisateur {
     public String getTelephone() { return telephone; }
     public void setTelephone(String telephone) { this.telephone = telephone; }
 
-    public LocalDate getDateInscription() { return dateInscription; }
-    public void setDateInscription(LocalDate dateInscription) { this.dateInscription = dateInscription; }
+    public LocalDateTime getDateInscription() { return dateInscription; }
+    public void setDateInscription(LocalDateTime dateInscription) { this.dateInscription = dateInscription; }
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
@@ -80,4 +89,13 @@ public class Utilisateur {
     public List<Emprunt> getEmprunts() { return emprunts; }
     public List<Reservation> getReservations() { return reservations; }
     public List<Avis> getAvis() { return avis; }
+
+    public int getNbRetards() { return nbRetards != null ? nbRetards : 0; }
+    public void setNbRetards(int nbRetards) { this.nbRetards = nbRetards; }
+
+    public boolean isBloque() { return Boolean.TRUE.equals(bloque); }
+    public void setBloque(boolean bloque) { this.bloque = bloque; }
+
+    public LocalDateTime getDateBlocageAuto() { return dateBlocageAuto; }
+    public void setDateBlocageAuto(LocalDateTime dateBlocageAuto) { this.dateBlocageAuto = dateBlocageAuto; }
 }

@@ -1,7 +1,8 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ProfilService, DashboardStats } from '../../services/profil.service';
+import { DatePipe } from '@angular/common';
+import { ProfilService, DashboardStats, UtilisateurProfil } from '../../services/profil.service';
 import { BookService } from '../../services/book.service';
 import { AvisService, AvisDTO } from '../../services/avis.service';
 import { EmpruntService } from '../../services/emprunt.service';
@@ -11,7 +12,7 @@ import { Book } from '../../models/book.model';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, DatePipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
@@ -25,8 +26,10 @@ export class DashboardComponent implements OnInit {
   stats            = signal<DashboardStats | null>(null);
   avisEnAttente    = signal<AvisDTO[]>([]);
   demandesEmprunt  = signal<Emprunt[]>([]);
-  retoursEnAttente = signal<Emprunt[]>([]);
-  fileAttente      = signal<Reservation[]>([]);
+  retoursEnAttente      = signal<Emprunt[]>([]);
+  fileAttente           = signal<Reservation[]>([]);
+  reservationsNotifiees = signal<Reservation[]>([]);
+  notifieeMsg           = signal<string | null>(null);
   isLoading        = signal(true);
   error            = signal<string | null>(null);
   moderMsg         = signal<string | null>(null);
@@ -50,6 +53,27 @@ export class DashboardComponent implements OnInit {
   promouvoirMsg  = signal<string | null>(null);
   promouvoirErr  = signal<string | null>(null);
 
+  // Gestion des utilisateurs (admin)
+  utilisateurs     = signal<UtilisateurProfil[]>([]);
+  utilisateursMsg  = signal<string | null>(null);
+  utilisateursErr  = signal<string | null>(null);
+  newUserOpen      = signal(false);
+  newUser          = { nom: '', prenom: '', mail: '', motDePasse: '', role: 'LECTEUR' };
+
+  // Retards & blocages
+  retardataires    = signal<UtilisateurProfil[]>([]);
+  retardMsg        = signal<string | null>(null);
+
+  // État ouvert/fermé des sections (false = ouvert)
+  colDemandes     = signal(false);
+  colRetours      = signal(false);
+  colNotifiees    = signal(false);
+  colRetards      = signal(false);
+  colGestionUsers = signal(true);
+  colGestionBiblio= signal(true);
+  colModeration   = signal(false);
+  colFileAttente  = signal(false);
+
   ngOnInit(): void {
     this.profilService.getDashboardStats().subscribe({
       next:  s => { this.stats.set(s); this.isLoading.set(false); },
@@ -61,6 +85,9 @@ export class DashboardComponent implements OnInit {
     this.loadFileAttente();
     this.bookService.getPopulaires(10).subscribe({ next: l => this.top10.set(l) });
     this.profilService.getEvolution().subscribe({ next: e => this.evolution.set(e) });
+    if (this.auth.isAdmin()) this.loadUtilisateurs();
+    this.loadReservationsNotifiees();
+    this.loadRetardataires();
   }
 
   loadModeration(): void {
@@ -77,6 +104,24 @@ export class DashboardComponent implements OnInit {
 
   loadFileAttente(): void {
     this.empruntService.getFileAttente().subscribe({ next: list => this.fileAttente.set(list) });
+  }
+
+  loadReservationsNotifiees(): void {
+    this.empruntService.getReservationsNotifiees().subscribe({ next: list => this.reservationsNotifiees.set(list) });
+  }
+
+  confirmerRecuperation(reservationId: number): void {
+    this.empruntService.validerReservationNotifiee(reservationId).subscribe({
+      next: () => {
+        this.notifieeMsg.set('✅ Emprunt créé, livre remis au lecteur.');
+        this.loadReservationsNotifiees();
+        setTimeout(() => this.notifieeMsg.set(null), 3000);
+      },
+      error: (e: any) => {
+        this.notifieeMsg.set('⚠️ ' + (e.error?.error ?? 'Erreur.'));
+        setTimeout(() => this.notifieeMsg.set(null), 4000);
+      },
+    });
   }
 
   approuver(id: number): void {
@@ -134,6 +179,54 @@ export class DashboardComponent implements OnInit {
         setTimeout(() => this.biblioMsg.set(null), 4000);
       },
       error: (e: any) => this.biblioErr.set(e.error?.error ?? 'Erreur lors de la création.'),
+    });
+  }
+
+  loadRetardataires(): void {
+    this.profilService.listerRetardataires().subscribe({ next: u => this.retardataires.set(u) });
+  }
+
+  debloquer(id: number, nom: string): void {
+    this.profilService.debloquerUtilisateur(id).subscribe({
+      next: () => {
+        this.retardMsg.set(`✅ ${nom} a été débloqué.`);
+        this.loadRetardataires();
+        setTimeout(() => this.retardMsg.set(null), 3000);
+      },
+      error: () => this.retardMsg.set('⚠️ Erreur lors du déblocage.'),
+    });
+  }
+
+  loadUtilisateurs(): void {
+    this.profilService.listerUtilisateurs().subscribe({ next: u => this.utilisateurs.set(u) });
+  }
+
+  supprimerUtilisateur(id: number, nom: string): void {
+    if (!confirm(`Supprimer le compte de ${nom} ? Cette action est irréversible.`)) return;
+    this.profilService.supprimerUtilisateur(id).subscribe({
+      next: () => {
+        this.utilisateursMsg.set('✅ Compte supprimé.');
+        this.loadUtilisateurs();
+        setTimeout(() => this.utilisateursMsg.set(null), 3000);
+      },
+      error: (e: any) => {
+        this.utilisateursErr.set(e.error?.error ?? 'Erreur lors de la suppression.');
+        setTimeout(() => this.utilisateursErr.set(null), 4000);
+      },
+    });
+  }
+
+  ajouterUtilisateur(): void {
+    this.utilisateursMsg.set(null); this.utilisateursErr.set(null);
+    this.profilService.creerUtilisateur(this.newUser).subscribe({
+      next: () => {
+        this.utilisateursMsg.set(`✅ ${this.newUser.prenom} ${this.newUser.nom} ajouté.`);
+        this.newUser = { nom: '', prenom: '', mail: '', motDePasse: '', role: 'LECTEUR' };
+        this.newUserOpen.set(false);
+        this.loadUtilisateurs();
+        setTimeout(() => this.utilisateursMsg.set(null), 4000);
+      },
+      error: (e: any) => this.utilisateursErr.set(e.error?.error ?? 'Erreur lors de la création.'),
     });
   }
 

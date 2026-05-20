@@ -117,6 +117,20 @@
 .top-author { font-size: .6875rem; color: #94a3b8; display: block; }
 .top-note { font-size: .6875rem; font-weight: 600; color: #15803d; white-space: nowrap; flex-shrink: 0; }
 
+/* ── SECTIONS COLLAPSIBLES ───────────────────────────────────── */
+.section-head.collapsible { cursor: pointer; user-select: none; padding: .25rem .375rem; margin: -.25rem -.375rem; border-radius: 8px; }
+.section-head.collapsible:hover { background: rgba(74,222,128,.06); }
+.head-right { display: flex; align-items: center; gap: .5rem; }
+.chevron { font-size: .7rem; color: #94a3b8; }
+
+/* ── LISTE UTILISATEURS ──────────────────────────────────────── */
+.user-list { display: flex; flex-direction: column; gap: .5rem; }
+.user-row { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: .5rem .75rem; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; }
+.user-info { display: flex; flex-direction: column; min-width: 0; }
+.user-name { font-size: .875rem; font-weight: 700; color: #0f2218; }
+.user-meta { font-size: .75rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.btn-sm { padding: .25rem .625rem; font-size: .75rem; }
+
 /* ── RESPONSIVE ──────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .dash-columns { grid-template-columns: 1fr; }

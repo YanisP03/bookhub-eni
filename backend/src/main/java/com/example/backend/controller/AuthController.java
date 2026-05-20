@@ -5,6 +5,10 @@ import com.example.backend.dto.LoginRequestDto;
 import com.example.backend.dto.LoginResponseDto;
 import com.example.backend.dto.RegisterRequestDto;
 import com.example.backend.services.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+@Tag(name = "Authentification", description = "Connexion et inscription des utilisateurs")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -30,73 +35,60 @@ public class AuthController {
     private final AuthService authService;
 
     @Autowired
-    // Injection par constructeur (meilleure pratique que @Autowired sur les champs)
     public AuthController(AuthenticationManager authenticationManager, JwtUtils jwtUtils, AuthService authService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.authService = authService;
     }
 
-    /** Endpoint de test — vérifie que le token JWT est valide */
-    @GetMapping("/me")
-    public ResponseEntity<?> me(@AuthenticationPrincipal UserDetails user) {
-        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non authentifié");
-        return ResponseEntity.ok(java.util.Map.of("email", user.getUsername(), "roles", user.getAuthorities()));
-    }
-
-    /**
-     * Endpoint de connexion (US-AUTH-02 du CDC)
-     * URL obligatoire : /api/auth/login
-     */
+    @Operation(summary = "Connexion", description = "Authentifie un utilisateur et retourne un token JWT")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Connexion réussie — token JWT retourné"),
+        @ApiResponse(responseCode = "401", description = "Email ou mot de passe incorrect")
+    })
     @PostMapping("/login")
     public ResponseEntity<?> connexion(@Valid @RequestBody LoginRequestDto loginDto) {
         try {
-            // 1. Authentification de l'utilisateur via Spring Security
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginDto.getMail(), loginDto.getMotDePasse())
             );
-
-            // 2. Génération du Token JWT via votre classe utilitaire
             String jwt = jwtUtils.generateJwtToken(authentication);
-
-            // 3. Extraction du rôle de l'utilisateur connecté pour le passer au Front-end
             String role = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .findFirst()
                     .orElse("ROLE_LECTEUR");
-
-            // 4. Renvoi du LoginResponseDto contenant le token, l'email et le rôle
-            // C'est cet objet que votre application Angular va intercepter et stocker
-            LoginResponseDto response = new LoginResponseDto(jwt, authentication.getName(), role);
-            return ResponseEntity.ok(response);
-
+            return ResponseEntity.ok(new LoginResponseDto(jwt, authentication.getName(), role));
         } catch (AuthenticationException e) {
-            // En cas d'échec, renvoi d'une erreur 401 Unauthorized propre au format JSON
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Identifiants incorrects");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Identifiants incorrects");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
     }
 
-    /**
-     * Endpoint d'inscription (US-AUTH-01 du CDC)
-     * URL obligatoire : /api/auth/register
-     */
+    @Operation(summary = "Inscription", description = "Crée un nouveau compte lecteur")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Compte créé avec succès"),
+        @ApiResponse(responseCode = "400", description = "Email déjà utilisé ou données invalides")
+    })
     @PostMapping("/register")
     public ResponseEntity<?> inscription(@Valid @RequestBody RegisterRequestDto registerDto) {
         try {
-            // Appel au service pour enregistrer le lecteur
             authService.inscrire(registerDto);
-
-            Map<String, String> successResponse = new HashMap<>();
-            successResponse.put("message", "Utilisateur enregistré avec succès !");
-            return ResponseEntity.status(HttpStatus.CREATED).body(successResponse);
-
+            Map<String, String> ok = new HashMap<>();
+            ok.put("message", "Utilisateur enregistré avec succès !");
+            return ResponseEntity.status(HttpStatus.CREATED).body(ok);
         } catch (RuntimeException e) {
-            // Si l'email existe déjà par exemple (Erreur 400 Bad Request)
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
+    }
+
+    @Operation(summary = "Profil JWT", description = "Retourne l'email et les rôles de l'utilisateur connecté")
+    @ApiResponse(responseCode = "200", description = "Informations de l'utilisateur courant")
+    @GetMapping("/me")
+    public ResponseEntity<?> me(@AuthenticationPrincipal UserDetails user) {
+        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Non authentifié");
+        return ResponseEntity.ok(Map.of("email", user.getUsername(), "roles", user.getAuthorities()));
     }
 }

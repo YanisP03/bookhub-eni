@@ -1,6 +1,6 @@
 package com.example.backend.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class UtilisateurDto {
 
@@ -10,11 +10,16 @@ public class UtilisateurDto {
     private String mail;
     private String telephone;
     private String roleLibelle;
-    private LocalDate dateInscription;
+    private LocalDateTime dateInscription;
+    private int nbRetards;
+    private boolean bloque;
+    private LocalDateTime dateBlocageAuto;
 
     public UtilisateurDto() {}
 
-    public UtilisateurDto(Integer id, String nom, String prenom, String mail, String telephone, String roleLibelle,  LocalDate dateInscription) {
+    public UtilisateurDto(Integer id, String nom, String prenom, String mail, String telephone,
+                          String roleLibelle, LocalDateTime dateInscription,
+                          int nbRetards, boolean bloque, LocalDateTime dateBlocageAuto) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;
@@ -22,6 +27,9 @@ public class UtilisateurDto {
         this.telephone = telephone;
         this.roleLibelle = roleLibelle;
         this.dateInscription = dateInscription;
+        this.nbRetards = nbRetards;
+        this.bloque = bloque;
+        this.dateBlocageAuto = dateBlocageAuto;
     }
 
     public Integer getId() { return id; }
@@ -39,9 +47,18 @@ public class UtilisateurDto {
     public String getTelephone() { return telephone; }
     public void setTelephone(String telephone) { this.telephone = telephone; }
 
-    public LocalDate getDateInscription() { return dateInscription; }
-    public void setDateInscription(LocalDate dateInscription) { this.dateInscription = dateInscription; }
+    public LocalDateTime getDateInscription() { return dateInscription; }
+    public void setDateInscription(LocalDateTime dateInscription) { this.dateInscription = dateInscription; }
 
     public String getRoleLibelle() { return roleLibelle; }
     public void setRoleLibelle(String roleLibelle) { this.roleLibelle = roleLibelle; }
+
+    public int getNbRetards() { return nbRetards; }
+    public void setNbRetards(int nbRetards) { this.nbRetards = nbRetards; }
+
+    public boolean isBloque() { return bloque; }
+    public void setBloque(boolean bloque) { this.bloque = bloque; }
+
+    public LocalDateTime getDateBlocageAuto() { return dateBlocageAuto; }
+    public void setDateBlocageAuto(LocalDateTime dateBlocageAuto) { this.dateBlocageAuto = dateBlocageAuto; }
 }

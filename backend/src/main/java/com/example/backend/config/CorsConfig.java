@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -42,14 +42,15 @@ public class CorsConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(customUserDetailsService);
         provider.setPasswordEncoder(passwordEndcoder());
         return provider;
     }
 
     @Bean
-    public AuthenticationManager authentificationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    public AuthenticationManager authentificationManager() {
+        return new ProviderManager(authenticationProvider());
     }
 
     /**
@@ -60,7 +61,7 @@ public class CorsConfig {
     @Order(-1)
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        config.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:8080"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept",
                 "X-Requested-With", "Origin", "Access-Control-Request-Method",
@@ -81,6 +82,11 @@ public class CorsConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers(
+                        "/v3/api-docs", "/v3/api-docs/**",
+                        "/swagger-ui/**", "/swagger-ui.html",
+                        "/webjars/**"
+                ).permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET,
                         "/api/livres", "/api/livres/**",
@@ -89,10 +95,18 @@ public class CorsConfig {
                         "/api/avis/livre/**",
                         "/uploads/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/upload/**").hasAnyRole("ADMIN", "BIBLIOTHECAIRE")
+                .requestMatchers(HttpMethod.POST, "/api/livres").hasAnyRole("ADMIN", "BIBLIOTHECAIRE")
+                .requestMatchers(HttpMethod.PUT, "/api/livres/**").hasAnyRole("ADMIN", "BIBLIOTHECAIRE")
+                .requestMatchers(HttpMethod.DELETE, "/api/livres/**").hasAnyRole("ADMIN", "BIBLIOTHECAIRE")
+                .requestMatchers(HttpMethod.GET, "/api/utilisateurs/retardataires").hasAnyRole("ADMIN", "BIBLIOTHECAIRE")
+                .requestMatchers(HttpMethod.PUT, "/api/utilisateurs/*/debloquer").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/utilisateurs").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/utilisateurs/*").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/utilisateurs/admin/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/utilisateurs/bibliothecaire").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/utilisateurs/bibliothecaire/promouvoir").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/reservations/file-attente").hasAnyRole("ADMIN", "BIBLIOTHECAIRE")
-                    .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/reservations/file-attente", "/api/reservations/notifiees").hasAnyRole("ADMIN", "BIBLIOTHECAIRE")
+                .requestMatchers(HttpMethod.PUT, "/api/emprunts/reservations/**").hasAnyRole("ADMIN", "BIBLIOTHECAIRE")
                 // Tout le reste nécessite un token JWT valide
                 .anyRequest().authenticated()
             )

@@ -38,6 +38,21 @@ public class ReservationService {
         Livre livre = livreRepository.findById(livreId)
                 .orElseThrow(() -> new ResourceNotFoundException("Livre introuvable"));
 
+        // Vérifier si l'utilisateur est bloqué
+        if (user.isBloque()) {
+            if (user.getDateBlocageAuto() != null && java.time.LocalDateTime.now().isAfter(user.getDateBlocageAuto())) {
+                user.setBloque(false);
+                user.setDateBlocageAuto(null);
+                user.setNbRetards(0);
+                utilisateurRepository.save(user);
+            } else {
+                String date = user.getDateBlocageAuto() != null
+                        ? user.getDateBlocageAuto().toLocalDate().toString() : "indéterminée";
+                throw new BusinessException(
+                        "Votre compte est suspendu jusqu'au " + date + " suite à trop de retards.");
+            }
+        }
+
         Statut enAttente = getStatut("EN_ATTENTE");
 
         if (livre.getNbDisponibles() > 0)
@@ -75,6 +90,11 @@ public class ReservationService {
             restantes.get(i).setPositionFileAttente(i + 1);
             reservationRepository.save(restantes.get(i));
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Reservation> getReservationsNotifiees() {
+        return reservationRepository.findByStatutOrderByLivreTitreAscPositionFileAttenteAsc(getStatut("NOTIFIEE"));
     }
 
     @Transactional(readOnly = true)

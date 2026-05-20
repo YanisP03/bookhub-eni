@@ -9,7 +9,7 @@
           <h1 class="dash-title">Tableau de bord</h1>
         </div>
         <div class="header-actions">
-          @if (auth.isAdmin()) {
+          @if (auth.isStaff()) {
             <a routerLink="/livres/nouveau" class="btn-add">+ Ajouter un livre</a>
           }
         </div>
@@ -46,121 +46,302 @@
 
           <!-- DEMANDES D'EMPRUNT -->
           <section class="dash-section">
-            <div class="section-head">
+            <div class="section-head collapsible" (click)="colDemandes.set(!colDemandes())">
               <h2>Demandes d'emprunt</h2>
-              <span class="badge-count" [class.badge-zero]="demandesEmprunt().length === 0">{{ demandesEmprunt().length }}</span>
-            </div>
-            @if (empruntMsg()) { <div class="section-msg">{{ empruntMsg() }}</div> }
-            @if (demandesEmprunt().length === 0) {
-              <p class="section-empty">Aucune demande en attente.</p>
-            } @else {
-              <div class="action-list">
-                @for (e of demandesEmprunt(); track e.id) {
-                  <div class="action-row">
-                    <div class="action-info">
-                      <span class="action-title">{{ e.livre.titre }}</span>
-                      <span class="action-sub">{{ e.utilisateur?.prenom }} {{ e.utilisateur?.nom }} · {{ formatDate(e.dateEmprunt) }}</span>
-                    </div>
-                    <div class="action-btns">
-                      <button class="btn-ok" (click)="validerEmprunt(e.id)">Valider</button>
-                      <button class="btn-ko" (click)="refuserEmprunt(e.id)">Refuser</button>
-                    </div>
-                  </div>
-                }
+              <div class="head-right">
+                <span class="badge-count" [class.badge-zero]="demandesEmprunt().length === 0">{{ demandesEmprunt().length }}</span>
+                <span class="chevron">{{ colDemandes() ? '▲' : '▼' }}</span>
               </div>
+            </div>
+            @if (!colDemandes()) {
+              @if (empruntMsg()) { <div class="section-msg">{{ empruntMsg() }}</div> }
+              @if (demandesEmprunt().length === 0) {
+                <p class="section-empty">Aucune demande en attente.</p>
+              } @else {
+                <div class="action-list">
+                  @for (e of demandesEmprunt(); track e.id) {
+                    <div class="action-row">
+                      <div class="action-info">
+                        <span class="action-title">{{ e.livre.titre }}</span>
+                        <span class="action-sub">{{ e.utilisateur?.prenom }} {{ e.utilisateur?.nom }} · {{ formatDate(e.dateEmprunt) }}</span>
+                      </div>
+                      <div class="action-btns">
+                        <button class="btn-ok" (click)="validerEmprunt(e.id)">Valider</button>
+                        <button class="btn-ko" (click)="refuserEmprunt(e.id)">Refuser</button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
             }
           </section>
 
           <!-- RETOURS EN ATTENTE -->
           <section class="dash-section">
-            <div class="section-head">
+            <div class="section-head collapsible" (click)="colRetours.set(!colRetours())">
               <h2>Retours à valider</h2>
-              <span class="badge-count" [class.badge-zero]="retoursEnAttente().length === 0">{{ retoursEnAttente().length }}</span>
-            </div>
-            @if (retourMsg()) { <div class="section-msg">{{ retourMsg() }}</div> }
-            @if (retoursEnAttente().length === 0) {
-              <p class="section-empty">Aucun retour en attente.</p>
-            } @else {
-              <div class="action-list">
-                @for (e of retoursEnAttente(); track e.id) {
-                  <div class="action-row" [class.action-row--retard]="e.dateRetourPrevue && formatDate(e.dateRetourPrevue) < formatDate(today)">
-                    <div class="action-info">
-                      <span class="action-title">{{ e.livre.titre }}</span>
-                      <span class="action-sub">{{ e.utilisateur?.prenom }} {{ e.utilisateur?.nom }}</span>
-                      @if (e.dateRetourPrevue) {
-                        <span class="action-sub" [class.text-retard]="e.dateRetourPrevue < today">
-                          Prévu le {{ formatDate(e.dateRetourPrevue) }}
-                          @if (e.dateRetourPrevue < today) { · <strong>EN RETARD</strong> }
-                        </span>
-                      }
-                    </div>
-                    <div class="action-btns">
-                      <button class="btn-ok" (click)="validerRetour(e.id)">Confirmer retour</button>
-                    </div>
-                  </div>
-                }
+              <div class="head-right">
+                <span class="badge-count" [class.badge-zero]="retoursEnAttente().length === 0">{{ retoursEnAttente().length }}</span>
+                <span class="chevron">{{ colRetours() ? '▲' : '▼' }}</span>
               </div>
+            </div>
+            @if (!colRetours()) {
+              @if (retourMsg()) { <div class="section-msg">{{ retourMsg() }}</div> }
+              @if (retoursEnAttente().length === 0) {
+                <p class="section-empty">Aucun retour en attente.</p>
+              } @else {
+                <div class="action-list">
+                  @for (e of retoursEnAttente(); track e.id) {
+                    <div class="action-row" [class.action-row--retard]="e.dateRetourPrevue && formatDate(e.dateRetourPrevue) < formatDate(today)">
+                      <div class="action-info">
+                        <span class="action-title">{{ e.livre.titre }}</span>
+                        <span class="action-sub">{{ e.utilisateur?.prenom }} {{ e.utilisateur?.nom }}</span>
+                        @if (e.dateRetourPrevue) {
+                          <span class="action-sub" [class.text-retard]="e.dateRetourPrevue < today">
+                            Prévu le {{ formatDate(e.dateRetourPrevue) }}
+                            @if (e.dateRetourPrevue < today) { · <strong>EN RETARD</strong> }
+                          </span>
+                        }
+                      </div>
+                      <div class="action-btns">
+                        <button class="btn-ok" (click)="validerRetour(e.id)">Confirmer retour</button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
             }
           </section>
 
+          <!-- RÉSERVATIONS NOTIFIÉES -->
+          <section class="dash-section">
+            <div class="section-head collapsible" (click)="colNotifiees.set(!colNotifiees())">
+              <h2>Réservations à convertir</h2>
+              <div class="head-right">
+                <span class="badge-count" [class.badge-zero]="reservationsNotifiees().length === 0">{{ reservationsNotifiees().length }}</span>
+                <span class="chevron">{{ colNotifiees() ? '▲' : '▼' }}</span>
+              </div>
+            </div>
+            @if (!colNotifiees()) {
+              @if (notifieeMsg()) { <div class="section-msg">{{ notifieeMsg() }}</div> }
+              @if (reservationsNotifiees().length === 0) {
+                <p class="section-empty">Aucun lecteur à notifier.</p>
+              } @else {
+                <div class="action-list">
+                  @for (r of reservationsNotifiees(); track r.id) {
+                    <div class="action-row">
+                      <div class="action-info">
+                        <span class="action-title">{{ r.livre.titre }}</span>
+                        <span class="action-sub">{{ r.utilisateur?.prenom }} {{ r.utilisateur?.nom }} · {{ r.utilisateur?.mail }}</span>
+                        <span class="action-sub">Réservé le {{ formatDate(r.dateReservation) }}</span>
+                      </div>
+                      <div class="action-btns">
+                        <button class="btn-ok" (click)="confirmerRecuperation(r.id)">Remettre le livre</button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            }
+          </section>
+
+          <!-- RETARDS & BLOCAGES -->
+          <section class="dash-section">
+            <div class="section-head collapsible" (click)="colRetards.set(!colRetards())">
+              <h2>Retards & blocages</h2>
+              <div class="head-right">
+                <span class="badge-count" [class.badge-zero]="retardataires().length === 0">{{ retardataires().length }}</span>
+                <span class="chevron">{{ colRetards() ? '▲' : '▼' }}</span>
+              </div>
+            </div>
+            @if (!colRetards()) {
+              @if (retardMsg()) { <div class="section-msg">{{ retardMsg() }}</div> }
+              @if (retardataires().length === 0) {
+                <p class="section-empty">Aucun retard en cours.</p>
+              } @else {
+                <div class="action-list">
+                  @for (u of retardataires(); track u.id) {
+                    <div class="action-row" [class.action-row--retard]="u.bloque">
+                      <div class="action-info">
+                        <span class="action-title">{{ u.prenom }} {{ u.nom }}</span>
+                        <span class="action-sub">{{ u.mail }}</span>
+                        @if (u.bloque) {
+                          <span class="action-sub text-retard">
+                            🔒 Bloqué jusqu'au {{ u.dateBlocageAuto | date:'dd/MM/yyyy' }}
+                          </span>
+                        } @else {
+                          <span class="action-sub">⚠️ {{ u.nbRetards }} retard(s) cumulé(s)</span>
+                        }
+                      </div>
+                      <div class="action-btns">
+                        @if (auth.isAdmin() && u.bloque) {
+                          <button class="btn-ok" (click)="debloquer(u.id, u.prenom + ' ' + u.nom)">Débloquer</button>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            }
+          </section>
+
+          <!-- GESTION UTILISATEURS (admin) -->
+          @if (auth.isAdmin()) {
+            <section class="dash-section">
+              <div class="section-head collapsible" (click)="colGestionUsers.set(!colGestionUsers())">
+                <h2>Gestion des utilisateurs</h2>
+                <div class="head-right">
+                  <span class="badge-count" [class.badge-zero]="utilisateurs().length === 0">{{ utilisateurs().length }}</span>
+                  <span class="chevron">{{ colGestionUsers() ? '▲' : '▼' }}</span>
+                </div>
+              </div>
+              @if (!colGestionUsers()) {
+                @if (utilisateursMsg()) { <div class="section-msg">{{ utilisateursMsg() }}</div> }
+                @if (utilisateursErr()) { <div class="section-err">⚠️ {{ utilisateursErr() }}</div> }
+                <div class="user-list">
+                  @for (u of utilisateurs(); track u.id) {
+                    <div class="user-row">
+                      <div class="user-info">
+                        <span class="user-name">{{ u.prenom }} {{ u.nom }}</span>
+                        <span class="user-meta">{{ u.mail }} · <em>{{ u.roleLibelle }}</em></span>
+                      </div>
+                      <button class="btn-ko btn-sm" (click)="supprimerUtilisateur(u.id, u.prenom + ' ' + u.nom)">Supprimer</button>
+                    </div>
+                  }
+                  @if (utilisateurs().length === 0) {
+                    <p class="section-empty">Aucun utilisateur.</p>
+                  }
+                </div>
+                <div class="biblio-block" style="margin-top:1rem">
+                  <div class="biblio-toggle" (click)="newUserOpen.set(!newUserOpen())">
+                    <p class="biblio-label">Ajouter un utilisateur</p>
+                    <span class="toggle-chevron">{{ newUserOpen() ? '▲' : '▼' }}</span>
+                  </div>
+                  @if (newUserOpen()) {
+                    <form class="biblio-form" (ngSubmit)="ajouterUtilisateur()">
+                      <input class="form-input" placeholder="Nom *" [(ngModel)]="newUser.nom" name="uNom" required />
+                      <input class="form-input" placeholder="Prénom *" [(ngModel)]="newUser.prenom" name="uPrenom" required />
+                      <input class="form-input" placeholder="Email *" type="email" [(ngModel)]="newUser.mail" name="uMail" required />
+                      <input class="form-input" placeholder="Mot de passe * (12 car. min.)" type="password" [(ngModel)]="newUser.motDePasse" name="uMdp" required />
+                      <select class="form-input" [(ngModel)]="newUser.role" name="uRole">
+                        <option value="LECTEUR">Lecteur</option>
+                        <option value="BIBLIOTHECAIRE">Bibliothécaire</option>
+                      </select>
+                      <button type="submit" class="btn-ok" style="width:100%">Créer le compte</button>
+                    </form>
+                  }
+                </div>
+              }
+            </section>
+
+            <!-- GESTION BIBLIOTHÉCAIRES (admin) -->
+            <section class="dash-section">
+              <div class="section-head collapsible" (click)="colGestionBiblio.set(!colGestionBiblio())">
+                <h2>Gestion bibliothécaires</h2>
+                <div class="head-right">
+                  <span class="chevron">{{ colGestionBiblio() ? '▲' : '▼' }}</span>
+                </div>
+              </div>
+              @if (!colGestionBiblio()) {
+                @if (biblioMsg()) { <div class="section-msg">{{ biblioMsg() }}</div> }
+                <div class="biblio-block">
+                  <p class="biblio-label">Promouvoir un compte existant</p>
+                  @if (promouvoirMsg()) { <div class="section-msg">{{ promouvoirMsg() }}</div> }
+                  @if (promouvoirErr()) { <div class="section-err">⚠️ {{ promouvoirErr() }}</div> }
+                  <div class="inline-form">
+                    <input class="form-input" placeholder="Email du membre" type="email"
+                           [(ngModel)]="promouvoirMail" name="pMail" />
+                    <button class="btn-ok" (click)="promouvoir()" [disabled]="!promouvoirMail">Promouvoir</button>
+                  </div>
+                </div>
+                <div class="biblio-block">
+                  <div class="biblio-toggle" (click)="biblioOpen.set(!biblioOpen())">
+                    <p class="biblio-label">Créer un nouveau compte</p>
+                    <span class="toggle-chevron">{{ biblioOpen() ? '▲' : '▼' }}</span>
+                  </div>
+                  @if (biblioOpen()) {
+                    @if (biblioErr()) { <div class="section-err">⚠️ {{ biblioErr() }}</div> }
+                    <form class="biblio-form" (ngSubmit)="ajouterBibliothecaire()">
+                      <input class="form-input" placeholder="Nom *" [(ngModel)]="biblio.nom" name="bNom" required />
+                      <input class="form-input" placeholder="Prénom *" [(ngModel)]="biblio.prenom" name="bPrenom" required />
+                      <input class="form-input" placeholder="Email *" type="email" [(ngModel)]="biblio.mail" name="bMail" required />
+                      <input class="form-input" placeholder="Mot de passe * (12 car. min.)" type="password" [(ngModel)]="biblio.motDePasse" name="bMdp" required />
+                      <button type="submit" class="btn-ok" style="width:100%">Créer le compte</button>
+                    </form>
+                  }
+                </div>
+              }
+            </section>
+          }
+
           <!-- MODÉRATION AVIS -->
           <section class="dash-section">
-            <div class="section-head">
+            <div class="section-head collapsible" (click)="colModeration.set(!colModeration())">
               <h2>Modération des avis</h2>
-              <span class="badge-count" [class.badge-zero]="avisEnAttente().length === 0">{{ avisEnAttente().length }}</span>
-            </div>
-            @if (moderMsg()) { <div class="section-msg">{{ moderMsg() }}</div> }
-            @if (avisEnAttente().length === 0) {
-              <p class="section-empty">Aucun avis en attente.</p>
-            } @else {
-              <div class="action-list">
-                @for (a of avisEnAttente(); track a.id) {
-                  <div class="action-row">
-                    <div class="action-info">
-                      <span class="action-title">{{ a.nomLivre }}</span>
-                      <span class="action-sub">{{ a.nomUtilisateur }} ·
-                        @for (star of getStars(a.note); track $index) {
-                          <span class="star" [class.full]="star === 'full'">★</span>
-                        }
-                      </span>
-                      @if (a.commentaire) { <span class="action-comment">{{ a.commentaire }}</span> }
-                    </div>
-                    <div class="action-btns">
-                      <button class="btn-ok" (click)="approuver(a.id)">Approuver</button>
-                      <button class="btn-ko" (click)="rejeter(a.id)">Rejeter</button>
-                    </div>
-                  </div>
-                }
+              <div class="head-right">
+                <span class="badge-count" [class.badge-zero]="avisEnAttente().length === 0">{{ avisEnAttente().length }}</span>
+                <span class="chevron">{{ colModeration() ? '▲' : '▼' }}</span>
               </div>
+            </div>
+            @if (!colModeration()) {
+              @if (moderMsg()) { <div class="section-msg">{{ moderMsg() }}</div> }
+              @if (avisEnAttente().length === 0) {
+                <p class="section-empty">Aucun avis en attente.</p>
+              } @else {
+                <div class="action-list">
+                  @for (a of avisEnAttente(); track a.id) {
+                    <div class="action-row">
+                      <div class="action-info">
+                        <span class="action-title">{{ a.nomLivre }}</span>
+                        <span class="action-sub">{{ a.nomUtilisateur }} ·
+                          @for (star of getStars(a.note); track $index) {
+                            <span class="star" [class.full]="star === 'full'">★</span>
+                          }
+                        </span>
+                        @if (a.commentaire) { <span class="action-comment">{{ a.commentaire }}</span> }
+                      </div>
+                      <div class="action-btns">
+                        <button class="btn-ok" (click)="approuver(a.id)">Approuver</button>
+                        <button class="btn-ko" (click)="rejeter(a.id)">Rejeter</button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
             }
           </section>
 
         </div>
 
-        <!-- COLONNE DROITE — info + admin -->
+        <!-- COLONNE DROITE — info -->
         <div class="dash-col">
 
           <!-- FILE D'ATTENTE RÉSERVATIONS -->
           <section class="dash-section">
-            <div class="section-head">
+            <div class="section-head collapsible" (click)="colFileAttente.set(!colFileAttente())">
               <h2>File d'attente</h2>
-              <span class="badge-count" [class.badge-zero]="fileAttente().length === 0">{{ fileAttente().length }}</span>
-            </div>
-            @if (fileAttente().length === 0) {
-              <p class="section-empty">Aucune réservation en attente.</p>
-            } @else {
-              <div class="queue-list">
-                @for (r of fileAttente(); track r.id) {
-                  <div class="queue-row">
-                    <span class="queue-pos">#{{ r.positionFileAttente }}</span>
-                    <div class="queue-info">
-                      <span class="action-title">{{ r.livre.titre }}</span>
-                      <span class="action-sub">{{ r.utilisateur?.prenom }} {{ r.utilisateur?.nom }}</span>
-                    </div>
-                    <span class="queue-date">{{ formatDate(r.dateReservation) }}</span>
-                  </div>
-                }
+              <div class="head-right">
+                <span class="badge-count" [class.badge-zero]="fileAttente().length === 0">{{ fileAttente().length }}</span>
+                <span class="chevron">{{ colFileAttente() ? '▲' : '▼' }}</span>
               </div>
+            </div>
+            @if (!colFileAttente()) {
+              @if (fileAttente().length === 0) {
+                <p class="section-empty">Aucune réservation en attente.</p>
+              } @else {
+                <div class="queue-list">
+                  @for (r of fileAttente(); track r.id) {
+                    <div class="queue-row">
+                      <span class="queue-pos">#{{ r.positionFileAttente }}</span>
+                      <div class="queue-info">
+                        <span class="action-title">{{ r.livre.titre }}</span>
+                        <span class="action-sub">{{ r.utilisateur?.prenom }} {{ r.utilisateur?.nom }}</span>
+                      </div>
+                      <span class="queue-date">{{ formatDate(r.dateReservation) }}</span>
+                    </div>
+                  }
+                </div>
+              }
             }
           </section>
 
@@ -204,50 +385,11 @@
             <h2 class="section-title-simple">Actions rapides</h2>
             <div class="quick-grid">
               <a routerLink="/catalogue" class="quick-card"><span>📖</span>Catalogue</a>
-              @if (auth.isAdmin()) {
+              @if (auth.isStaff()) {
                 <a routerLink="/livres/nouveau" class="quick-card"><span>➕</span>Ajouter livre</a>
               }
             </div>
           </section>
-
-          <!-- CRÉER / PROMOUVOIR BIBLIOTHÉCAIRE (admin uniquement) -->
-          @if (auth.isAdmin()) {
-            <section class="dash-section">
-              <h2 class="section-title-simple">Gestion bibliothécaires</h2>
-              @if (biblioMsg()) { <div class="section-msg">{{ biblioMsg() }}</div> }
-
-              <!-- Promouvoir un compte existant -->
-              <div class="biblio-block">
-                <p class="biblio-label">Promouvoir un compte existant</p>
-                @if (promouvoirMsg()) { <div class="section-msg">{{ promouvoirMsg() }}</div> }
-                @if (promouvoirErr()) { <div class="section-err">⚠️ {{ promouvoirErr() }}</div> }
-                <div class="inline-form">
-                  <input class="form-input" placeholder="Email du membre" type="email"
-                         [(ngModel)]="promouvoirMail" name="pMail" />
-                  <button class="btn-ok" (click)="promouvoir()" [disabled]="!promouvoirMail">Promouvoir</button>
-                </div>
-              </div>
-
-              <!-- Créer un nouveau compte -->
-              <div class="biblio-block">
-                <div class="biblio-toggle" (click)="biblioOpen.set(!biblioOpen())">
-                  <p class="biblio-label">Créer un nouveau compte</p>
-                  <span class="toggle-chevron">{{ biblioOpen() ? '▲' : '▼' }}</span>
-                </div>
-                @if (biblioOpen()) {
-                  @if (biblioErr()) { <div class="section-err">⚠️ {{ biblioErr() }}</div> }
-                  <form class="biblio-form" (ngSubmit)="ajouterBibliothecaire()">
-                    <input class="form-input" placeholder="Nom *" [(ngModel)]="biblio.nom" name="bNom" required />
-                    <input class="form-input" placeholder="Prénom *" [(ngModel)]="biblio.prenom" name="bPrenom" required />
-                    <input class="form-input" placeholder="Email *" type="email" [(ngModel)]="biblio.mail" name="bMail" required />
-                    <input class="form-input" placeholder="Mot de passe * (12 car. min.)" type="password" [(ngModel)]="biblio.motDePasse" name="bMdp" required />
-                    <button type="submit" class="btn-ok" style="width:100%">Créer le compte</button>
-                  </form>
-                }
-              </div>
-
-            </section>
-          }
 
         </div>
       </div>

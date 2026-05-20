@@ -3,11 +3,18 @@
     "allow": [
       "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\" -Recurse -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -match \"^\\(db|migrations|schema|sql|flyway|liquibase\\)$\" } | Select-Object -ExpandProperty FullName)",
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\backend\\\\src\\\\main\\\\java\\\\com\\\\example\\\\backend\" -Recurse -Filter \"*.java\")",
-      "Bash(xargs basename -a)"
+      "Bash(xargs basename -a)",
+      "Bash(dir \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\backend\" /B)",
+      "Bash(dir \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\backend\\\\uploads\" /B /S)",
+      "Bash(dir \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\FrontEnd\\\\public\" /B)",
+      "PowerShell(Copy-Item \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\FrontEnd\\\\src\\\\app\\\\pages\\\\profil\\\\Logo\\\\logo.png\" \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\FrontEnd\\\\public\\\\logo.png\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\backend\\src\\main\\resources",
-      "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\backend\\src\\test\\java\\com\\example\\backend\\services"
+      "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\backend\\src\\test\\java\\com\\example\\backend\\services",
+      "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\backend\\src\\main\\java\\com\\example\\backend\\dto",
+      "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\backend",
+      "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni"
     ]
   }
 }

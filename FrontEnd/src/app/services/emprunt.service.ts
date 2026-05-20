@@ -47,6 +47,14 @@ export class EmpruntService {
     return this.http.get<Reservation[]>(`${this.baseUrl}/reservations/file-attente`);
   }
 
+  getReservationsNotifiees(): Observable<Reservation[]> {
+    return this.http.get<Reservation[]>(`${this.baseUrl}/reservations/notifiees`);
+  }
+
+  validerReservationNotifiee(reservationId: number): Observable<Emprunt> {
+    return this.http.put<Emprunt>(`${this.baseUrl}/emprunts/reservations/${reservationId}/valider`, {});
+  }
+
   // ── Réservations ───────────────────────────────────────────────────────────
 
   getMesReservations(): Observable<Reservation[]> {

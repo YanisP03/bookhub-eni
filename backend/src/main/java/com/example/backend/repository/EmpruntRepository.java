@@ -35,4 +35,6 @@ public interface EmpruntRepository extends JpaRepository<Emprunt, Integer> {
      *  Évite les doublons avant appel à la procédure stockée. */
     @Query("SELECT COUNT(e) > 0 FROM Emprunt e WHERE e.utilisateur = :user AND e.livre = :livre AND e.statut.libelle IN ('DEMANDE', 'EN_COURS')")
     boolean hasEmpruntActifPourLivre(@Param("user") Utilisateur user, @Param("livre") Livre livre);
+
+    void deleteByUtilisateur(Utilisateur utilisateur);
 }

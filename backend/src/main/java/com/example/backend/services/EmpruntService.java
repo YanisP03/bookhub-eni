@@ -99,6 +99,9 @@ public class EmpruntService {
         Livre livre = livreRepository.findById(livreId)
                 .orElseThrow(() -> new ResourceNotFoundException("Livre introuvable"));
 
+        // Règle : compte bloqué
+        verifierBlocage(user);
+
         // Règle : max MAX_EMPRUNTS_ACTIFS emprunts simultanés
         long nbActifs = empruntRepository.countActifsByUtilisateur(user);
         if (nbActifs >= MAX_EMPRUNTS_ACTIFS)
@@ -243,6 +246,16 @@ public class EmpruntService {
         if (emprunt.getDateRetourPrevue() != null && now.isAfter(emprunt.getDateRetourPrevue())) {
             long jours = ChronoUnit.DAYS.between(emprunt.getDateRetourPrevue(), now);
             emprunt.setJoursRetard((int) jours);
+
+            // Comptabiliser le retard sur l'utilisateur
+            Utilisateur user = emprunt.getUtilisateur();
+            user.setNbRetards(user.getNbRetards() + 1);
+            if (user.getNbRetards() >= 3) {
+                user.setBloque(true);
+                user.setDateBlocageAuto(now.plusDays(5));
+                user.setNbRetards(0);
+            }
+            utilisateurRepository.save(user);
         }
 
         // Libérer l'exemplaire dans le stock
@@ -292,6 +305,42 @@ public class EmpruntService {
     }
 
     /**
+     * Convertit une réservation NOTIFIEE en emprunt EN_COURS directement.
+     * Utilisé par le bibliothécaire quand le lecteur vient récupérer le livre.
+     *
+     * Endpoint : PUT /api/emprunts/reservations/{id}/valider
+     */
+    public Emprunt validerReservationNotifiee(Integer reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Réservation introuvable"));
+
+        if (!"NOTIFIEE".equals(reservation.getStatut().getLibelle()))
+            throw new BusinessException("Cette réservation n'est pas en statut NOTIFIEE.");
+
+        Utilisateur user = reservation.getUtilisateur();
+        Livre livre = reservation.getLivre();
+
+        if (livre.getNbDisponibles() <= 0)
+            throw new BusinessException("Aucun exemplaire disponible pour ce livre.");
+
+        livre.setNbDisponibles(livre.getNbDisponibles() - 1);
+        if (livre.getNbDisponibles() == 0)
+            livre.setStatut(getStatut("EMPRUNTE"));
+        livreRepository.save(livre);
+
+        reservation.setStatut(getStatut("CONVERTIE"));
+        reservationRepository.save(reservation);
+
+        Emprunt emprunt = new Emprunt();
+        emprunt.setUtilisateur(user);
+        emprunt.setLivre(livre);
+        emprunt.setDateEmprunt(LocalDateTime.now());
+        emprunt.setDateRetourPrevue(LocalDateTime.now().plusDays(DUREE_EMPRUNT_JOURS));
+        emprunt.setStatut(getStatut("EN_COURS"));
+        return empruntRepository.save(emprunt);
+    }
+
+    /**
      * Position (1-based) d'un emprunt dans la file d'attente DEMANDE de son livre.
      * Retourne -1 si l'emprunt n'est pas dans la file.
      * Endpoint : GET /api/emprunts/{id}/position
@@ -328,6 +377,21 @@ public class EmpruntService {
      * Lance ResourceNotFoundException si le statut n'existe pas en base
      * (protection contre les statuts manquants après migration).
      */
+    private void verifierBlocage(Utilisateur user) {
+        if (!user.isBloque()) return;
+        if (user.getDateBlocageAuto() != null && LocalDateTime.now().isAfter(user.getDateBlocageAuto())) {
+            user.setBloque(false);
+            user.setDateBlocageAuto(null);
+            user.setNbRetards(0);
+            utilisateurRepository.save(user);
+            return;
+        }
+        String date = user.getDateBlocageAuto() != null
+                ? user.getDateBlocageAuto().toLocalDate().toString() : "indéterminée";
+        throw new BusinessException(
+                "Votre compte est suspendu jusqu'au " + date + " suite à trop de retards.");
+    }
+
     private Statut getStatut(String libelle) {
         return statutRepository.findFirstByLibelle(libelle)
                 .orElseThrow(() -> new ResourceNotFoundException("Statut introuvable : " + libelle));

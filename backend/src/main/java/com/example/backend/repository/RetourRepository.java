@@ -1,6 +1,7 @@
 package com.example.backend.repository;
 
 import com.example.backend.model.entity.Retour;
+import com.example.backend.model.entity.Utilisateur;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +12,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface RetourRepository extends JpaRepository<Retour, Integer> {
-    // findByLivreIdAndStatutLibelle supprimé : déclaré mais jamais appelé.
+    void deleteByUtilisateur(Utilisateur utilisateur);
 }

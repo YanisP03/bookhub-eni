@@ -10,6 +10,9 @@ export interface UtilisateurProfil {
   telephone?: string;
   roleLibelle: string;
   dateInscription?: string | Date;
+  nbRetards: number;
+  bloque: boolean;
+  dateBlocageAuto?: string;
 }
 
 export interface DashboardStats {
@@ -57,5 +60,25 @@ export class ProfilService {
 
   promouvoirBibliothecaire(mail: string): Observable<unknown> {
     return this.http.put(`${this.base}/utilisateurs/bibliothecaire/promouvoir`, { mail });
+  }
+
+  listerUtilisateurs(): Observable<UtilisateurProfil[]> {
+    return this.http.get<UtilisateurProfil[]>(`${this.base}/utilisateurs`);
+  }
+
+  listerRetardataires(): Observable<UtilisateurProfil[]> {
+    return this.http.get<UtilisateurProfil[]>(`${this.base}/utilisateurs/retardataires`);
+  }
+
+  debloquerUtilisateur(id: number): Observable<UtilisateurProfil> {
+    return this.http.put<UtilisateurProfil>(`${this.base}/utilisateurs/${id}/debloquer`, {});
+  }
+
+  supprimerUtilisateur(id: number): Observable<unknown> {
+    return this.http.delete(`${this.base}/utilisateurs/${id}`);
+  }
+
+  creerUtilisateur(data: { nom: string; prenom: string; mail: string; motDePasse: string; role: string }): Observable<unknown> {
+    return this.http.post(`${this.base}/utilisateurs/admin/creer`, data);
   }
 }
