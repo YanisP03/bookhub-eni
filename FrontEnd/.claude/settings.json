@@ -6,7 +6,8 @@
       "Bash(xargs basename -a)"
     ],
     "additionalDirectories": [
-      "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\backend\\src\\main\\resources"
+      "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\backend\\src\\main\\resources",
+      "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\backend\\src\\test\\java\\com\\example\\backend\\services"
     ]
   }
 }
