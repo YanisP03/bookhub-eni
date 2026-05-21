@@ -7,14 +7,16 @@
       "Bash(dir \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\backend\" /B)",
       "Bash(dir \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\backend\\\\uploads\" /B /S)",
       "Bash(dir \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\FrontEnd\\\\public\" /B)",
-      "PowerShell(Copy-Item \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\FrontEnd\\\\src\\\\app\\\\pages\\\\profil\\\\Logo\\\\logo.png\" \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\FrontEnd\\\\public\\\\logo.png\")"
+      "PowerShell(Copy-Item \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\FrontEnd\\\\src\\\\app\\\\pages\\\\profil\\\\Logo\\\\logo.png\" \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\FrontEnd\\\\public\\\\logo.png\")",
+      "Bash(rm -rf \"c:\\\\Users\\\\nlebihan2025\\\\Documents\\\\GitHub\\\\bookhub-eni\\\\FrontEnd\\\\src\\\\app\\\\pages\\\\detail-livre\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\backend\\src\\main\\resources",
       "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\backend\\src\\test\\java\\com\\example\\backend\\services",
       "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\backend\\src\\main\\java\\com\\example\\backend\\dto",
       "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\backend",
-      "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni"
+      "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni",
+      "c:\\Users\\nlebihan2025\\Documents\\GitHub\\bookhub-eni\\FrontEnd\\src\\app\\pages\\detail-livre"
     ]
   }
 }

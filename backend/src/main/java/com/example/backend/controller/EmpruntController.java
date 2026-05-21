@@ -88,7 +88,7 @@ public class EmpruntController {
     @Operation(summary = "Confirmer le retour physique d'un livre", description = "Calcule le retard, libère l'exemplaire et notifie la 1ère réservation en attente")
     @PutMapping("/{id}/valider-retour")
     public ResponseEntity<Emprunt> validerRetour(@PathVariable Integer id) {
-        return ResponseEntity.ok(empruntService.validerRetour(id));
+        return ResponseEntity.ok(empruntService.validerRetour(id)); 
     }
 
     @Operation(summary = "Convertir une réservation notifiée en emprunt", description = "Crée directement un emprunt EN_COURS pour le lecteur qui vient récupérer son livre")

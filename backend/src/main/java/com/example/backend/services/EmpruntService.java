@@ -98,7 +98,6 @@ public class EmpruntService {
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur introuvable"));
         Livre livre = livreRepository.findById(livreId)
                 .orElseThrow(() -> new ResourceNotFoundException("Livre introuvable"));
-
         // Règle : compte bloqué
         verifierBlocage(user);
 
@@ -110,11 +109,9 @@ public class EmpruntService {
         // Règle : pas de doublon actif sur le même livre (évite aussi l'erreur de contrainte DB)
         if (empruntRepository.hasEmpruntActifPourLivre(user, livre))
             throw new BusinessException("Vous avez déjà un emprunt en cours pour ce livre.");
-
         // Règle : au moins 1 exemplaire disponible
         if (livre.getNbDisponibles() <= 0)
             throw new BusinessException("Aucun exemplaire disponible pour ce livre.");
-
         // Réserver l'exemplaire immédiatement (avant validation bibliothécaire)
         livre.setNbDisponibles(livre.getNbDisponibles() - 1);
         if (livre.getNbDisponibles() == 0)
@@ -127,7 +124,6 @@ public class EmpruntService {
                     r.setStatut(getStatut("CONVERTIE"));
                     reservationRepository.save(r);
                 });
-
         Emprunt emprunt = new Emprunt();
         emprunt.setUtilisateur(user);
         emprunt.setLivre(livre);
